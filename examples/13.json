@@ -1,0 +1,34 @@
+{
+    "uri": "http://example.com",
+    "langCode": "en",
+    "entries": [{
+        "id": "buy",
+        "headword": "buy",
+        "senses": [{
+            "id": "buy-1",
+            "definitions": [{"text": "get something by paying money for it"}]
+        }, {
+        "id": "sell",
+        "headword": "sell",
+        "senses": [{
+            "id": "sell-1",
+            "definitions": [{"text": "exchange something for money"}]
+        }]
+        }],
+        "relations": [{
+            "type": "antonyms",
+            "members": [
+                {"memberID": "buy-1"},
+                {"memberID": "sell-1"}
+            ]
+        }],
+        "relationTypes": [{
+            "type": "antonyms",
+            "memberTypes": [{
+                "type": "sense",
+                "min": 2,
+                "max": 2,
+                "hint": "navigate"
+            }]
+        }]
+    }

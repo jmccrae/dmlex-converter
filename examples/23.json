@@ -1,0 +1,22 @@
+{
+  "id": "cat-n",
+  "headword": "cat",
+  "senses": [...],
+  "etymology": {
+    "etymons" [{
+      "etymonUnits": [
+        {"langCode": "enm", "text": "catte"}
+      ]
+    }, {
+      "etymonUnits": [
+        {"langCode": "ang", "text": "catt", "translation": "male cat"},
+        {"langCode": "ang", "text": "catte", "translation": "female cat"}
+      ]
+    }, {
+      "etymonUnits": [
+        {"langCode": "gem-x-proto", "text": "kattuz", "reconstructed": true}
+      ]
+    }]
+  }
+}
+

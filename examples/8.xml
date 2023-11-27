@@ -1,0 +1,25 @@
+<entry id="doctor-n">
+    <headword>doctor</headword>
+    <sense id="doctor-n-1">
+        <indicator>medical doctor</indicator>
+        <headwordTranslation>
+            <text>Arzt</text>
+            <partOfSpeech tag="n-masc"/>
+        </headwordTranslation>
+        <headwordTranslation>
+            <text>Ärztin</text>
+            <partOfSpeech tag="n-fem"/>
+        </headwordTranslation>
+    </sense>
+    <sense id="doctor-n-2">
+        <indicator>academic title</indicator>
+        <headwordTranslation>
+            <text>Doktor</text>
+            <partOfSpeech tag="n-masc"/>
+        </headwordTranslation>
+        <headwordTranslation>
+            <text>Doktorin</text>
+            <partOfSpeech tag="n-fem"/>
+        </headwordTranslation>
+    </sense>
+</entry>
