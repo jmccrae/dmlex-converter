@@ -105,13 +105,13 @@ mod tests {
     #[test]
     fn test_read_xml_8() {
         let file = File::open("examples/8.xml").unwrap();
-        let _resource : LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : Entry = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
     fn test_read_json_8() {
         let file = File::open("examples/8.json").unwrap();
-        let _resource : LexicographicResource = serde_json::from_reader(file).unwrap();
+        let _resource : Entry = serde_json::from_reader(file).unwrap();
     }
 
     #[test]
@@ -129,13 +129,13 @@ mod tests {
     #[test]
     fn test_read_xml_10() {
         let file = File::open("examples/10.xml").unwrap();
-        let _resource : Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
     fn test_read_json_10() {
         let file = File::open("examples/10.json").unwrap();
-        let _resource : Entry = serde_json::from_reader(file).unwrap();
+        let _resource : LexicographicResource = serde_json::from_reader(file).unwrap();
     }
 
     #[test]

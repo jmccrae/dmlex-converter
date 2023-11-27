@@ -1,6 +1,6 @@
 <entry id="treppenwitz">
     <headword>Treppenwitz</headword>
-    <partOfSpeech value="n-masc"/>
+    <partOfSpeech tag="n-masc"/>
     <sense id="treppenwitz-1">
         <headwordExplanation>
             belated realisation of what one could have said
@@ -9,4 +9,5 @@
             <text>staircase wit</text>
         </headwordTranslation>
     </sense>
+</entry>
 

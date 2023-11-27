@@ -12,7 +12,7 @@
         "tag": "pl",
         "text": "folúsghlantóirí"
         }],
-        "senses": [...]
+        "senses": []
     }],
     "partOfSpeechTags": [{
         "tag": "n-masc",
@@ -23,7 +23,7 @@
     }],
     "inflectedFormTags": [{
         "tag": "sg-gen",
-        "description": "singular genitive"
+        "description": "singular genitive",
         "forPartsOfSpeech": ["n-masc", "n-fem"]
     }, {
     "tag": "pl",

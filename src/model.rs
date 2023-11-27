@@ -3,10 +3,15 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct LexicographicResource {
-    pub title: String,
-    pub uri: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
     #[serde(rename = "langCode")]
     pub lang_code: LangCode,
+    #[serde(alias = "entries")]
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
     pub entry: Vec<Entry>,
 }
 
@@ -37,6 +42,7 @@ pub struct Entry {
     pub inflected_from: Vec<InflectedForm>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
+    #[serde(alias = "senses")]
     pub sense: Vec<Sense>
 }
 
@@ -48,9 +54,9 @@ pub struct PartOfSpeech {
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct InflectedForm {
     pub text: String,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub tag: Vec<String>,
+    pub tag: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub label: Vec<Label>,
@@ -77,6 +83,7 @@ pub struct Sense {
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Definition {
+    #[serde(rename = "$value")]
     pub text: String,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(rename = "definition_type")]
@@ -105,6 +112,7 @@ pub struct Pronunciation {
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Transcription {
+    #[serde(rename = "$value")]
     pub text: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]

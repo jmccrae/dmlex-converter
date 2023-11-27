@@ -3,6 +3,8 @@
     <translationLanguage langCode="en"/>
     <translationLanguage langCode="de"/>
     <translationLanguage langCode="cs"/>
-    ...
+    <entry>
+        <headword>focal</headword>
+    </entry>
 </lexicographicResource>
 

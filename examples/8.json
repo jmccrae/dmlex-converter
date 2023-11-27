@@ -3,7 +3,7 @@
     "headword": "doctor",
     "senses": [{
         "id": "doctor-n-1",
-        "indicator": "medical doctor",
+        "indicator": ["medical doctor"],
         "headwordTranslations": [{
             "text": "Arzt",
             "partsOfSpeech": ["n-masc"]
@@ -13,7 +13,7 @@
         }]
     }, {
         "id": "doctor-n-2",
-        "indicator": "academic title",
+        "indicator": ["academic title"],
         "headwordTranslations": [{
             "text": "Doktor",
             "partsOfSpeech": ["n-masc"]

@@ -3,6 +3,8 @@
     "uri": "http://example.com",
     "langCode": "ga",
     "translationLanguages": ["en", "de", "cs"],
-    ...
+    "entries": [{
+        "headword": "focal"
+    }]
 }
 

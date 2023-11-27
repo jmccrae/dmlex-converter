@@ -1,9 +1,9 @@
 {
   "id": "cat-n",
   "headword": "cat",
-  "senses": [...],
+  "senses": [],
   "etymology": {
-    "etymons" [{
+    "etymons": [{
       "etymonUnits": [
         {"langCode": "enm", "text": "catte"}
       ]

@@ -1,7 +1,8 @@
 {
     "uri": "http://example.com",
     "langCode": "en",
-    "entry": {
+    "title": "Example Lexicon",
+    "entries": [{
         "id": "abandon-verb",
         "headword": "abandon",
         "partsOfSpeech": ["verb"],
@@ -24,5 +25,5 @@
             "text": "That theory has been abandoned."
         }]
         }]
-    }
+    }]
 }

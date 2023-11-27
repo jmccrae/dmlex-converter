@@ -1,7 +1,7 @@
 <lexicographicResource uri="http://example.com" langCode="ga">
     <entry id="folúsghlantóir-n">
         <headword>folúsghlantóir</headword>
-        <partOfSpeech value="n-masc"/>
+        <partOfSpeech tag="n-masc"/>
         <inflectedForm tag="sg-gen">
             <text>folúsghlantóra</text>
         </inflectedForm>
@@ -20,7 +20,7 @@
         <description>singular genitive</description>
         <forPartOfSpeech tag="n-masc"/>
         <forPartOfSpeech tag="n-fem"/>
-    </tag>
+    </inflectedFormTag>
     <tag value="pl">
         <description>plural</description>
         <target value="inflectedTag"/>

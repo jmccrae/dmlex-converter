@@ -2,21 +2,21 @@
     <translationLanguage langCode="de"/>
     <entry id="die-see">
         <headword>See</headword>
-        <partOfSpeech value="n-fem"/>
+        <partOfSpeech tag="n-fem"/>
         <sense id="die-see-1">
             <headwordTranslation><text>sea</text></headwordTranslation>
         </sense>
     </entry>
     <entry id="das-meer">
         <headword>Meer</headword>
-        <partOfSpeech value="n-neut"/>
+        <partOfSpeech tag="n-neut"/>
         <sense id="das-meer-1">
             <headwordTranslation><text>sea</text></headwordTranslation>
         </sense>
     </entry>
     <entry id="der-ozean">
         <headword>Ozean</headword>
-        <partOfSpeech value="n-masc"/>
+        <partOfSpeech tag="n-masc"/>
         <sense id="der-ozean-1">
             <headwordTranslation><text>ocean</text></headwordTranslation>
         </sense>

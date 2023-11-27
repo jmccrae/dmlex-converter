@@ -1,7 +1,8 @@
 <lexicographicResource uri="http://example.com" langCode="en">
+    <title>Example Dictionary</title>
     <entry id="abandon-verb">
         <headword>abandon</headword>
-        <partOfSpeech value="verb"/>
+            <partOfSpeech tag="verb"/>
         <sense id="abandon-verb-1">
             <definition>to suddenly leave a place or a person</definition>
             <example>
@@ -9,14 +10,16 @@
             </example>
             <example>
                 <text>Abandon ship!</text>
-                <label value="idiom"/>
+                <label tag="idiom"/>
             </example>
+        </sense>
         <sense id="abandon-verb-2">
-            <label value="mostly-passive"/>
+            <label tag="mostly-passive"/>
             <definition>to stop supporting an idea</definition>
             <example>
                 <text>That theory has been abandoned.</text>
             </example>
         </sense>
     </entry>
-<lexicographicResource>
+</lexicographicResource>
+
