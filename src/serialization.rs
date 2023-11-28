@@ -30,6 +30,9 @@ impl<'de> Visitor<'de> for HeadwordStringVisitor {
                 "placeholderMarker" => {
                     content.push(HeadwordStringPart::PlaceholderMarker(map.next_value()?));
                 }
+                "text" => {
+                    content.push(HeadwordStringPart::Text(map.next_value()?));
+                }
                 "$value" => {
                     content.push(HeadwordStringPart::Text(map.next_value()?));
                 }
@@ -83,6 +86,9 @@ impl<'de> Visitor<'de> for TextStringVisitor {
                 "collocateMarker" => {
                     content.push(TextStringPart::CollocateMarker(map.next_value()?));
                 }
+                "text" => {
+                    content.push(TextStringPart::Text(map.next_value()?));
+                }
                 "$value" => {
                     content.push(TextStringPart::Text(map.next_value()?));
                 }
@@ -107,7 +113,218 @@ impl<'de> Deserialize<'de> for TextString {
     }
 }
 
+struct PartOfSpeechVisitor;
 
+impl<'de> Visitor<'de> for PartOfSpeechVisitor {
+    type Value = PartOfSpeech;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("A part of speech value")
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(PartOfSpeech {
+            tag: value.to_owned(),
+        })
+    }
+
+    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+    where
+        A: serde::de::MapAccess<'de>,
+    {
+        let mut tag = None;
+        while let Some(key) = map.next_key::<String>()? {
+            match key.as_str() {
+                "tag" => {
+                    tag = Some(map.next_value()?);
+                }
+                _ => {
+                    return Err(serde::de::Error::unknown_field(
+                        key.as_str(),
+                        &["tag"],
+                    ))
+                }
+            }
+        }
+        Ok(PartOfSpeech {
+            tag: tag.ok_or_else(|| serde::de::Error::missing_field("tag"))?,
+        })
+    }
+}
+
+impl<'de> Deserialize<'de> for PartOfSpeech {
+    fn deserialize<D>(deserializer: D) -> Result<PartOfSpeech, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_any(PartOfSpeechVisitor)
+    }
+}
+
+struct DefinitionVisitor;
+
+impl<'de> Visitor<'de> for DefinitionVisitor {
+    type Value = Definition;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("A definition value")
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(Definition {
+            text: value.to_owned(),
+            definition_type: Vec::new(),
+        })
+    }
+
+    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+    where
+        A: serde::de::MapAccess<'de>,
+    {
+        let mut text = None;
+        let mut definition_type = Vec::new();
+        while let Some(key) = map.next_key::<String>()? {
+            match key.as_str() {
+                "text" => {
+                    text = Some(map.next_value()?);
+                }
+                "$value" => {
+                    text = Some(map.next_value()?);
+                }
+                "definitionType" => {
+                    definition_type.push(map.next_value()?);
+                }
+                _ => {
+                    return Err(serde::de::Error::unknown_field(
+                        key.as_str(),
+                        &["text", "definitionType"],
+                    ))
+                }
+            }
+        }
+        Ok(Definition {
+            text: text.ok_or_else(|| serde::de::Error::missing_field("text"))?,
+            definition_type,
+        })
+    }
+}
+
+impl<'de> Deserialize<'de> for Definition {
+    fn deserialize<D>(deserializer: D) -> Result<Definition, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_any(DefinitionVisitor)
+    }
+}
+
+struct LabelVisitor;
+
+impl<'de> Visitor<'de> for LabelVisitor {
+    type Value = Label;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("A label value")
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(Label {
+            tag: value.to_owned(),
+        })
+    }
+
+    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+    where
+        A: serde::de::MapAccess<'de>,
+    {
+        let mut tag = None;
+        while let Some(key) = map.next_key::<String>()? {
+            match key.as_str() {
+                "tag" => {
+                    tag = Some(map.next_value()?);
+                }
+                _ => {
+                    return Err(serde::de::Error::unknown_field(
+                        key.as_str(),
+                        &["tag"],
+                    ))
+                }
+            }
+        }
+        Ok(Label {
+            tag: tag.ok_or_else(|| serde::de::Error::missing_field("tag"))?,
+        })
+    }
+}
+
+impl<'de> Deserialize<'de> for Label {
+    fn deserialize<D>(deserializer: D) -> Result<Label, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_any(LabelVisitor)
+    }
+}
+
+pub struct TranslationLanguageVisitor;
+
+impl<'de> Visitor<'de> for TranslationLanguageVisitor {
+    type Value = TranslationLanguage;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("A translation language value")
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(TranslationLanguage {
+            lang_code: LangCode(value.to_owned()),
+        })
+    }
+
+    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+    where
+        A: serde::de::MapAccess<'de>,
+    {
+        let mut lang_code = None;
+        while let Some(key) = map.next_key::<String>()? {
+            match key.as_str() {
+                "langCode" => {
+                    lang_code = Some(map.next_value()?);
+                }
+                _ => {
+                    return Err(serde::de::Error::unknown_field(
+                        key.as_str(),
+                        &["tag", "script"],
+                    ))
+                }
+            }
+        }
+        Ok(TranslationLanguage {
+            lang_code: lang_code.ok_or_else(|| serde::de::Error::missing_field("tag"))?,
+        })
+    }
+}
+
+impl<'de> Deserialize<'de> for TranslationLanguage {
+    fn deserialize<D>(deserializer: D) -> Result<TranslationLanguage, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_any(TranslationLanguageVisitor)
+    }
+}
 
 #[cfg(test)]
 mod tests {
