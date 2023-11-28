@@ -1,4 +1,113 @@
 /// Any serialization specific code should be placed in this module.
+use serde::Deserialize;
+use serde::de::{Visitor, Deserializer};
+use std::fmt;
+use crate::model::*;
+
+struct HeadwordStringVisitor;
+
+impl<'de> Visitor<'de> for HeadwordStringVisitor {
+    type Value = HeadwordString;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("a string or a placeholderMarker")
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(HeadwordString(vec![HeadwordStringPart::Text(value.to_owned())]))
+    }
+
+    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+    where
+        A: serde::de::MapAccess<'de>,
+    {
+        let mut content = Vec::new();
+        while let Some(key) = map.next_key::<String>()? {
+            match key.as_str() {
+                "placeholderMarker" => {
+                    content.push(HeadwordStringPart::PlaceholderMarker(map.next_value()?));
+                }
+                "$value" => {
+                    content.push(HeadwordStringPart::Text(map.next_value()?));
+                }
+                _ => {
+                    return Err(serde::de::Error::unknown_field(
+                        key.as_str(),
+                        &["placeholderMarker", "$value"],
+                    ))
+                }
+            }
+        }
+        Ok(HeadwordString(content))
+    }
+}
+
+impl<'de> Deserialize<'de> for HeadwordString {
+    fn deserialize<D>(deserializer: D) -> Result<HeadwordString, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_any(HeadwordStringVisitor)
+    }
+}
+
+struct TextStringVisitor;
+
+impl<'de> Visitor<'de> for TextStringVisitor {
+    type Value = TextString;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("a string or a placeholderMarker")
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(TextString(vec![TextStringPart::Text(value.to_owned())]))
+    }
+
+    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+    where
+        A: serde::de::MapAccess<'de>,
+    {
+        let mut content = Vec::new();
+        while let Some(key) = map.next_key::<String>()? {
+            match key.as_str() {
+                "headwordMarker" => {
+                    content.push(TextStringPart::HeadwordMarker(map.next_value()?));
+                }
+                "collocateMarker" => {
+                    content.push(TextStringPart::CollocateMarker(map.next_value()?));
+                }
+                "$value" => {
+                    content.push(TextStringPart::Text(map.next_value()?));
+                }
+                _ => {
+                    return Err(serde::de::Error::unknown_field(
+                        key.as_str(),
+                        &["placeholderMarker", "$value"],
+                    ))
+                }
+            }
+        }
+        Ok(TextString(content))
+    }
+}
+
+impl<'de> Deserialize<'de> for TextString {
+    fn deserialize<D>(deserializer: D) -> Result<TextString, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_any(TextStringVisitor)
+    }
+}
+
+
 
 #[cfg(test)]
 mod tests {
