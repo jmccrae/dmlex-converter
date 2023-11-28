@@ -8,7 +8,6 @@
         <inflectedForm tag="pl">
             <text>folúsghlantóirí</text>
         </inflectedForm>
-        <sense>...</sense>
     </entry>
     <partOfSpeechTag tag="n-masc">
         <description>masculine noun</description>
@@ -21,10 +20,9 @@
         <forPartOfSpeech tag="n-masc"/>
         <forPartOfSpeech tag="n-fem"/>
     </inflectedFormTag>
-    <tag value="pl">
+    <inflectedFormTag tag="pl">
         <description>plural</description>
-        <target value="inflectedTag"/>
         <forPartOfSpeech tag="n-masc"/>
         <forPartOfSpeech tag="n-fem"/>
-    </tag>
+    </inflectedFormTag>
 </lexicographicResource>

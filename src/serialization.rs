@@ -39,7 +39,7 @@ impl<'de> Visitor<'de> for HeadwordStringVisitor {
                 _ => {
                     return Err(serde::de::Error::unknown_field(
                         key.as_str(),
-                        &["placeholderMarker", "$value"],
+                        &["placeholderMarker", "text", "$value"],
                     ))
                 }
             }
@@ -95,7 +95,7 @@ impl<'de> Visitor<'de> for TextStringVisitor {
                 _ => {
                     return Err(serde::de::Error::unknown_field(
                         key.as_str(),
-                        &["placeholderMarker", "$value"],
+                        &["headwordMarker", "collocateMarker", "text", "$value"],
                     ))
                 }
             }
@@ -323,6 +323,108 @@ impl<'de> Deserialize<'de> for TranslationLanguage {
         D: Deserializer<'de>,
     {
         deserializer.deserialize_any(TranslationLanguageVisitor)
+    }
+}
+
+pub struct ForPartOfSpeechVisitor;
+
+impl<'de> Visitor<'de> for ForPartOfSpeechVisitor {
+    type Value = ForPartOfSpeech;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("A for part of speech value")
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(ForPartOfSpeech {
+            tag: value.to_owned(),
+        })
+    }
+
+    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+    where
+        A: serde::de::MapAccess<'de>,
+    {
+        let mut tag = None;
+        while let Some(key) = map.next_key::<String>()? {
+            match key.as_str() {
+                "tag" => {
+                    tag = Some(map.next_value()?);
+                }
+                _ => {
+                    return Err(serde::de::Error::unknown_field(
+                        key.as_str(),
+                        &["tag"],
+                    ))
+                }
+            }
+        }
+        Ok(ForPartOfSpeech {
+            tag: tag.ok_or_else(|| serde::de::Error::missing_field("tag"))?,
+        })
+    }
+}
+
+impl<'de> Deserialize<'de> for ForPartOfSpeech {
+    fn deserialize<D>(deserializer: D) -> Result<ForPartOfSpeech, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_any(ForPartOfSpeechVisitor)
+    }
+}
+
+pub struct ForLanguageVisitor;
+
+impl<'de> Visitor<'de> for ForLanguageVisitor {
+    type Value = ForLanguage;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("A for label value")
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(ForLanguage {
+            lang_code: LangCode(value.to_owned()),
+        })
+    }
+
+    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+    where
+        A: serde::de::MapAccess<'de>,
+    {
+        let mut tag = None;
+        while let Some(key) = map.next_key::<String>()? {
+            match key.as_str() {
+                "lang_code" => {
+                    tag = Some(LangCode(map.next_value()?));
+                }
+                _ => {
+                    return Err(serde::de::Error::unknown_field(
+                        key.as_str(),
+                        &["tag"],
+                    ))
+                }
+            }
+        }
+        Ok(ForLanguage {
+            lang_code: tag.ok_or_else(|| serde::de::Error::missing_field("tag"))?,
+        })
+    }
+}
+
+impl<'de> Deserialize<'de> for ForLanguage {
+    fn deserialize<D>(deserializer: D) -> Result<ForLanguage, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_any(ForLanguageVisitor)
     }
 }
 

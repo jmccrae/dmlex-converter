@@ -18,12 +18,12 @@
         </sense>
     </entry>
     <relation type="meronymy">
-        <member memberID="glasses-1" role="whole"/>
-        <member memberID="lens-1" role="part"/>
+        <member memberID="glasses-1" role="whole" obverseListingOrder="0"/>
+        <member memberID="lens-1" role="part" obverseListingOrder="0"/>
     </relation>
     <relation type="meronymy">
-        <member memberID="microscrope-1" role="whole"/>
-        <member memberID="lens-1" role="part"/>
+        <member memberID="microscrope-1" role="whole" obverseListingOrder="0"/>
+        <member memberID="lens-1" role="part" obverseListingOrder="0"/>
     </relation>
     <relationType type="meronomy">
         <description>part-whole relationship</description>

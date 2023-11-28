@@ -26,8 +26,8 @@
     "relations": [{
         "type": "subentrying",
         "members": [
-          {"role": "container", "memberID": "safe-1"},
-          {"role": "subentry", "memberID": "better-safe"}
+          {"role": "container", "memberID": "safe-1", "obverseListingOrder": 0},
+          {"role": "subentry", "memberID": "better-safe", "obverseListingOrder": 0}
         ]
     }],
     "relationTypes": [{

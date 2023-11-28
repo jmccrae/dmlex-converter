@@ -18,13 +18,14 @@
     "relations": [{
         "type": "antonyms",
         "members": [
-            {"memberID": "buy-1"},
-            {"memberID": "sell-1"}
+            {"memberID": "buy-1", "obverseListingOrder": 0},
+            {"memberID": "sell-1", "obverseListingOrder": 0}
         ]
     }],
     "relationTypes": [{
         "type": "antonyms",
         "memberTypes": [{
+            "role": "obverse",
             "type": "sense",
             "min": 2,
             "max": 2,

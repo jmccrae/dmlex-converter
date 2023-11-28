@@ -2,7 +2,7 @@
   "id": "cat-n",
   "headword": "cat",
   "senses": [],
-  "etymology": {
+  "etymology": [{
     "etymons": [{
       "etymonUnits": [
         {"langCode": "enm", "text": "catte"}
@@ -17,6 +17,6 @@
         {"langCode": "gem-x-proto", "text": "kattuz", "reconstructed": true}
       ]
     }]
-  }
+  }]
 }
 

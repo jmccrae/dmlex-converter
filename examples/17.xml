@@ -19,8 +19,8 @@
         </sense>
     </entry>
     <relation type="subentrying">
-        <member memberID="safe-1" role="container"/>
-        <member memberID="better-safe" role="subentry"/>
+        <member memberID="safe-1" role="container" obverseListingOrder="0"/>
+        <member memberID="better-safe" role="subentry" obverseListingOrder="0"/>
     </relation>
     <relationType type="subentrying" scopeRestriction="sameResource">
         <memberType role="container" type="sense" min="1" max="1" hint="navigate"/>

@@ -12,10 +12,10 @@
         </sense>
     </entry>
     <relation type="antonyms">
-        <member memberID="buy-1"/>
-        <member memberID="sell-1"/>
+        <member memberID="buy-1" obverseListingOrder="0"/>
+        <member memberID="sell-1" obverseListingOrder="0"/>
     </relation>
     <relationType type="antonyms">
-        <memberType type="sense" min="2" max="2" hint="navigate"/>
+        <memberType type="sense" min="2" max="2" hint="navigate" role="obverse"/>
     </relationType>
 </lexicographicResource>

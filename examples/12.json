@@ -25,19 +25,23 @@
         "type": "meronymy",
         "members": [{
             "memberID": "glasses-1",
-            "role": "whole"
+            "role": "whole",
+            "obverseListingOrder": 0
         }, {
             "memberID": "lens-1",
-            "role": "part"
+            "role": "part",
+            "obverseListingOrder": 0
         }]
     }, {
         "type": "meronymy",
         "members": [{
             "memberID": "microscope-1",
-            "role": "whole"
+            "role": "whole",
+            "obverseListingOrder": 0
         }, {
-        "memberId": "lens-1",
-        "role": "part"
+            "memberID": "lens-1",
+            "role": "part",
+            "obverseListingOrder": 0
         }]
     }],
     "relationTypes": [{
