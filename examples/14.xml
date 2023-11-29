@@ -1,5 +1,5 @@
-<lexicographicResource uri="http://example.com" langCode="en">
-    <translationLanguage langCode="de"/>
+<lexicographicResource uri="http://example.com" langCode="de">
+    <translationLanguage langCode="en"/>
     <entry id="die-see">
         <headword>See</headword>
         <partOfSpeech tag="n-fem"/>

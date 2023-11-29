@@ -1,7 +1,7 @@
 {
     "uri": "http://example.com",
     "langCode": "en",
-    "title": "Example Lexicon",
+    "title": "Example Dictionary",
     "entries": [{
         "id": "abandon-verb",
         "headword": "abandon",

@@ -721,4 +721,141 @@ mod tests {
         let file = File::open("examples/23.json").unwrap();
         let _resource : Entry = serde_json::from_reader(file).unwrap();
     }
+
+    fn test_equivalent_lexicon(fname : &str) {
+        let file1 = File::open(format!("examples/{}.xml", fname)).unwrap();
+        let file2 = File::open(format!("examples/{}.json", fname)).unwrap();
+        let resource1 : LexicographicResource = serde_xml_rs::from_reader(file1).unwrap();
+        let resource2 : LexicographicResource = serde_json::from_reader(file2).unwrap();
+        assert_eq!(resource1, resource2);
+    }
+
+    fn test_equivalent_entry(fname : &str) {
+        let file1 = File::open(format!("examples/{}.xml", fname)).unwrap();
+        let file2 = File::open(format!("examples/{}.json", fname)).unwrap();
+        let resource1 : Entry = serde_xml_rs::from_reader(file1).unwrap();
+        let resource2 : Entry = serde_json::from_reader(file2).unwrap();
+        assert_eq!(resource1, resource2);
+    }
+
+
+    #[test]
+    fn test_equivalent_0() {
+        test_equivalent_lexicon("0");
+    }
+
+    #[test]
+    fn test_equivalent_1() {
+        test_equivalent_entry("1");
+    }
+
+    #[test]
+    fn test_equivalent_2() {
+        test_equivalent_entry("2");
+    }
+
+    #[test]
+    fn test_equivalent_3() {
+        test_equivalent_entry("3");
+    }
+
+    #[test]
+    fn test_equivalent_4() {
+        test_equivalent_entry("4");
+    }
+
+    #[test]
+    fn test_equivalent_5() {
+        test_equivalent_lexicon("5");
+    }
+
+//    #[test]
+//    fn test_equivalent_6() {
+//        test_equivalent_lexicon("6");
+//    }
+
+    #[test]
+    fn test_equivalent_7() {
+        test_equivalent_lexicon("7");
+    }
+
+    #[test]
+    fn test_equivalent_8() {
+        test_equivalent_entry("8");
+    }
+
+    #[test]
+    fn test_equivalent_9() {
+        test_equivalent_entry("9");
+    }
+
+    #[test]
+    fn test_equivalent_10() {
+        test_equivalent_lexicon("10");
+    }
+
+    #[test]
+    fn test_equivalent_11() {
+        test_equivalent_entry("11");
+    }
+
+    #[test]
+    fn test_equivalent_12() {
+        test_equivalent_lexicon("12");
+    }
+
+    #[test]
+    fn test_equivalent_13() {
+        test_equivalent_lexicon("13");
+    }
+
+    #[test]
+    fn test_equivalent_14() {
+        test_equivalent_lexicon("14");
+    }
+
+    #[test]
+    fn test_equivalent_15() {
+        test_equivalent_lexicon("15");
+    }
+
+    #[test]
+    fn test_equivalent_16() {
+        test_equivalent_lexicon("16");
+    }
+
+    #[test]
+    fn test_equivalent_17() {
+        test_equivalent_lexicon("17");
+    }
+
+    #[test]
+    fn test_equivalent_18() {
+        test_equivalent_lexicon("18");
+    }
+
+    #[test]
+    fn test_equivalent_19() {
+        test_equivalent_entry("19");
+    }
+
+    #[test]
+    fn test_equivalent_20() {
+        test_equivalent_entry("20");
+    }
+
+    #[test]
+    fn test_equivalent_21() {
+        test_equivalent_entry("21");
+    }
+
+    #[test]
+    fn test_equivalent_22() {
+        test_equivalent_entry("22");
+    }
+
+    #[test]
+    fn test_equivalent_23() {
+        test_equivalent_entry("23");
+    }
 }
