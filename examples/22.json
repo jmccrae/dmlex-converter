@@ -13,9 +13,9 @@
         {"startIndex": 12, "endIndex": 21, "lemma": "perform"}
       ],
       "exampleTranslations": [{
-        "text": "Koroner provedl a pitvu.",
+        "text": "Koroner provedl pitvu.",
         "headwordMarkers": [
-          {"startIndex": 18, "endIndex": 23}
+          {"startIndex": 16, "endIndex": 21}
         ],
         "collocateMarkers": [
           {"startIndex": 8, "endIndex": 15, "lemma": "provést"}

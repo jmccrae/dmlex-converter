@@ -113,10 +113,13 @@ impl<'de> Visitor<'de> for TextStringVisitor {
                             Vec::new()));
                 }
                 "text" => {
-                    content.push(TextStringPart::Text(map.next_value()?));
+                    content.push(TextStringPart::Text(map.next_value::<String>()?.replace("\u{a0}", " ")));
                 }
                 "$value" => {
-                    content.push(TextStringPart::Text(map.next_value()?));
+                    content.push(TextStringPart::Text(map.next_value::<String>()?.replace("\u{a0}", " ")));
+                }
+                "space" => {
+                    let _ : String =map.next_value()?;
                 }
                 _ => {
                     return Err(serde::de::Error::unknown_field(
@@ -482,6 +485,54 @@ impl<'de> Deserialize<'de> for ForLanguage {
     }
 }
 
+pub struct SameAsVisitor;
+
+impl<'de> Visitor<'de> for SameAsVisitor {
+    type Value = SameAs;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("A same as value")
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        Ok(SameAs { uri: value.to_owned() })
+    }
+
+    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+    where
+        A: serde::de::MapAccess<'de>,
+    {
+
+        let mut uri = None;
+        while let Some(key) = map.next_key::<String>()? {
+            match key.as_str() {
+                "uri" => {
+                    uri = Some(map.next_value()?);
+                }
+                _ => {
+                    return Err(serde::de::Error::unknown_field(
+                        key.as_str(),
+                        &["href", "lang_code", "script", "tag"],
+                    ))
+                }
+            }
+        }
+        Ok(SameAs { uri: uri.ok_or_else(|| serde::de::Error::missing_field("uri"))? })
+    }
+}
+
+impl<'de> Deserialize<'de> for SameAs {
+    fn deserialize<D>(deserializer: D) -> Result<SameAs, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_any(SameAsVisitor)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::model::*;
@@ -561,17 +612,17 @@ mod tests {
         let _resource : LexicographicResource = serde_json::from_reader(file).unwrap();
     }
 
-//    #[test]
-//    fn test_read_xml_6() {
-//        let file = File::open("examples/6.xml").unwrap();
-//        let _resource : LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
-//    }
-//
-//    #[test]
-//    fn test_read_json_6() {
-//        let file = File::open("examples/6.json").unwrap();
-//        let _resource : LexicographicResource = serde_json::from_reader(file).unwrap();
-//    }
+    #[test]
+    fn test_read_xml_6() {
+        let file = File::open("examples/6.xml").unwrap();
+        let _resource : LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+    }
+
+    #[test]
+    fn test_read_json_6() {
+        let file = File::open("examples/6.json").unwrap();
+        let _resource : LexicographicResource = serde_json::from_reader(file).unwrap();
+    }
 
     #[test]
     fn test_read_xml_7() {
@@ -830,10 +881,10 @@ mod tests {
         test_equivalent_lexicon("5");
     }
 
-//    #[test]
-//    fn test_equivalent_6() {
-//        test_equivalent_lexicon("6");
-//    }
+    #[test]
+    fn test_equivalent_6() {
+        test_equivalent_lexicon("6");
+    }
 
     #[test]
     fn test_equivalent_7() {

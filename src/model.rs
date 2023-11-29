@@ -475,7 +475,7 @@ pub struct DefinitionTypeTag {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub same_as: Vec<String>,
+    pub same_as: Vec<SameAs>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -488,7 +488,7 @@ pub struct InflectedFormTag {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub same_as: Vec<String>,
+    pub same_as: Vec<SameAs>,
     #[serde(default)]
     pub for_headwords: bool,
     #[serde(default)]
@@ -512,7 +512,7 @@ pub struct LabelTag {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub same_as: Vec<String>,
+    pub same_as: Vec<SameAs>,
     #[serde(default)]
     pub for_headwords: bool,
     #[serde(default)]
@@ -537,7 +537,7 @@ pub struct LabelTypeTag {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub same_as: Vec<String>,
+    pub same_as: Vec<SameAs>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -550,7 +550,7 @@ pub struct PartOfSpeechTag {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub same_as: Vec<String>,
+    pub same_as: Vec<SameAs>,
     #[serde(default)]
     pub for_headwords: bool,
     #[serde(default)]
@@ -572,7 +572,7 @@ pub struct SourceIdentityTag {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub same_as: Vec<String>,
+    pub same_as: Vec<SameAs>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -653,7 +653,7 @@ pub struct RelationType {
     pub member_types: Vec<MemberType>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub same_as: Vec<String>,
+    pub same_as: Vec<SameAs>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -685,7 +685,7 @@ pub struct MemberType {
     pub hint: Option<Hint>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub same_as: Vec<String>
+    pub same_as: Vec<SameAs>
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -799,5 +799,12 @@ pub struct EtymonLanguage {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub display_name: Option<String>,
+}
+
+#[derive(Serialize, Debug, Clone, PartialEq)]
+#[serde(rename_all = "camelCase")]
+#[serde(deny_unknown_fields)]
+pub struct SameAs {
+    pub uri: String
 }
 
