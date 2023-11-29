@@ -53,7 +53,29 @@ impl<'de> Deserialize<'de> for HeadwordString {
     where
         D: Deserializer<'de>,
     {
-        deserializer.deserialize_any(HeadwordStringVisitor)
+        let mut headword_string = deserializer.deserialize_any(HeadwordStringVisitor)?;
+        if headword_string.0.is_empty() {
+            Err(serde::de::Error::custom("HeadwordString must not be empty"))
+        } else {
+            match &headword_string.0[0] {
+                HeadwordStringPart::PlaceholderMarker(m) => {
+                   headword_string.0[0] = HeadwordStringPart::PlaceholderMarker(m.trim_start().to_owned()); 
+                },
+                HeadwordStringPart::Text(ref t) => {
+                    headword_string.0[0] = HeadwordStringPart::Text(t.trim_start().to_owned());
+                }
+            }
+            let last_idx = headword_string.0.len() - 1;
+            match &headword_string.0[last_idx] {
+                HeadwordStringPart::PlaceholderMarker(m) => {
+                   headword_string.0[last_idx] = HeadwordStringPart::PlaceholderMarker(m.trim_end().to_owned()); 
+                },
+                HeadwordStringPart::Text(ref t) => {
+                    headword_string.0[last_idx] = HeadwordStringPart::Text(t.trim_end().to_owned());
+                }
+            }
+            Ok(headword_string)
+        }
     }
 }
 
@@ -84,7 +106,11 @@ impl<'de> Visitor<'de> for TextStringVisitor {
                     content.push(TextStringPart::HeadwordMarker(map.next_value()?));
                 }
                 "collocateMarker" => {
-                    content.push(TextStringPart::CollocateMarker(map.next_value()?));
+                    let collocates : std::collections::HashMap<String, String> = map.next_value()?;
+                    content.push(TextStringPart::CollocateMarker(
+                            collocates.get("$value").map(|s| s.clone()).unwrap_or_else(|| "".to_owned()),
+                            collocates.get("lemma").map(|s| s.clone()),
+                            Vec::new()));
                 }
                 "text" => {
                     content.push(TextStringPart::Text(map.next_value()?));
@@ -109,7 +135,35 @@ impl<'de> Deserialize<'de> for TextString {
     where
         D: Deserializer<'de>,
     {
-        deserializer.deserialize_any(TextStringVisitor)
+        let mut string = deserializer.deserialize_any(TextStringVisitor)?;
+        if string.0.is_empty() {
+            Err(serde::de::Error::custom("TextString must not be empty"))
+        } else {
+            match &string.0[0] {
+                TextStringPart::HeadwordMarker(m) => {
+                   string.0[0] = TextStringPart::HeadwordMarker(m.trim_start().to_owned()); 
+                },
+                TextStringPart::CollocateMarker(m, lemma, labels) => {
+                   string.0[0] = TextStringPart::CollocateMarker(m.trim_start().to_owned(), lemma.clone(), labels.clone()); 
+                },
+                TextStringPart::Text(ref t) => {
+                    string.0[0] = TextStringPart::Text(t.trim_start().to_owned());
+                }
+            }
+            let last_idx = string.0.len() - 1;
+            match &string.0[last_idx] {
+                TextStringPart::HeadwordMarker(m) => {
+                   string.0[last_idx] = TextStringPart::HeadwordMarker(m.trim_end().to_owned()); 
+                },
+                TextStringPart::CollocateMarker(m, lemma, labels) => {
+                   string.0[last_idx] = TextStringPart::CollocateMarker(m.trim_end().to_owned(), lemma.clone(), labels.clone()); 
+                },
+                TextStringPart::Text(ref t) => {
+                    string.0[last_idx] = TextStringPart::Text(t.trim_end().to_owned());
+                }
+            }
+            Ok(string)
+        }
     }
 }
 
@@ -433,6 +487,7 @@ mod tests {
     use crate::model::*;
     use serde_xml_rs;
     use std::fs::File;
+    use serde::Deserialize;
 
     #[test]
     fn test_read_xml_0() {
@@ -725,7 +780,8 @@ mod tests {
     fn test_equivalent_lexicon(fname : &str) {
         let file1 = File::open(format!("examples/{}.xml", fname)).unwrap();
         let file2 = File::open(format!("examples/{}.json", fname)).unwrap();
-        let resource1 : LexicographicResource = serde_xml_rs::from_reader(file1).unwrap();
+        let mut resource1 : LexicographicResource = serde_xml_rs::from_reader(file1).unwrap();
+        resource1.normalize();
         let resource2 : LexicographicResource = serde_json::from_reader(file2).unwrap();
         assert_eq!(resource1, resource2);
     }
@@ -733,7 +789,12 @@ mod tests {
     fn test_equivalent_entry(fname : &str) {
         let file1 = File::open(format!("examples/{}.xml", fname)).unwrap();
         let file2 = File::open(format!("examples/{}.json", fname)).unwrap();
-        let resource1 : Entry = serde_xml_rs::from_reader(file1).unwrap();
+        let mut deserializer = serde_xml_rs::de::Deserializer::new(
+            serde_xml_rs::EventReader::new_with_config(file1, 
+                serde_xml_rs::ParserConfig::new().trim_whitespace(false)));
+        
+        let mut resource1 : Entry = Entry::deserialize(&mut deserializer).unwrap();
+        resource1.normalize();
         let resource2 : Entry = serde_json::from_reader(file2).unwrap();
         assert_eq!(resource1, resource2);
     }

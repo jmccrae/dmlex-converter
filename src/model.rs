@@ -64,6 +64,14 @@ pub struct LexicographicResource {
     pub etymon_type: Vec<EtymonType>,
 }
 
+impl LexicographicResource {
+    pub fn normalize(&mut self) {
+        for entry in &mut self.entries {
+            entry.normalize();
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[serde(transparent)]
 pub struct LangCode(pub String);
@@ -106,8 +114,45 @@ pub struct Entry {
     pub etymology: Vec<Etymology>,
 }
 
+impl Entry {
+    pub fn normalize(&mut self) {
+        let (normalized, markers) = self.headword.normalize();
+        self.headword = HeadwordString(vec![HeadwordStringPart::Text(normalized)]);
+        self.placeholder_markers = markers;
+        for sense in &mut self.sense {
+            sense.normalize();
+        }
+    }
+}
+
 #[derive(Serialize, Debug, Clone, PartialEq)]
 pub struct HeadwordString(pub Vec<HeadwordStringPart>);
+
+impl HeadwordString {
+    pub fn normalize(&self) -> (String, Vec<Marker>) {
+        let mut normalized = String::new();
+        let mut markers = Vec::new();
+        let mut len = 0;
+        for part in &self.0 {
+            match part {
+                HeadwordStringPart::Text(text) => {
+                    normalized.push_str(text);
+                    len += text.chars().count();
+                },
+                HeadwordStringPart::PlaceholderMarker(marker) => {
+                    let marker_len = marker.chars().count();
+                    markers.push(Marker {
+                        start_index: len as u32,
+                        end_index: (len + marker_len) as u32
+                    });
+                    normalized.push_str(marker);
+                    len += marker_len;
+                }
+            }
+        }
+        (normalized, markers)
+    }
+}
 
 #[derive(Serialize, Debug, Clone, PartialEq)]
 pub enum HeadwordStringPart {
@@ -140,11 +185,49 @@ pub struct InflectedForm {
 #[derive(Serialize, Debug, Clone, PartialEq)]
 pub struct TextString(pub Vec<TextStringPart>);
 
+impl TextString {
+    fn normalize(&self) -> (String, Vec<Marker>, Vec<CollocateMarker>) {
+        let mut normalized = String::new();
+        let mut markers = Vec::new();
+        let mut collocate_markers = Vec::new();
+        let mut len = 0;
+        for part in &self.0 {
+            match part {
+                TextStringPart::Text(text) => {
+                    normalized.push_str(text);
+                    len += text.chars().count();
+                },
+                TextStringPart::HeadwordMarker(marker) => {
+                    let marker_len = marker.chars().count();
+                    markers.push(Marker {
+                        start_index: len as u32,
+                        end_index: (len + marker_len) as u32
+                    });
+                    normalized.push_str(marker);
+                    len += marker_len;
+                },
+                TextStringPart::CollocateMarker(marker, lemma, label) => {
+                    let marker_len = marker.chars().count();
+                    collocate_markers.push(CollocateMarker {
+                        start_index: len as u32,
+                        end_index: (len + marker_len) as u32,
+                        lemma: lemma.clone(),
+                        label: label.clone() 
+                    });
+                    normalized.push_str(marker);
+                    len += marker_len;
+                }
+            }
+        }
+        (normalized, markers, collocate_markers)
+    }
+}
+
 #[derive(Serialize, Debug, Clone, PartialEq)]
 pub enum TextStringPart {
     Text(String),
     HeadwordMarker(String),
-    CollocateMarker(String),
+    CollocateMarker(String, Option<String>, Vec<Label>)
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -176,6 +259,20 @@ pub struct Sense {
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub headword_translations: Vec<HeadwordTranslation>,
+}
+
+impl Sense {
+    fn normalize(&mut self) {
+        for example in &mut self.examples {
+            example.normalize();
+        }
+        for headword_explanation in &mut self.headword_explanations {
+            headword_explanation.normalize();
+        }
+        for headword_translation in &mut self.headword_translations {
+            headword_translation.normalize();
+        }
+    }
 }
 
 #[derive(Serialize, Debug, Clone, PartialEq)]
@@ -254,6 +351,18 @@ pub struct Example {
     pub example_translations: Vec<ExampleTranslation>,
 }
 
+impl Example {
+    fn normalize(&mut self) {
+        let (normalized, headword_markers, collocate_markers) = self.text.normalize();
+        self.text = TextString(vec![TextStringPart::Text(normalized)]);
+        self.headword_markers = headword_markers;
+        self.collocate_markers = collocate_markers;
+        for example_translation in &mut self.example_translations {
+            example_translation.normalize();
+        }
+    }
+}
+
 #[derive(Serialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
@@ -290,6 +399,14 @@ pub struct HeadwordTranslation {
     pub inflected_forms: Vec<InflectedForm>,
 }
 
+impl HeadwordTranslation {
+    fn normalize(&mut self) {
+        let (normalized, markers) = self.text.normalize();
+        self.text = HeadwordString(vec![HeadwordStringPart::Text(normalized)]);
+        self.placeholder_markers = markers;
+    }
+}
+
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
@@ -306,6 +423,15 @@ pub struct HeadwordExplanation {
     #[serde(default)]
     pub lang_code: Option<LangCode>,
  }
+
+impl HeadwordExplanation {
+    fn normalize(&mut self) {
+        let (normalized, headword_markers, collocate_markers) = self.text.normalize();
+        self.text = TextString(vec![TextStringPart::Text(normalized)]);
+        self.headword_markers = headword_markers;
+        self.collocate_markers = collocate_markers;
+    }
+}
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -328,6 +454,15 @@ pub struct ExampleTranslation {
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub sound_file: Vec<String>,
+}
+
+impl ExampleTranslation {
+    fn normalize(&mut self) {
+        let (normalized, headword_markers, collocate_markers) = self.text.normalize();
+        self.text = TextString(vec![TextStringPart::Text(normalized)]);
+        self.headword_markers = headword_markers;
+        self.collocate_markers = collocate_markers;
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
