@@ -1,59 +1,42 @@
 /// This module contains the data model for the lexicon.
-use serde::{Deserialize, Deserializer};
+use serde::Deserialize;
 use crate::model::{Marker, CollocateMarker, LangCode};
-use serde::de::Error;
 
 #[derive(Deserialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct LexicographicResource {
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub id: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub title: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub uri: Option<String>,
     pub lang_code: LangCode,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub entry: Vec<Entry>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub translation_language: Vec<TranslationLanguage>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub definition_type_tag: Vec<DefinitionTypeTag>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub inflected_form_tag: Vec<InflectedFormTag>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub label_tag: Vec<LabelTag>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub label_type_tag: Vec<LabelTypeTag>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub part_of_speech_tag: Vec<PartOfSpeechTag>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub source_identity_tag: Vec<SourceIdentityTag>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub transcription_scheme_tag: Vec<TranscriptionSchemeTag>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub relation: Vec<Relation>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub relation_type: Vec<RelationType>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub etymon_language: Vec<EtymonLanguage>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub etymon_type: Vec<EtymonType>,
 }
@@ -86,29 +69,21 @@ impl Into<crate::model::LexicographicResource> for LexicographicResource {
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct Entry { 
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub id: Option<String>,
     pub headword: HeadwordString,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub homograph_number: Option<u32>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub part_of_speech: Vec<PartOfSpeech>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub label: Vec<Label>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub pronunciation: Vec<Pronunciation>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub inflected_form: Vec<InflectedForm>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub sense: Vec<Sense>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub etymology: Vec<Etymology>,
 }
@@ -147,8 +122,8 @@ impl HeadwordString {
                 HeadwordStringPart::PlaceholderMarker(marker) => {
                     let marker_len = marker.chars().count();
                     markers.push(Marker {
-                        start_index: len as u32,
-                        end_index: (len + marker_len) as u32
+                        start_index: len,
+                        end_index: (len + marker_len)
                     });
                     normalized.push_str(marker);
                     len += marker_len;
@@ -174,13 +149,10 @@ pub struct PartOfSpeech {
 #[serde(deny_unknown_fields)]
 pub struct InflectedForm {
     pub text: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub tag: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub label: Vec<Label>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub pronunciation: Vec<Pronunciation>,
 }
@@ -214,8 +186,8 @@ impl TextString {
                 TextStringPart::HeadwordMarker(marker) => {
                     let marker_len = marker.chars().count();
                     markers.push(Marker {
-                        start_index: len as u32,
-                        end_index: (len + marker_len) as u32
+                        start_index: len,
+                        end_index: (len + marker_len)
                     });
                     normalized.push_str(marker);
                     len += marker_len;
@@ -223,8 +195,8 @@ impl TextString {
                 TextStringPart::CollocateMarker(marker, lemma, label) => {
                     let marker_len = marker.chars().count();
                     collocate_markers.push(CollocateMarker {
-                        start_index: len as u32,
-                        end_index: (len + marker_len) as u32,
+                        start_index: len,
+                        end_index: (len + marker_len),
                         lemma: lemma.clone(),
                         label: label.into_iter().map(|x| x.tag.clone()).collect()
                     });
@@ -249,19 +221,12 @@ pub enum TextStringPart {
 #[serde(deny_unknown_fields)]
 #[serde(default)]
 pub struct Sense {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub indicator: Vec<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub label: Vec<Label>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub definition: Vec<Definition>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub example: Vec<Example>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub headword_explanation: Vec<HeadwordExplanation>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub headword_translation: Vec<HeadwordTranslation>,
 }
 
@@ -285,9 +250,8 @@ impl Into<crate::model::Sense> for Sense {
 pub struct Definition {
     #[serde(rename = "$value")]
     pub text: String,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub definition_type: Vec<String>
+    pub definition_type: Option<String>
 }
 
 impl Into<crate::model::Definition> for Definition {
@@ -311,11 +275,8 @@ pub struct Label {
 #[serde(deny_unknown_fields)]
 #[serde(default)]
 pub struct Pronunciation {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub sound_file: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub transcription: Vec<Transcription>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub label: Vec<Label>,
 }
 
@@ -335,7 +296,6 @@ impl Into<crate::model::Pronunciation> for Pronunciation {
 pub struct Transcription {
     #[serde(alias = "$value")]
     pub text: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub scheme: Option<String>,
 }
@@ -354,19 +314,14 @@ impl Into<crate::model::Transcription> for Transcription {
 #[serde(deny_unknown_fields)]
 pub struct Example {
     pub text: TextString,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub source_identity: Vec<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub source_identity: Option<String>,
     #[serde(default)]
-    pub source_elaboration: Vec<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub source_elaboration: Option<String>,
     #[serde(default)]
     pub label: Vec<Label>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub sound_file: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub example_translation: Vec<ExampleTranslation>,
 }
@@ -397,19 +352,14 @@ pub struct TranslationLanguage {
 #[serde(deny_unknown_fields)]
 pub struct HeadwordTranslation {
     pub text: HeadwordString,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub lang_code: Option<LangCode>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub part_of_speech: Vec<PartOfSpeech>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub label: Vec<Label>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub pronunciation: Vec<Pronunciation>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub inflected_form: Vec<InflectedForm>,
 }
@@ -434,7 +384,6 @@ impl Into<crate::model::HeadwordTranslation> for HeadwordTranslation {
 pub struct HeadwordExplanation {
     #[serde(alias = "$value")]
     pub text: TextString,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub lang_code: Option<LangCode>,
  }
@@ -454,15 +403,12 @@ impl Into<crate::model::HeadwordExplanation> for HeadwordExplanation {
 #[serde(deny_unknown_fields)]
 pub struct ExampleTranslation {
     pub text: TextString,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub lang_code: Option<LangCode>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub label: Vec<Label>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub sound_file: Vec<String>,
+    pub sound_file: Option<String>,
 }
 
 impl Into<crate::model::ExampleTranslation> for ExampleTranslation {
@@ -482,10 +428,8 @@ impl Into<crate::model::ExampleTranslation> for ExampleTranslation {
 #[serde(deny_unknown_fields)]
 pub struct DefinitionTypeTag {
     pub tag: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub description: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub same_as: Vec<SameAs>,
 }
@@ -505,20 +449,16 @@ impl Into<crate::model::DefinitionTypeTag> for DefinitionTypeTag {
 #[serde(deny_unknown_fields)]
 pub struct InflectedFormTag {
     pub tag: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub description: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub same_as: Vec<SameAs>,
     #[serde(default)]
-    pub for_headwords: bool,
+    pub for_headwords: Option<bool>,
     #[serde(default)]
-    pub for_translations: bool,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub for_translations: Option<bool>,
     #[serde(default)]
     pub for_language: Vec<ForLanguage>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub for_part_of_speech: Vec<ForPartOfSpeech>,
 }
@@ -542,22 +482,20 @@ impl Into<crate::model::InflectedFormTag> for InflectedFormTag {
 #[serde(deny_unknown_fields)]
 pub struct LabelTag {
     pub tag: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub type_tag: Option<String>,
     #[serde(default)]
     pub description: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub same_as: Vec<SameAs>,
     #[serde(default)]
-    pub for_headwords: bool,
+    pub for_headwords: Option<bool>,
     #[serde(default)]
-    pub for_translations: bool,
+    pub for_translations: Option<bool>,
     #[serde(default)]
-    pub for_collocates: bool,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub for_collocates: Option<bool>,
     #[serde(default)]
     pub for_language: Vec<ForLanguage>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub for_parts_of_speech: Vec<ForPartOfSpeech>,
 }
@@ -566,6 +504,7 @@ impl Into<crate::model::LabelTag> for LabelTag {
     fn into(self) -> crate::model::LabelTag {
         crate::model::LabelTag {
             tag: self.tag,
+            type_tag: self.type_tag,
             description: self.description,
             same_as: self.same_as.into_iter().map(|x| x.uri).collect(),
             for_headwords: self.for_headwords,
@@ -582,10 +521,8 @@ impl Into<crate::model::LabelTag> for LabelTag {
 #[serde(deny_unknown_fields)]
 pub struct LabelTypeTag {
     pub tag: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub description: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub same_as: Vec<SameAs>,
 }
@@ -605,19 +542,16 @@ impl Into<crate::model::LabelTypeTag> for LabelTypeTag {
 #[serde(deny_unknown_fields)]
 pub struct PartOfSpeechTag {
     pub tag: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub description: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub same_as: Vec<SameAs>,
     #[serde(default)]
-    pub for_headwords: bool,
+    pub for_headwords: Option<bool>,
     #[serde(default)]
-    pub for_translations: bool,
+    pub for_translations: Option<bool>,
     #[serde(default)]
-    pub for_etymology: bool,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub for_etymology: Option<bool>,
     #[serde(default)]
     pub for_languages: Vec<ForLanguage>,
 }
@@ -641,10 +575,8 @@ impl Into<crate::model::PartOfSpeechTag> for PartOfSpeechTag {
 #[serde(deny_unknown_fields)]
 pub struct SourceIdentityTag {
     pub tag: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub description: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub same_as: Vec<SameAs>,
 }
@@ -664,16 +596,12 @@ impl Into<crate::model::SourceIdentityTag> for SourceIdentityTag {
 #[serde(deny_unknown_fields)]
 pub struct TranscriptionSchemeTag {
     pub tag: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub description: Option<String>,
     #[serde(default)]
-    pub for_headwords: bool,
+    pub for_headwords: Option<bool>,
     #[serde(default)]
-    pub for_translations: bool,
-    #[serde(default)]
-    pub for_etymology: bool,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub for_translations: Option<bool>,
     #[serde(default)]
     pub for_languags: Vec<ForLanguage>,
 }
@@ -685,7 +613,6 @@ impl Into<crate::model::TranscriptionSchemeTag> for TranscriptionSchemeTag {
             description: self.description,
             for_headwords: self.for_headwords,
             for_translations: self.for_translations,
-            for_etymology: self.for_etymology,
             for_languages: self.for_languags.into_iter().map(|x| x.lang_code.0).collect(),
         }
     }
@@ -711,10 +638,8 @@ pub struct ForPartOfSpeech {
 pub struct Relation {
     #[serde(rename = "type")]
     pub _type: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub description: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub member: Vec<Member>,
 }
@@ -735,7 +660,6 @@ impl Into<crate::model::Relation> for Relation {
 pub struct Member {
     #[serde(rename = "memberID")]
     pub member_id: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub role: Option<String>,
     pub obverse_listing_order: u32,
@@ -757,16 +681,12 @@ impl Into<crate::model::Member> for Member {
 pub struct RelationType {
     #[serde(rename = "type")]
     pub _type: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub description: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub scope_restriction: Option<crate::model::ScopeRestriction>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub member_type: Vec<MemberType>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub same_as: Vec<SameAs>,
 }
@@ -788,21 +708,16 @@ impl Into<crate::model::RelationType> for RelationType {
 #[serde(deny_unknown_fields)]
 pub struct MemberType {
     pub role: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub description: Option<String>,
     #[serde(rename = "type")]
     pub _type: crate::model::MemberTypeType,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub min: Option<u32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub max: Option<u32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub hint: Option<crate::model::Hint>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub same_as: Vec<SameAs>
 }
@@ -826,9 +741,7 @@ impl Into<crate::model::MemberType> for MemberType {
 #[serde(deny_unknown_fields)]
 #[serde(default)]
 pub struct Etymology {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub etymon: Vec<Etymon>,
 }
 
@@ -846,16 +759,11 @@ impl Into<crate::model::Etymology> for Etymology {
 #[serde(deny_unknown_fields)]
 #[serde(default)]
 pub struct Etymon {
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub when: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(rename = "type")]
     pub _type: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub note: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub etymon_unit: Vec<EtymonUnit>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub translation: Option<String>,
 }
 
@@ -877,13 +785,10 @@ impl Into<crate::model::Etymon> for Etymon {
 pub struct EtymonUnit {
     pub lang_code: LangCode,
     pub text: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub reconstructed: Option<bool>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub part_of_speech: Vec<PartOfSpeech>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub translation: Option<String>,
 }
@@ -906,7 +811,6 @@ impl Into<crate::model::EtymonUnit> for EtymonUnit {
 pub struct EtymonType {
     #[serde(rename = "type")]
     pub _type: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub description: Option<String>,
 }
@@ -925,7 +829,6 @@ impl Into<crate::model::EtymonType> for EtymonType {
 #[serde(deny_unknown_fields)]
 pub struct EtymonLanguage {
     pub lang_code: LangCode,
-    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub display_name: Option<String>,
 }

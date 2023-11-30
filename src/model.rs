@@ -500,16 +500,16 @@ pub enum Hint {
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct Marker {
-    pub start_index: u32,
-    pub end_index: u32
+    pub start_index: usize,
+    pub end_index: usize
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct CollocateMarker {
-    pub start_index: u32,
-    pub end_index: u32,
+    pub start_index: usize,
+    pub end_index: usize,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub lemma: Option<String>,

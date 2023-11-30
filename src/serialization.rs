@@ -176,6 +176,7 @@ mod tests {
     use serde_xml_rs;
     use std::fs::File;
     use serde::Deserialize;
+    use crate::write_xml::WriteXML;
 
     #[test]
     fn test_read_xml_0() {
@@ -606,5 +607,290 @@ mod tests {
     #[test]
     fn test_equivalent_23() {
         test_equivalent_entry("23");
+    }
+
+    fn json_round_trip_lexicon(fname : &str) {
+        let file = File::open(format!("examples/{}.json", fname)).unwrap();
+        let resource1 : LexicographicResource = serde_json::from_reader(file).unwrap();
+        let to_str = serde_json::to_string(&resource1).unwrap();
+        let resource2 : LexicographicResource = serde_json::from_str(&to_str).unwrap();
+        assert_eq!(resource1, resource2);
+    }
+
+    fn json_round_trip_entry(fname : &str) {
+        let file = File::open(format!("examples/{}.json", fname)).unwrap();
+        let resource1 : Entry = serde_json::from_reader(file).unwrap();
+        let to_str = serde_json::to_string(&resource1).unwrap();
+        let resource2 : Entry = serde_json::from_str(&to_str).unwrap();
+        assert_eq!(resource1, resource2);
+    }
+
+
+    #[test]
+    fn test_json_round_trip_0() {
+        json_round_trip_lexicon("0");
+    }
+
+    #[test]
+    fn test_json_round_trip_1() {
+        json_round_trip_entry("1");
+    }
+
+    #[test]
+    fn test_json_round_trip_2() {
+        json_round_trip_entry("2");
+    }
+
+    #[test]
+    fn test_json_round_trip_3() {
+        json_round_trip_entry("3");
+    }
+
+    #[test]
+    fn test_json_round_trip_4() {
+        json_round_trip_entry("4");
+    }
+
+    #[test]
+    fn test_json_round_trip_5() {
+        json_round_trip_lexicon("5");
+    }
+
+    #[test]
+    fn test_json_round_trip_6() {
+        json_round_trip_lexicon("6");
+    }
+
+    #[test]
+    fn test_json_round_trip_7() {
+        json_round_trip_lexicon("7");
+    }
+
+    #[test]
+    fn test_json_round_trip_8() {
+        json_round_trip_entry("8");
+    }
+
+    #[test]
+    fn test_json_round_trip_9() {
+        json_round_trip_entry("9");
+    }
+
+    #[test]
+    fn test_json_round_trip_10() {
+        json_round_trip_lexicon("10");
+    }
+
+    #[test]
+    fn test_json_round_trip_11() {
+        json_round_trip_entry("11");
+    }
+
+    #[test]
+    fn test_json_round_trip_12() {
+        json_round_trip_lexicon("12");
+    }
+
+    #[test]
+    fn test_json_round_trip_13() {
+        json_round_trip_lexicon("13");
+    }
+
+    #[test]
+    fn test_json_round_trip_14() {
+        json_round_trip_lexicon("14");
+    }
+
+    #[test]
+    fn test_json_round_trip_15() {
+        json_round_trip_lexicon("15");
+    }
+
+    #[test]
+    fn test_json_round_trip_16() {
+        json_round_trip_lexicon("16");
+    }
+
+    #[test]
+    fn test_json_round_trip_17() {
+        json_round_trip_lexicon("17");
+    }
+
+    #[test]
+    fn test_json_round_trip_18() {
+        json_round_trip_lexicon("18");
+    }
+
+    #[test]
+    fn test_json_round_trip_19() {
+        json_round_trip_entry("19");
+    }
+
+    #[test]
+    fn test_json_round_trip_20() {
+        json_round_trip_entry("20");
+    }
+
+    #[test]
+    fn test_json_round_trip_21() {
+        json_round_trip_entry("21");
+    }
+
+    #[test]
+    fn test_json_round_trip_22() {
+        json_round_trip_entry("22");
+    }
+
+    #[test]
+    fn test_json_round_trip_23() {
+        json_round_trip_entry("23");
+    }
+
+    fn xml_round_trip_lexicon(fname: &str) {
+        let file1 = File::open(format!("examples/{}.xml", fname)).unwrap();
+        let resource1 : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file1).unwrap();
+        let mut out = Vec::new();
+        let mut writer = xml::EmitterConfig::new().perform_indent(true).create_writer(&mut out);
+        let resource1 : LexicographicResource = resource1.into();
+        (&resource1).write_xml(&mut writer).unwrap();
+        let resource2 : crate::model_xml::LexicographicResource = serde_xml_rs::from_str(&String::from_utf8(out).unwrap()).unwrap();
+        let resource2 : LexicographicResource = resource2.into();
+        assert_eq!(resource1, resource2);
+    }
+
+    fn xml_round_trip_entry(fname: &str) {
+        let file1 = File::open(format!("examples/{}.xml", fname)).unwrap();
+        let mut deserializer = serde_xml_rs::de::Deserializer::new(
+            serde_xml_rs::EventReader::new_with_config(file1, 
+                serde_xml_rs::ParserConfig::new().trim_whitespace(false)));
+        
+        let resource1 : crate::model_xml::Entry = crate::model_xml::Entry::deserialize(&mut deserializer).unwrap();
+        let mut out = Vec::new();
+        let mut writer = xml::EmitterConfig::new().perform_indent(true).create_writer(&mut out);
+        let resource1 : Entry = resource1.into();
+        (&resource1).write_xml(&mut writer).unwrap();
+        let resource2 : crate::model_xml::Entry = serde_xml_rs::from_str(&String::from_utf8(out).unwrap()).unwrap();
+        let resource2 : Entry = resource2.into();
+        assert_eq!(resource1, resource2);
+    }
+
+    #[test]
+    fn test_xml_round_trip_0() {
+        xml_round_trip_lexicon("0");
+    }
+
+    #[test]
+    fn test_xml_round_trip_1() {
+        xml_round_trip_entry("1");
+    }
+
+    #[test]
+    fn test_xml_round_trip_2() {
+        xml_round_trip_entry("2");
+    }
+
+    #[test]
+    fn test_xml_round_trip_3() {
+        xml_round_trip_entry("3");
+    }
+
+    #[test]
+    fn test_xml_round_trip_4() {
+        xml_round_trip_entry("4");
+    }
+
+    #[test]
+    fn test_xml_round_trip_5() {
+        xml_round_trip_lexicon("5");
+    }
+
+    #[test]
+    fn test_xml_round_trip_6() {
+        xml_round_trip_lexicon("6");
+    }
+
+    #[test]
+    fn test_xml_round_trip_7() {
+        xml_round_trip_lexicon("7");
+    }
+
+    #[test]
+    fn test_xml_round_trip_8() {
+        xml_round_trip_entry("8");
+    }
+
+    #[test]
+    fn test_xml_round_trip_9() {
+        xml_round_trip_entry("9");
+    }
+
+    #[test]
+    fn test_xml_round_trip_10() {
+        xml_round_trip_lexicon("10");
+    }
+
+    #[test]
+    fn test_xml_round_trip_11() {
+        xml_round_trip_entry("11");
+    }
+
+    #[test]
+    fn test_xml_round_trip_12() {
+        xml_round_trip_lexicon("12");
+    }
+
+    #[test]
+    fn test_xml_round_trip_13() {
+        xml_round_trip_lexicon("13");
+    }
+
+    #[test]
+    fn test_xml_round_trip_14() {
+        xml_round_trip_lexicon("14");
+    }
+
+    #[test]
+    fn test_xml_round_trip_15() {
+        xml_round_trip_lexicon("15");
+    }
+
+    #[test]
+    fn test_xml_round_trip_16() {
+        xml_round_trip_lexicon("16");
+    }
+
+    #[test]
+    fn test_xml_round_trip_17() {
+        xml_round_trip_lexicon("17");
+    }
+
+    #[test]
+    fn test_xml_round_trip_18() {
+        xml_round_trip_lexicon("18");
+    }
+
+    //#[test]
+    //fn test_xml_round_trip_19() {
+    //    xml_round_trip_entry("19");
+    //}
+
+    //#[test]
+    //fn test_xml_round_trip_20() {
+    //    xml_round_trip_entry("20");
+    //}
+
+    //#[test]
+    //fn test_xml_round_trip_21() {
+    //    xml_round_trip_entry("21");
+    //}
+
+    //#[test]
+    //fn test_xml_round_trip_22() {
+    //    xml_round_trip_entry("22");
+    //}
+
+    #[test]
+    fn test_xml_round_trip_23() {
+        xml_round_trip_entry("23");
     }
 }
