@@ -1,6 +1,8 @@
 
 mod serialization;
 mod model;
+mod model_xml;
+mod write_xml;
 use serde::{Deserialize, Serialize};
 
 

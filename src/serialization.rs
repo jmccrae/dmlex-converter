@@ -2,7 +2,7 @@
 use serde::Deserialize;
 use serde::de::{Visitor, Deserializer};
 use std::fmt;
-use crate::model::*;
+use crate::model_xml::{HeadwordString, HeadwordStringPart, TextString, TextStringPart};
 
 struct HeadwordStringVisitor;
 
@@ -170,369 +170,6 @@ impl<'de> Deserialize<'de> for TextString {
     }
 }
 
-struct PartOfSpeechVisitor;
-
-impl<'de> Visitor<'de> for PartOfSpeechVisitor {
-    type Value = PartOfSpeech;
-
-    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("A part of speech value")
-    }
-
-    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        Ok(PartOfSpeech {
-            tag: value.to_owned(),
-        })
-    }
-
-    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
-    where
-        A: serde::de::MapAccess<'de>,
-    {
-        let mut tag = None;
-        while let Some(key) = map.next_key::<String>()? {
-            match key.as_str() {
-                "tag" => {
-                    tag = Some(map.next_value()?);
-                }
-                _ => {
-                    return Err(serde::de::Error::unknown_field(
-                        key.as_str(),
-                        &["tag"],
-                    ))
-                }
-            }
-        }
-        Ok(PartOfSpeech {
-            tag: tag.ok_or_else(|| serde::de::Error::missing_field("tag"))?,
-        })
-    }
-}
-
-impl<'de> Deserialize<'de> for PartOfSpeech {
-    fn deserialize<D>(deserializer: D) -> Result<PartOfSpeech, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        deserializer.deserialize_any(PartOfSpeechVisitor)
-    }
-}
-
-struct DefinitionVisitor;
-
-impl<'de> Visitor<'de> for DefinitionVisitor {
-    type Value = Definition;
-
-    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("A definition value")
-    }
-
-    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        Ok(Definition {
-            text: value.to_owned(),
-            definition_type: Vec::new(),
-        })
-    }
-
-    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
-    where
-        A: serde::de::MapAccess<'de>,
-    {
-        let mut text = None;
-        let mut definition_type = Vec::new();
-        while let Some(key) = map.next_key::<String>()? {
-            match key.as_str() {
-                "text" => {
-                    text = Some(map.next_value()?);
-                }
-                "$value" => {
-                    text = Some(map.next_value()?);
-                }
-                "definitionType" => {
-                    definition_type.push(map.next_value()?);
-                }
-                _ => {
-                    return Err(serde::de::Error::unknown_field(
-                        key.as_str(),
-                        &["text", "definitionType"],
-                    ))
-                }
-            }
-        }
-        Ok(Definition {
-            text: text.ok_or_else(|| serde::de::Error::missing_field("text"))?,
-            definition_type,
-        })
-    }
-}
-
-impl<'de> Deserialize<'de> for Definition {
-    fn deserialize<D>(deserializer: D) -> Result<Definition, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        deserializer.deserialize_any(DefinitionVisitor)
-    }
-}
-
-struct LabelVisitor;
-
-impl<'de> Visitor<'de> for LabelVisitor {
-    type Value = Label;
-
-    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("A label value")
-    }
-
-    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        Ok(Label {
-            tag: value.to_owned(),
-        })
-    }
-
-    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
-    where
-        A: serde::de::MapAccess<'de>,
-    {
-        let mut tag = None;
-        while let Some(key) = map.next_key::<String>()? {
-            match key.as_str() {
-                "tag" => {
-                    tag = Some(map.next_value()?);
-                }
-                _ => {
-                    return Err(serde::de::Error::unknown_field(
-                        key.as_str(),
-                        &["tag"],
-                    ))
-                }
-            }
-        }
-        Ok(Label {
-            tag: tag.ok_or_else(|| serde::de::Error::missing_field("tag"))?,
-        })
-    }
-}
-
-impl<'de> Deserialize<'de> for Label {
-    fn deserialize<D>(deserializer: D) -> Result<Label, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        deserializer.deserialize_any(LabelVisitor)
-    }
-}
-
-pub struct TranslationLanguageVisitor;
-
-impl<'de> Visitor<'de> for TranslationLanguageVisitor {
-    type Value = TranslationLanguage;
-
-    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("A translation language value")
-    }
-
-    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        Ok(TranslationLanguage {
-            lang_code: LangCode(value.to_owned()),
-        })
-    }
-
-    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
-    where
-        A: serde::de::MapAccess<'de>,
-    {
-        let mut lang_code = None;
-        while let Some(key) = map.next_key::<String>()? {
-            match key.as_str() {
-                "langCode" => {
-                    lang_code = Some(map.next_value()?);
-                }
-                _ => {
-                    return Err(serde::de::Error::unknown_field(
-                        key.as_str(),
-                        &["tag", "script"],
-                    ))
-                }
-            }
-        }
-        Ok(TranslationLanguage {
-            lang_code: lang_code.ok_or_else(|| serde::de::Error::missing_field("tag"))?,
-        })
-    }
-}
-
-impl<'de> Deserialize<'de> for TranslationLanguage {
-    fn deserialize<D>(deserializer: D) -> Result<TranslationLanguage, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        deserializer.deserialize_any(TranslationLanguageVisitor)
-    }
-}
-
-pub struct ForPartOfSpeechVisitor;
-
-impl<'de> Visitor<'de> for ForPartOfSpeechVisitor {
-    type Value = ForPartOfSpeech;
-
-    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("A for part of speech value")
-    }
-
-    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        Ok(ForPartOfSpeech {
-            tag: value.to_owned(),
-        })
-    }
-
-    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
-    where
-        A: serde::de::MapAccess<'de>,
-    {
-        let mut tag = None;
-        while let Some(key) = map.next_key::<String>()? {
-            match key.as_str() {
-                "tag" => {
-                    tag = Some(map.next_value()?);
-                }
-                _ => {
-                    return Err(serde::de::Error::unknown_field(
-                        key.as_str(),
-                        &["tag"],
-                    ))
-                }
-            }
-        }
-        Ok(ForPartOfSpeech {
-            tag: tag.ok_or_else(|| serde::de::Error::missing_field("tag"))?,
-        })
-    }
-}
-
-impl<'de> Deserialize<'de> for ForPartOfSpeech {
-    fn deserialize<D>(deserializer: D) -> Result<ForPartOfSpeech, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        deserializer.deserialize_any(ForPartOfSpeechVisitor)
-    }
-}
-
-pub struct ForLanguageVisitor;
-
-impl<'de> Visitor<'de> for ForLanguageVisitor {
-    type Value = ForLanguage;
-
-    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("A for label value")
-    }
-
-    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        Ok(ForLanguage {
-            lang_code: LangCode(value.to_owned()),
-        })
-    }
-
-    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
-    where
-        A: serde::de::MapAccess<'de>,
-    {
-        let mut tag = None;
-        while let Some(key) = map.next_key::<String>()? {
-            match key.as_str() {
-                "lang_code" => {
-                    tag = Some(LangCode(map.next_value()?));
-                }
-                _ => {
-                    return Err(serde::de::Error::unknown_field(
-                        key.as_str(),
-                        &["tag"],
-                    ))
-                }
-            }
-        }
-        Ok(ForLanguage {
-            lang_code: tag.ok_or_else(|| serde::de::Error::missing_field("tag"))?,
-        })
-    }
-}
-
-impl<'de> Deserialize<'de> for ForLanguage {
-    fn deserialize<D>(deserializer: D) -> Result<ForLanguage, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        deserializer.deserialize_any(ForLanguageVisitor)
-    }
-}
-
-pub struct SameAsVisitor;
-
-impl<'de> Visitor<'de> for SameAsVisitor {
-    type Value = SameAs;
-
-    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("A same as value")
-    }
-
-    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
-    where
-        E: serde::de::Error,
-    {
-        Ok(SameAs { uri: value.to_owned() })
-    }
-
-    fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
-    where
-        A: serde::de::MapAccess<'de>,
-    {
-
-        let mut uri = None;
-        while let Some(key) = map.next_key::<String>()? {
-            match key.as_str() {
-                "uri" => {
-                    uri = Some(map.next_value()?);
-                }
-                _ => {
-                    return Err(serde::de::Error::unknown_field(
-                        key.as_str(),
-                        &["href", "lang_code", "script", "tag"],
-                    ))
-                }
-            }
-        }
-        Ok(SameAs { uri: uri.ok_or_else(|| serde::de::Error::missing_field("uri"))? })
-    }
-}
-
-impl<'de> Deserialize<'de> for SameAs {
-    fn deserialize<D>(deserializer: D) -> Result<SameAs, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        deserializer.deserialize_any(SameAsVisitor)
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use crate::model::*;
@@ -543,7 +180,7 @@ mod tests {
     #[test]
     fn test_read_xml_0() {
         let file = File::open("examples/0.xml").unwrap();
-        let _resource : LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -555,7 +192,7 @@ mod tests {
     #[test]
     fn test_read_xml_1() {
         let file = File::open("examples/1.xml").unwrap();
-        let _resource : Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -567,7 +204,7 @@ mod tests {
     #[test]
     fn test_read_xml_2() {
         let file = File::open("examples/2.xml").unwrap();
-        let _resource : Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -579,7 +216,7 @@ mod tests {
     #[test]
     fn test_read_xml_3() {
         let file = File::open("examples/3.xml").unwrap();
-        let _resource : Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -591,7 +228,7 @@ mod tests {
     #[test]
     fn test_read_xml_4() {
         let file = File::open("examples/4.xml").unwrap();
-        let _resource : Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -603,7 +240,7 @@ mod tests {
     #[test]
     fn test_read_xml_5() {
         let file = File::open("examples/5.xml").unwrap();
-        let _resource : LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -615,7 +252,7 @@ mod tests {
     #[test]
     fn test_read_xml_6() {
         let file = File::open("examples/6.xml").unwrap();
-        let _resource : LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -627,7 +264,7 @@ mod tests {
     #[test]
     fn test_read_xml_7() {
         let file = File::open("examples/7.xml").unwrap();
-        let _resource : LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -639,7 +276,7 @@ mod tests {
     #[test]
     fn test_read_xml_8() {
         let file = File::open("examples/8.xml").unwrap();
-        let _resource : Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -651,7 +288,7 @@ mod tests {
     #[test]
     fn test_read_xml_9() {
         let file = File::open("examples/9.xml").unwrap();
-        let _resource : Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -663,7 +300,7 @@ mod tests {
     #[test]
     fn test_read_xml_10() {
         let file = File::open("examples/10.xml").unwrap();
-        let _resource : LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -675,7 +312,7 @@ mod tests {
     #[test]
     fn test_read_xml_11() {
         let file = File::open("examples/11.xml").unwrap();
-        let _resource : Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -687,7 +324,7 @@ mod tests {
     #[test]
     fn test_read_xml_12() {
         let file = File::open("examples/12.xml").unwrap();
-        let _resource : LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -699,7 +336,7 @@ mod tests {
     #[test]
     fn test_read_xml_13() {
         let file = File::open("examples/13.xml").unwrap();
-        let _resource : LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -711,7 +348,7 @@ mod tests {
     #[test]
     fn test_read_xml_14() {
         let file = File::open("examples/14.xml").unwrap();
-        let _resource : LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -723,7 +360,7 @@ mod tests {
     #[test]
     fn test_read_xml_15() {
         let file = File::open("examples/15.xml").unwrap();
-        let _resource : LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -735,7 +372,7 @@ mod tests {
     #[test]
     fn test_read_xml_16() {
         let file = File::open("examples/16.xml").unwrap();
-        let _resource : LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -747,7 +384,7 @@ mod tests {
     #[test]
     fn test_read_xml_17() {
         let file = File::open("examples/17.xml").unwrap();
-        let _resource : LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -759,7 +396,7 @@ mod tests {
     #[test]
     fn test_read_xml_18() {
         let file = File::open("examples/18.xml").unwrap();
-        let _resource : LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -771,7 +408,7 @@ mod tests {
     #[test]
     fn test_read_xml_19() {
         let file = File::open("examples/19.xml").unwrap();
-        let _resource : Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -783,7 +420,7 @@ mod tests {
     #[test]
     fn test_read_xml_20() {
         let file = File::open("examples/20.xml").unwrap();
-        let _resource : Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -795,7 +432,7 @@ mod tests {
     #[test]
     fn test_read_xml_21() {
         let file = File::open("examples/21.xml").unwrap();
-        let _resource : Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -807,7 +444,7 @@ mod tests {
     #[test]
     fn test_read_xml_22() {
         let file = File::open("examples/22.xml").unwrap();
-        let _resource : Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -819,7 +456,7 @@ mod tests {
     #[test]
     fn test_read_xml_23() {
         let file = File::open("examples/23.xml").unwrap();
-        let _resource : Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
     }
 
     #[test]
@@ -831,8 +468,8 @@ mod tests {
     fn test_equivalent_lexicon(fname : &str) {
         let file1 = File::open(format!("examples/{}.xml", fname)).unwrap();
         let file2 = File::open(format!("examples/{}.json", fname)).unwrap();
-        let mut resource1 : LexicographicResource = serde_xml_rs::from_reader(file1).unwrap();
-        resource1.normalize();
+        let resource1 : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file1).unwrap();
+        let resource1 : LexicographicResource = resource1.into();
         let resource2 : LexicographicResource = serde_json::from_reader(file2).unwrap();
         assert_eq!(resource1, resource2);
     }
@@ -844,8 +481,8 @@ mod tests {
             serde_xml_rs::EventReader::new_with_config(file1, 
                 serde_xml_rs::ParserConfig::new().trim_whitespace(false)));
         
-        let mut resource1 : Entry = Entry::deserialize(&mut deserializer).unwrap();
-        resource1.normalize();
+        let resource1 : crate::model_xml::Entry = crate::model_xml::Entry::deserialize(&mut deserializer).unwrap();
+        let resource1 : Entry = resource1.into();
         let resource2 : Entry = serde_json::from_reader(file2).unwrap();
         assert_eq!(resource1, resource2);
     }

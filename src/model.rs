@@ -1,60 +1,53 @@
 /// This module contains the data model for the lexicon.
 use serde::{Deserialize, Serialize};
 
+
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct LexicographicResource {
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub title: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub uri: Option<String>,
     pub lang_code: LangCode,
-    #[serde(alias = "entry")]
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub entries: Vec<Entry>,
-    #[serde(alias = "translationLanguage")]
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub translation_languages: Vec<TranslationLanguage>,
+    pub translation_languages: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "definitionTypeTag")]
     pub definition_type_tags: Vec<DefinitionTypeTag>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "inflectedFormTag")]
     pub inflected_form_tags: Vec<InflectedFormTag>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "labelTag")]
     pub label_tags: Vec<LabelTag>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "labelTypeTag")]
     pub label_type_tags: Vec<LabelTypeTag>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "partOfSpeechTag")]
     pub part_of_speech_tags: Vec<PartOfSpeechTag>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "sourceIdentityTag")]
     pub source_identity_tags: Vec<SourceIdentityTag>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "transcriptionSchemeTag")]
     pub transcription_scheme_tags: Vec<TranscriptionSchemeTag>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "relation")]
     pub relations: Vec<Relation>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "relationType")]
     pub relation_types: Vec<RelationType>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
@@ -62,14 +55,6 @@ pub struct LexicographicResource {
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub etymon_type: Vec<EtymonType>,
-}
-
-impl LexicographicResource {
-    pub fn normalize(&mut self) {
-        for entry in &mut self.entries {
-            entry.normalize();
-        }
-    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -81,87 +66,33 @@ pub struct LangCode(pub String);
 #[serde(deny_unknown_fields)]
 pub struct Entry { 
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub id: Option<String>,
-    pub headword: HeadwordString,
+    pub headword: String,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub placeholder_markers: Vec<Marker>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub homograph_number: Option<u32>,
-    #[serde(alias = "partOfSpeech")]
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub parts_of_speech: Vec<PartOfSpeech>,
+    pub parts_of_speech: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "label")]
-    pub labels: Vec<Label>,
+    pub labels: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "pronunciation")]
     pub pronunciations: Vec<Pronunciation>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "inflectedForm")]
     pub inflected_forms: Vec<InflectedForm>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "senses")]
-    pub sense: Vec<Sense>,
+    pub senses: Vec<Sense>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub etymology: Vec<Etymology>,
-}
-
-impl Entry {
-    pub fn normalize(&mut self) {
-        let (normalized, markers) = self.headword.normalize();
-        self.headword = HeadwordString(vec![HeadwordStringPart::Text(normalized)]);
-        self.placeholder_markers = markers;
-        for sense in &mut self.sense {
-            sense.normalize();
-        }
-    }
-}
-
-#[derive(Serialize, Debug, Clone, PartialEq)]
-pub struct HeadwordString(pub Vec<HeadwordStringPart>);
-
-impl HeadwordString {
-    pub fn normalize(&self) -> (String, Vec<Marker>) {
-        let mut normalized = String::new();
-        let mut markers = Vec::new();
-        let mut len = 0;
-        for part in &self.0 {
-            match part {
-                HeadwordStringPart::Text(text) => {
-                    normalized.push_str(text);
-                    len += text.chars().count();
-                },
-                HeadwordStringPart::PlaceholderMarker(marker) => {
-                    let marker_len = marker.chars().count();
-                    markers.push(Marker {
-                        start_index: len as u32,
-                        end_index: (len + marker_len) as u32
-                    });
-                    normalized.push_str(marker);
-                    len += marker_len;
-                }
-            }
-        }
-        (normalized, markers)
-    }
-}
-
-#[derive(Serialize, Debug, Clone, PartialEq)]
-pub enum HeadwordStringPart {
-    Text(String),
-    PlaceholderMarker(String)
-}
-#[derive(Serialize, Debug, Clone, PartialEq)]
-pub struct PartOfSpeech {
-    pub tag: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -174,60 +105,10 @@ pub struct InflectedForm {
     pub tag: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "label")]
-    pub labels: Vec<Label>,
+    pub labels: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "pronunciation")]
     pub pronunciations: Vec<Pronunciation>,
-}
-
-#[derive(Serialize, Debug, Clone, PartialEq)]
-pub struct TextString(pub Vec<TextStringPart>);
-
-impl TextString {
-    fn normalize(&self) -> (String, Vec<Marker>, Vec<CollocateMarker>) {
-        let mut normalized = String::new();
-        let mut markers = Vec::new();
-        let mut collocate_markers = Vec::new();
-        let mut len = 0;
-        for part in &self.0 {
-            match part {
-                TextStringPart::Text(text) => {
-                    normalized.push_str(text);
-                    len += text.chars().count();
-                },
-                TextStringPart::HeadwordMarker(marker) => {
-                    let marker_len = marker.chars().count();
-                    markers.push(Marker {
-                        start_index: len as u32,
-                        end_index: (len + marker_len) as u32
-                    });
-                    normalized.push_str(marker);
-                    len += marker_len;
-                },
-                TextStringPart::CollocateMarker(marker, lemma, label) => {
-                    let marker_len = marker.chars().count();
-                    collocate_markers.push(CollocateMarker {
-                        start_index: len as u32,
-                        end_index: (len + marker_len) as u32,
-                        lemma: lemma.clone(),
-                        label: label.clone() 
-                    });
-                    normalized.push_str(marker);
-                    len += marker_len;
-                }
-            }
-        }
-        (normalized, markers, collocate_markers)
-    }
-}
-
-#[derive(Serialize, Debug, Clone, PartialEq)]
-pub enum TextStringPart {
-    Text(String),
-    HeadwordMarker(String),
-    CollocateMarker(String, Option<String>, Vec<Label>)
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -235,62 +116,36 @@ pub enum TextStringPart {
 #[serde(deny_unknown_fields)]
 pub struct Sense {
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
     pub id: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub indicator: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "label")]
-    pub labels: Vec<Label>,
-    #[serde(alias = "definition")]
+    pub labels: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub definitions: Vec<Definition>,
-    #[serde(alias = "example")]
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub examples: Vec<Example>,
-    #[serde(alias = "headwordExplanation")]
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub headword_explanations: Vec<HeadwordExplanation>,
-    #[serde(alias = "headwordTranslation")]
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub headword_translations: Vec<HeadwordTranslation>,
 }
 
-impl Sense {
-    fn normalize(&mut self) {
-        for example in &mut self.examples {
-            example.normalize();
-        }
-        for headword_explanation in &mut self.headword_explanations {
-            headword_explanation.normalize();
-        }
-        for headword_translation in &mut self.headword_translations {
-            headword_translation.normalize();
-        }
-    }
-}
-
-#[derive(Serialize, Debug, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct Definition {
-    #[serde(rename = "$value")]
     pub text: String,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub definition_type: Vec<String>
-}
-
-#[derive(Serialize, Debug, Clone, PartialEq)]
-#[serde(rename_all = "camelCase")]
-#[serde(deny_unknown_fields)]
-pub struct Label {
-    pub tag: String,
+    pub definition_type: Option<String>
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -302,19 +157,16 @@ pub struct Pronunciation {
     pub sound_file: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "transcription")]
     pub transcriptions: Vec<Transcription>,
-    #[serde(alias = "label")]
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub labels: Vec<Label>,
+    pub labels: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct Transcription {
-    #[serde(alias = "$value")]
     pub text: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
@@ -325,56 +177,35 @@ pub struct Transcription {
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct Example {
-    pub text: TextString,
+    pub text: String,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub collocate_markers: Vec<CollocateMarker>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub headword_markers: Vec<Marker>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub source_identity: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub source_elaboration: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub source_identity: Vec<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    #[serde(default)]
-    pub source_elaboration: Vec<String>,
-    #[serde(alias = "label")]
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    #[serde(default)]
-    pub labels: Vec<Label>,
+    pub labels: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub sound_file: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "exampleTranslation")]
     pub example_translations: Vec<ExampleTranslation>,
-}
-
-impl Example {
-    fn normalize(&mut self) {
-        let (normalized, headword_markers, collocate_markers) = self.text.normalize();
-        self.text = TextString(vec![TextStringPart::Text(normalized)]);
-        self.headword_markers = headword_markers;
-        self.collocate_markers = collocate_markers;
-        for example_translation in &mut self.example_translations {
-            example_translation.normalize();
-        }
-    }
-}
-
-#[derive(Serialize, Debug, Clone, PartialEq)]
-#[serde(rename_all = "camelCase")]
-#[serde(deny_unknown_fields)]
-pub struct TranslationLanguage {
-    pub lang_code: LangCode,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct HeadwordTranslation {
-    pub text: HeadwordString,
+    pub text: String,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub placeholder_markers: Vec<Marker>,
@@ -383,36 +214,23 @@ pub struct HeadwordTranslation {
     pub lang_code: Option<LangCode>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "partOfSpeech")]
-    pub parts_of_speech: Vec<PartOfSpeech>,
+    pub parts_of_speech: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "label")]
-    pub labels: Vec<Label>,
+    pub labels: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "pronunciation")]
     pub pronunciations: Vec<Pronunciation>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "inflectedForm")]
     pub inflected_forms: Vec<InflectedForm>,
-}
-
-impl HeadwordTranslation {
-    fn normalize(&mut self) {
-        let (normalized, markers) = self.text.normalize();
-        self.text = HeadwordString(vec![HeadwordStringPart::Text(normalized)]);
-        self.placeholder_markers = markers;
-    }
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct HeadwordExplanation {
-    #[serde(alias = "$value")]
-    pub text: TextString,
+    pub text: String,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub collocate_markers: Vec<CollocateMarker>,
@@ -424,20 +242,11 @@ pub struct HeadwordExplanation {
     pub lang_code: Option<LangCode>,
  }
 
-impl HeadwordExplanation {
-    fn normalize(&mut self) {
-        let (normalized, headword_markers, collocate_markers) = self.text.normalize();
-        self.text = TextString(vec![TextStringPart::Text(normalized)]);
-        self.headword_markers = headword_markers;
-        self.collocate_markers = collocate_markers;
-    }
-}
-
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct ExampleTranslation {
-    pub text: TextString,
+    pub text: String,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub collocate_markers: Vec<CollocateMarker>,
@@ -449,20 +258,10 @@ pub struct ExampleTranslation {
     pub lang_code: Option<LangCode>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "label")]
-    pub labels: Vec<Label>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub labels: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub sound_file: Vec<String>,
-}
-
-impl ExampleTranslation {
-    fn normalize(&mut self) {
-        let (normalized, headword_markers, collocate_markers) = self.text.normalize();
-        self.text = TextString(vec![TextStringPart::Text(normalized)]);
-        self.headword_markers = headword_markers;
-        self.collocate_markers = collocate_markers;
-    }
+    pub sound_file: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -475,7 +274,7 @@ pub struct DefinitionTypeTag {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub same_as: Vec<SameAs>,
+    pub same_as: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -488,18 +287,19 @@ pub struct InflectedFormTag {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub same_as: Vec<SameAs>,
+    pub same_as: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub for_headwords: bool,
+    pub for_headwords: Option<bool>,
     #[serde(default)]
-    pub for_translations: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub for_translations: Option<bool>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub for_languages: Vec<ForLanguage>,
+    pub for_languages: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "forPartOfSpeech")]
-    pub for_parts_of_speech: Vec<ForPartOfSpeech>,
+    pub for_parts_of_speech: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -510,21 +310,27 @@ pub struct LabelTag {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub type_tag: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub same_as: Vec<SameAs>,
+    pub same_as: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub for_headwords: bool,
+    pub for_headwords: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub for_translations: bool,
+    pub for_translations: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub for_collocates: bool,
+    pub for_collocates: Option<bool>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub for_languages: Vec<ForLanguage>,
+    pub for_languages: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub for_parts_of_speech: Vec<ForPartOfSpeech>,
+    pub for_parts_of_speech: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -537,7 +343,7 @@ pub struct LabelTypeTag {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub same_as: Vec<SameAs>,
+    pub same_as: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -550,16 +356,19 @@ pub struct PartOfSpeechTag {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub same_as: Vec<SameAs>,
+    pub same_as: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub for_headwords: bool,
+    pub for_headwords: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub for_translations: bool,
+    pub for_translations: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub for_etymology: bool,
+    pub for_etymology: Option<bool>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub for_languages: Vec<ForLanguage>,
+    pub for_languages: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -572,7 +381,7 @@ pub struct SourceIdentityTag {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub same_as: Vec<SameAs>,
+    pub same_as: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -583,31 +392,16 @@ pub struct TranscriptionSchemeTag {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub for_headwords: bool,
+    pub for_headwords: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub for_translations: bool,
-    #[serde(default)]
-    pub for_etymology: bool,
+    pub for_translations: Option<bool>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub for_languages: Vec<ForLanguage>,
+    pub for_languages: Vec<String>,
 }
-
-#[derive(Serialize, Debug, Clone, PartialEq)]
-#[serde(rename_all = "camelCase")]
-#[serde(deny_unknown_fields)]
-pub struct ForLanguage {
-    pub lang_code: LangCode,
-}
-
-#[derive(Serialize, Debug, Clone, PartialEq)]
-#[serde(rename_all = "camelCase")]
-#[serde(deny_unknown_fields)]
-pub struct ForPartOfSpeech {
-    pub tag: String,
-}
-
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
@@ -619,7 +413,6 @@ pub struct Relation {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "member")]
     pub members: Vec<Member>,
 }
 
@@ -649,11 +442,10 @@ pub struct RelationType {
     pub scope_restriction: Option<ScopeRestriction>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "memberType")]
     pub member_types: Vec<MemberType>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub same_as: Vec<SameAs>,
+    pub same_as: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -685,7 +477,7 @@ pub struct MemberType {
     pub hint: Option<Hint>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub same_as: Vec<SameAs>
+    pub same_as: Vec<String>
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -708,22 +500,22 @@ pub enum Hint {
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct Marker {
-    start_index: u32,
-    end_index: u32
+    pub start_index: u32,
+    pub end_index: u32
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct CollocateMarker {
-    start_index: u32,
-    end_index: u32,
+    pub start_index: u32,
+    pub end_index: u32,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    lemma: Option<String>,
+    pub lemma: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    label: Vec<Label>
+    pub label: Vec<String>
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
@@ -735,7 +527,6 @@ pub struct Etymology {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "etymon")]
     pub etymons: Vec<Etymon>,
 }
 
@@ -747,15 +538,14 @@ pub struct Etymon {
     #[serde(default)]
     pub when: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
     #[serde(rename = "type")]
+    #[serde(default)]
     pub _type: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub note: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    #[serde(alias = "etymonUnit")]
     pub etymon_units: Vec<EtymonUnit>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
@@ -772,9 +562,9 @@ pub struct EtymonUnit {
     #[serde(default)]
     pub reconstructed: Option<bool>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    #[serde(default)]
     #[serde(alias = "partOfSpeech")]
-    pub parts_of_speech: Vec<PartOfSpeech>,
+    #[serde(default)]
+    pub parts_of_speech: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub translation: Option<String>,
@@ -800,11 +590,3 @@ pub struct EtymonLanguage {
     #[serde(default)]
     pub display_name: Option<String>,
 }
-
-#[derive(Serialize, Debug, Clone, PartialEq)]
-#[serde(rename_all = "camelCase")]
-#[serde(deny_unknown_fields)]
-pub struct SameAs {
-    pub uri: String
-}
-
