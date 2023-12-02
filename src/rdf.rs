@@ -138,52 +138,24 @@ impl ToRDF for LexicographicResource {
 impl FromRDF for LexicographicResource {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
-        let title = get_zero_one_str(g, id, &dmlex.get("title")?)?;
-        let uri = get_zero_one_str(g, id, &dmlex.get("uri")?)?;
-        let lang_code = LangCode(get_one_str(g, id, &dmlex.get("langCode")?)?);
-
-        let mut translation_languages = Vec::new();
-
-        let mut definition_type_tags = Vec::new();
-
-        let mut inflected_form_tags = Vec::new();
-
-        let mut label_tags = Vec::new();
-
-        let mut label_type_tags = Vec::new();
-
-        let mut part_of_speech_tags = Vec::new();
-
-        let mut source_identity_tags = Vec::new();
-
-        let mut transcription_scheme_tags = Vec::new();
-
-        let mut relations = Vec::new();
-
-        let mut relation_types = Vec::new();
-
-        let mut etymon_language = Vec::new();
-
-        let mut etymon_type = Vec::new();
-
         Ok((0, LexicographicResource {
             id: get_id(id, data),
-            title, 
-            uri,
-            lang_code,
+            title: get_zero_one_str(g, id, &dmlex.get("title")?)?,
+            uri: get_zero_one_str(g, id, &dmlex.get("uri")?)?,
+            lang_code: LangCode(get_one_str(g, id, &dmlex.get("langCode")?)?),
             entries: read_many(g, id, "entry", data, dmlex)?,
-            translation_languages,
-            definition_type_tags,
-            inflected_form_tags,
-            label_tags,
-            label_type_tags,
-            part_of_speech_tags,
-            source_identity_tags,
-            transcription_scheme_tags,
-            relations,
-            relation_types,
-            etymon_language,
-            etymon_type
+            translation_languages: read_many_str(g, id, "translationLanguage", data, dmlex)?,
+            definition_type_tags: read_many(g, id, "definitionTypeTag", data, dmlex)?,
+            inflected_form_tags: read_many(g, id, "inflectedFormTag", data, dmlex)?,
+            label_tags: read_many(g, id, "labelTag", data, dmlex)?,
+            label_type_tags: read_many(g, id, "labelTypeTag", data, dmlex)?,
+            part_of_speech_tags: read_many(g, id, "partOfSpeechTag", data, dmlex)?,
+            source_identity_tags: read_many(g, id, "sourceIdentityTag", data, dmlex)?,
+            transcription_scheme_tags: read_many(g, id, "transcriptionSchemeTag", data, dmlex)?,
+            relations: read_many(g, id, "relation", data, dmlex)?,
+            relation_types: read_many(g, id, "relationType", data, dmlex)?,
+            etymon_language: read_many(g, id, "etymonLanguage", data, dmlex)?,
+            etymon_type: read_many(g, id, "etymonType", data, dmlex)?,
         }))
 
     }
@@ -258,25 +230,17 @@ impl ToRDF for &Entry {
 impl FromRDF for Entry {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
-        let mut placeholder_markers = Vec::new();
-        let mut homograph_number = None;
-        let mut parts_of_speech = Vec::new();
-        let mut labels = Vec::new();
-        let mut pronunciations = Vec::new();
-        let mut inflected_forms = Vec::new();
-        let mut senses = Vec::new();
-        let mut etymology = Vec::new();
         Ok((0, Entry {
             id : get_id(id, data),
             headword: get_one_str(g, id, &dmlex.get("headword")?)?,
-            placeholder_markers,
-            homograph_number,
-            parts_of_speech,
-            labels,
-            pronunciations,
-            inflected_forms,
-            senses,
-            etymology
+            placeholder_markers: read_many(g, id, "placeholderMarker", data, dmlex)?,
+            homograph_number: get_zero_one_u32(g, id, &dmlex.get("homographNumber")?)?,
+            parts_of_speech: read_many_str(g, id, "partOfSpeech", data, dmlex)?,
+            labels: read_many_str(g, id, "label", data, dmlex)?,
+            pronunciations: read_many(g, id, "pronunciation", data, dmlex)?,
+            inflected_forms: read_many(g, id, "inflectedForm", data, dmlex)?,
+            senses: read_many(g, id, "sense", data, dmlex)?,
+            etymology: read_many(g, id, "etymology", data, dmlex)?,
         }))
     }
 }
@@ -322,6 +286,19 @@ impl ToRDF for &InflectedForm {
     }
 }
 
+
+impl FromRDF for InflectedForm {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+
+        Ok((0, InflectedForm {
+            text: get_one_str(g, id, &dmlex.get("text")?)?,
+            tag: get_zero_one_str(g, id, &dmlex.get("tag")?)?,
+            labels: read_many_str(g, id, "label", data, dmlex)?,
+            pronunciations: read_many(g, id, "pronunciation", data, dmlex)?,
+        }))
+    }
+}
 
 impl ToRDF for &Sense {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -382,6 +359,21 @@ impl ToRDF for &Sense {
 }
 
 
+impl FromRDF for Sense {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        Ok((0, Sense {
+            id: get_id(id, data),
+            indicator: read_many_str(g, id, "indicator", data, dmlex)?,
+            labels: read_many_str(g, id, "label", data, dmlex)?,
+            definitions: read_many(g, id, "definition", data, dmlex)?,
+            examples: read_many(g, id, "example", data, dmlex)?,
+            headword_explanations: read_many(g, id, "headwordExplanation", data, dmlex)?,
+            headword_translations: read_many(g, id, "headwordTranslation", data, dmlex)?,
+        }))
+    }
+}
+
 impl ToRDF for &Definition {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
@@ -407,6 +399,18 @@ impl ToRDF for &Definition {
             &dmlex.get("listingOrder")?,
             &(index + 1).to_string().as_literal()).expect("Error inserting triple");
         Ok(id)
+    }
+}
+
+
+impl FromRDF for Definition {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+
+        Ok((0, Definition {
+            text: get_one_str(g, id, &dmlex.get("text")?)?,
+            definition_type: get_zero_one_str(g, id, &dmlex.get("definitionType")?)?,
+        }))
     }
 }
 
@@ -449,6 +453,18 @@ impl ToRDF for &Pronunciation {
 }
 
 
+impl FromRDF for Pronunciation {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+
+        Ok((0, Pronunciation {
+            sound_file: get_zero_one_str(g, id, &dmlex.get("soundFile")?)?,
+            transcriptions: read_many(g, id, "transcription", data, dmlex)?,
+            labels: read_many_str(g, id, "label", data, dmlex)?,
+        }))
+    }
+}
+
 impl ToRDF for &Transcription {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
@@ -477,6 +493,15 @@ impl ToRDF for &Transcription {
     }
 }
 
+impl FromRDF for Transcription {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        Ok((0, Transcription {
+            text: get_one_str(g, id, &dmlex.get("text")?)?,
+            scheme: get_zero_one_str(g, id, &dmlex.get("scheme")?)?,
+        }))
+    }
+}
 
 impl ToRDF for &Example {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -546,6 +571,22 @@ impl ToRDF for &Example {
 }
 
 
+impl FromRDF for Example {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        Ok((0, Example {
+            text: get_one_str(g, id, &dmlex.get("text")?)?,
+            collocate_markers: read_many(g, id, "collocateMarker", data, dmlex)?,
+            headword_markers: read_many(g, id, "headwordMarker", data, dmlex)?,
+            source_identity: get_zero_one_str(g, id, &dmlex.get("sourceIdentity")?)?,
+            source_elaboration: get_zero_one_str(g, id, &dmlex.get("sourceElaboration")?)?,
+            labels: read_many_str(g, id, "label", data, dmlex)?,
+            sound_file: get_zero_one_str(g, id, &dmlex.get("soundFile")?)?,
+            example_translations: read_many(g, id, "exampleTranslation", data, dmlex)?,
+        }))
+    }
+}
+
 impl ToRDF for &HeadwordTranslation {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
@@ -608,6 +649,21 @@ impl ToRDF for &HeadwordTranslation {
 }
 
 
+impl FromRDF for HeadwordTranslation {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        Ok((0, HeadwordTranslation {
+            text: get_one_str(g, id, &dmlex.get("text")?)?,
+            placeholder_markers: read_many(g, id, "placeholderMarker", data, dmlex)?,
+            lang_code: get_zero_one_str(g, id, &dmlex.get("langCode")?)?.map(|x| LangCode(x)),
+            parts_of_speech: read_many_str(g, id, "partOfSpeech", data, dmlex)?,
+            labels: read_many_str(g, id, "label", data, dmlex)?,
+            pronunciations: read_many(g, id, "pronunciation", data, dmlex)?,
+            inflected_forms: read_many(g, id, "inflectedForm", data, dmlex)?,
+        }))
+    }
+}
+
 impl ToRDF for &HeadwordExplanation {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
@@ -646,6 +702,18 @@ impl ToRDF for &HeadwordExplanation {
     }
 }
 
+
+impl FromRDF for HeadwordExplanation {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        Ok((0, HeadwordExplanation {
+            text: get_one_str(g, id, &dmlex.get("text")?)?,
+            collocate_markers: read_many(g, id, "collocateMarker", data, dmlex)?,
+            headword_markers: read_many(g, id, "headwordMarker", data, dmlex)?,
+            lang_code: get_zero_one_str(g, id, &dmlex.get("langCode")?)?.map(|x| LangCode(x)),
+        }))
+    }
+}
 
 impl ToRDF for &ExampleTranslation {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -702,6 +770,20 @@ impl ToRDF for &ExampleTranslation {
 }
 
 
+impl FromRDF for ExampleTranslation {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        Ok((0, ExampleTranslation {
+            text: get_one_str(g, id, &dmlex.get("text")?)?,
+            collocate_markers: read_many(g, id, "collocateMarker", data, dmlex)?,
+            headword_markers: read_many(g, id, "headwordMarker", data, dmlex)?,
+            lang_code: get_zero_one_str(g, id, &dmlex.get("langCode")?)?.map(|x| LangCode(x)),
+            labels: read_many_str(g, id, "label", data, dmlex)?,
+            sound_file: get_zero_one_str(g, id, &dmlex.get("soundFile")?)?,
+        }))
+    }
+}
+
 impl ToRDF for &DefinitionTypeTag {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
@@ -732,6 +814,17 @@ impl ToRDF for &DefinitionTypeTag {
     }
 }
 
+
+impl FromRDF for DefinitionTypeTag {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        Ok((0, DefinitionTypeTag {
+            tag: get_one_str(g, id, &dmlex.get("tag")?)?,
+            description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
+            same_as: read_many_str(g, id, "sameAs", data, dmlex)?,
+        }))
+    }
+}
 
 
 impl ToRDF for &InflectedFormTag {
@@ -789,6 +882,21 @@ impl ToRDF for &InflectedFormTag {
     }
 }
 
+
+impl FromRDF for InflectedFormTag {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        Ok((0, InflectedFormTag {
+            tag: get_one_str(g, id, &dmlex.get("tag")?)?,
+            description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
+            same_as: read_many_str(g, id, "sameAs", data, dmlex)?,
+            for_headwords: get_zero_one_bool(g, id, &dmlex.get("forHeadwords")?)?,
+            for_translations: get_zero_one_bool(g, id, &dmlex.get("forTranslations")?)?,
+            for_languages: read_many_str(g, id, "forLanguage", data, dmlex)?,
+            for_parts_of_speech: read_many_str(g, id, "forPartOfSpeech", data, dmlex)?,
+        }))
+    }
+}
 
 impl ToRDF for &LabelTag {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -856,6 +964,24 @@ impl ToRDF for &LabelTag {
     }
 }
 
+impl FromRDF for LabelTag {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>,
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+
+        Ok((0, LabelTag {
+            tag: get_one_str(g, id, &dmlex.get("tag")?)?,
+            description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
+            type_tag: get_zero_one_str(g, id, &dmlex.get("typeTag")?)?,
+            same_as: read_many_str(g, id, "sameAs", data, dmlex)?,
+            for_headwords: get_zero_one_bool(g, id, &dmlex.get("forHeadwords")?)?,
+            for_translations: get_zero_one_bool(g, id, &dmlex.get("forTranslations")?)?,
+            for_collocates: get_zero_one_bool(g, id, &dmlex.get("forCollocates")?)?,
+            for_languages: read_many_str(g, id, "forLanguage", data, dmlex)?,
+            for_parts_of_speech: read_many_str(g, id, "forPartOfSpeech", data, dmlex)?,
+        }))
+    }
+}
+
 
 impl ToRDF for &LabelTypeTag {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -887,6 +1013,17 @@ impl ToRDF for &LabelTypeTag {
     }
 }
 
+impl FromRDF for LabelTypeTag {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>,
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+
+        Ok((0, LabelTypeTag {
+            tag: get_one_str(g, id, &dmlex.get("tag")?)?,
+            description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
+            same_as: read_many_str(g, id, "sameAs", data, dmlex)?,
+        }))
+    }
+}
 
 impl ToRDF for &PartOfSpeechTag {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -942,6 +1079,22 @@ impl ToRDF for &PartOfSpeechTag {
     }
 }
 
+impl FromRDF for PartOfSpeechTag {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>,
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+
+        Ok((0, PartOfSpeechTag {
+            tag: get_one_str(g, id, &dmlex.get("tag")?)?,
+            description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
+            same_as: read_many_str(g, id, "sameAs", data, dmlex)?,
+            for_headwords: get_zero_one_bool(g, id, &dmlex.get("forHeadwords")?)?,
+            for_translations: get_zero_one_bool(g, id, &dmlex.get("forTranslations")?)?,
+            for_etymology: get_zero_one_bool(g, id, &dmlex.get("forEtymology")?)?,
+            for_languages: read_many_str(g, id, "forLanguage", data, dmlex)?,
+        }))
+    }
+}
+
 
 impl ToRDF for &SourceIdentityTag {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -973,6 +1126,17 @@ impl ToRDF for &SourceIdentityTag {
     }
 }
 
+impl FromRDF for SourceIdentityTag {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>,
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+
+        Ok((0, SourceIdentityTag {
+            tag: get_one_str(g, id, &dmlex.get("tag")?)?,
+            description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
+            same_as: read_many_str(g, id, "sameAs", data, dmlex)?,
+        }))
+    }
+}
 
 impl ToRDF for &TranscriptionSchemeTag {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -1016,6 +1180,19 @@ impl ToRDF for &TranscriptionSchemeTag {
     }
 }
 
+impl FromRDF for TranscriptionSchemeTag {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>,
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+
+        Ok((0, TranscriptionSchemeTag {
+            tag: get_one_str(g, id, &dmlex.get("tag")?)?,
+            description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
+            for_headwords: get_zero_one_bool(g, id, &dmlex.get("forHeadwords")?)?,
+            for_translations: get_zero_one_bool(g, id, &dmlex.get("forTranslations")?)?,
+            for_languages: read_many_str(g, id, "forLanguage", data, dmlex)?,
+        }))
+    }
+}
 
 impl ToRDF for &Relation {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -1052,6 +1229,18 @@ impl ToRDF for &Relation {
     }
 }
 
+impl FromRDF for Relation {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>,
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+
+        Ok((0, Relation {
+            _type: get_one_str(g, id, &dmlex.get("type")?)?,
+            description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
+            members: read_many(g, id, "member", data, dmlex)?,
+        }))
+    }
+}
+
 
 impl ToRDF for &Member {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -1081,6 +1270,17 @@ impl ToRDF for &Member {
     }
 }
 
+impl FromRDF for Member {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>,
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+
+        Ok((0, Member {
+            member_id: get_one_str(g, id, &dmlex.get("member")?)?,
+            role: get_zero_one_str(g, id, &dmlex.get("role")?)?,
+            obverse_listing_order: get_one_u32(g, id, &dmlex.get("obverseListingOrder")?)?,
+        }))
+    }
+}
 
 impl ToRDF for &RelationType {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -1137,6 +1337,28 @@ impl ToRDF for &RelationType {
                 &Iri::new(same_as)?).expect("Error inserting triple");
         }
         Ok(id)
+    }
+}
+
+impl FromRDF for RelationType {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>,
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        let scope_restriction = match get_zero_one_str(g, id, &dmlex.get("scopeRestriction")?)? {
+            None => None,
+            Some(s) => match s.as_str() {
+                "sameEntry" => Some(ScopeRestriction::SameEntry),
+                "sameResource" => Some(ScopeRestriction::SameResource),
+                "any" => Some(ScopeRestriction::Any),
+                _ => return Err(RdfError::InvalidScopeRestriction(s))
+            }
+        };
+        Ok((0, RelationType {
+            _type: get_one_str(g, id, &dmlex.get("type")?)?,
+            description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
+            scope_restriction,
+            member_types: read_many(g, id, "memberType", data, dmlex)?,
+            same_as: read_many_str(g, id, "sameAs", data, dmlex)?,
+        }))
     }
 }
 
@@ -1224,6 +1446,35 @@ impl ToRDF for &MemberType {
     }
 }
 
+impl FromRDF for MemberType {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        let _type = match get_one_str(g, id, &dmlex.get("type")?)?.as_str() {
+            "sense" => MemberTypeType::Sense,
+            "collocate" => MemberTypeType::Collocate,
+            "entry" => MemberTypeType::Entry,
+            s => return Err(RdfError::InvalidMemberType(s.to_string()))
+        };
+        let hint = match get_zero_one_str(g, id, &dmlex.get("hint")?)? {
+            None => None,
+            Some(s) => match s.as_str() {
+                "embed" => Some(Hint::Embed),
+                "navigate" => Some(Hint::Navigate),
+                "none" => Some(Hint::None),
+                s => return Err(RdfError::InvalidHint(s.to_string()))
+            }
+        };
+        Ok((0, MemberType {
+            role: get_one_str(g, id, &dmlex.get("role")?)?,
+            description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
+            _type,
+            min: get_zero_one_u32(g, id, &dmlex.get("min")?)?,
+            max: get_zero_one_u32(g, id, &dmlex.get("max")?)?,
+            hint,
+            same_as: read_many_str(g, id, "sameAs", data, dmlex)?,
+        }))
+    }
+}
 
 impl ToRDF for &Marker {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -1240,6 +1491,16 @@ impl ToRDF for &Marker {
             &dmlex.get("endIndex")?,
             &self.end_index.to_string().as_literal()).expect("Error inserting triple");
         Ok(id)
+    }
+}
+
+impl FromRDF for Marker {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        Ok((0, Marker {
+            start_index: get_one_usize(g, id, &dmlex.get("startIndex")?)?,
+            end_index: get_one_usize(g, id, &dmlex.get("endIndex")?)?,
+        }))
     }
 }
 
@@ -1273,6 +1534,17 @@ impl ToRDF for &CollocateMarker {
     }
 }
 
+impl FromRDF for CollocateMarker {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        Ok((0, CollocateMarker {
+            start_index: get_one_usize(g, id, &dmlex.get("startIndex")?)?,
+            end_index: get_one_usize(g, id, &dmlex.get("endIndex")?)?,
+            lemma: get_zero_one_str(g, id, &dmlex.get("lemma")?)?,
+            label: read_many_str(g, id, "label", _data, dmlex)?,
+        }))
+    }
+}
 
 impl ToRDF for &Etymology {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -1302,6 +1574,16 @@ impl ToRDF for &Etymology {
             &dmlex.get("listingOrder")?,
             &(index + 1).to_string().as_literal()).expect("Error inserting triple");
         Ok(id)
+    }
+}
+
+impl FromRDF for Etymology {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        Ok((0, Etymology {
+            description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
+            etymons: read_many(g, id, "etymon", data, dmlex)?,
+        }))
     }
 }
 
@@ -1355,6 +1637,18 @@ impl ToRDF for &Etymon {
     }
 }
 
+impl FromRDF for Etymon {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        Ok((0, Etymon {
+            when: get_zero_one_str(g, id, &dmlex.get("when")?)?,
+            _type: get_zero_one_str(g, id, &dmlex.get("type")?)?,
+            note: get_zero_one_str(g, id, &dmlex.get("note")?)?,
+            etymon_units: read_many(g, id, "etymonUnit", data, dmlex)?,
+            translation: get_zero_one_str(g, id, &dmlex.get("translation")?)?,
+        }))
+    }
+}
 
 impl ToRDF for &EtymonUnit {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -1400,6 +1694,18 @@ impl ToRDF for &EtymonUnit {
     }
 }
 
+impl FromRDF for EtymonUnit {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        Ok((0, EtymonUnit {
+            lang_code: LangCode(get_one_str(g, id, &dmlex.get("langCode")?)?),
+            text: get_one_str(g, id, &dmlex.get("text")?)?,
+            reconstructed: get_zero_one_bool(g, id, &dmlex.get("reconstructed")?)?,
+            parts_of_speech: read_many_str(g, id, "partOfSpeech", _data, dmlex)?,
+            translation: get_zero_one_str(g, id, &dmlex.get("translation")?)?,
+        }))
+    }
+}
 
 impl ToRDF for &EtymonType {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -1425,6 +1731,16 @@ impl ToRDF for &EtymonType {
     }
 }
 
+impl FromRDF for EtymonType {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        Ok((0, EtymonType {
+            _type: get_one_str(g, id, &dmlex.get("type")?)?,
+            description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
+        }))
+    }
+}
+
 
 impl ToRDF for &EtymonLanguage {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -1447,6 +1763,16 @@ impl ToRDF for &EtymonLanguage {
                 &display_name.as_literal()).expect("Error inserting triple");
         }
         Ok(id)
+    }
+}
+
+impl FromRDF for EtymonLanguage {
+    fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
+        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        Ok((0, EtymonLanguage {
+            lang_code: LangCode(get_one_str(g, id, &dmlex.get("langCode")?)?),
+            display_name: get_zero_one_str(g, id, &dmlex.get("displayName")?)?,
+        }))
     }
 }
 
@@ -1532,6 +1858,31 @@ fn get_zero_one_str<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt
     }
 }
 
+fn get_zero_one_u32<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<Option<u32>> {
+    match get_zero_one_str(g, subj, prop) {
+        Ok(Some(s)) => Ok(Some(s.parse::<u32>()?)),
+        Ok(None) => Ok(None),
+        Err(e) => Err(e),
+    }
+}
+
+
+fn get_zero_one_usize<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<Option<usize>> {
+    match get_zero_one_str(g, subj, prop) {
+        Ok(Some(s)) => Ok(Some(s.parse::<usize>()?)),
+        Ok(None) => Ok(None),
+        Err(e) => Err(e),
+    }
+}
+
+
+fn get_zero_one_bool<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<Option<bool>> {
+    match get_zero_one_str(g, subj, prop) {
+        Ok(Some(s)) => Ok(Some(s.to_lowercase() == "true" || s == "1" || s == "yes" || s == "y")),
+        Ok(None) => Ok(None),
+        Err(e) => Err(e),
+    }
+}
 
 fn get_one_str<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<String> {
     let mut iter = g.triples_with_sp(subj, prop);
@@ -1546,6 +1897,36 @@ fn get_one_str<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Deb
     } else {
         Err(RdfError::MissingTriple(format!("{:?}", subj), format!("{:?}", prop)))
     }
+}
+
+fn get_one_usize<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<usize> {
+    match get_one_str(g, subj, prop) {
+        Ok(s) => Ok(s.parse::<usize>()?),
+        Err(e) => Err(e),
+    }
+}
+
+
+fn get_one_u32<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<u32> {
+    match get_one_str(g, subj, prop) {
+        Ok(s) => Ok(s.parse::<u32>()?),
+        Err(e) => Err(e),
+    }
+}
+
+fn get_many_str<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<Vec<String>> {
+    let mut iter = g.triples_with_sp(subj, prop);
+    let mut result = Vec::new();
+    while let Some(triple) = iter.next() {
+        let t = triple.unwrap();
+        let obj = t.o();
+        if obj.kind() == TermKind::Literal {
+            result.push(obj.value_raw().0.to_string());
+        } else {
+            return Err(RdfError::LiteralExpected(format!("{:?}", subj), format!("{:?}", prop)))
+        }
+    }
+    Ok(result)
 }
 
 fn get_many<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<Vec<Term<String>>> {
@@ -1576,6 +1957,10 @@ fn read_many<E : FromRDF, G : Graph, T1: AsRef<str>, T2: AsRef<str>>
     Ok(elems.into_iter().map(|(_, entry)| entry).collect())
 }
 
+fn read_many_str<G : Graph, T1: AsRef<str>, T2: AsRef<str>>
+    (g : &G, id : &Term<String>, prop : &str, data : &Namespace<T1>, dmlex : &Namespace<T2>) -> Result<Vec<String>> {
+    get_many_str(g, id, &dmlex.get(prop)?)
+}
 
 #[derive(Error, Debug)]
 pub enum RdfError {
@@ -1589,4 +1974,12 @@ pub enum RdfError {
     MissingTriple(String, String),
     #[error("Value expected as object of {0} ={1}=>")]
     ValueExpected(String, String),
+    #[error("Expected Integer but found: {0}")]
+    ParseError(#[from] std::num::ParseIntError),
+    #[error("Invalid scope restriction: {0}")]
+    InvalidScopeRestriction(String),
+    #[error("Invalid member type: {0}")]
+    InvalidMemberType(String),
+    #[error("Invalid hint: {0}")]
+    InvalidHint(String),
 }
