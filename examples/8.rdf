@@ -1,0 +1,34 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
+
+<file:doctor-n> a dmlex:Entry;
+  dmlex:headword "doctor";
+  dmlex:sense <file:doctor-n-1>,
+    <file:doctor-n-2>.
+
+<file:doctor-n-2> a dmlex:Sense;
+  dmlex:indicator "academic title";
+  dmlex:headwordTranslation [ a dmlex:HeadwordTranslation;
+      dmlex:text "Doktorin";
+      dmlex:listingOrder "2";
+      dmlex:partOfSpeech "n-fem" ],
+    [ a dmlex:HeadwordTranslation;
+      dmlex:partOfSpeech "n-masc";
+      dmlex:text "Doktor";
+      dmlex:listingOrder "1" ];
+  dmlex:listingOrder "2".
+
+<file:doctor-n-1> a dmlex:Sense;
+  dmlex:listingOrder "1";
+  dmlex:headwordTranslation [ a dmlex:HeadwordTranslation;
+      dmlex:text "Arzt";
+      dmlex:partOfSpeech "n-masc";
+      dmlex:listingOrder "1" ],
+    [ a dmlex:HeadwordTranslation;
+      dmlex:partOfSpeech "n-fem";
+      dmlex:text "Ärztin";
+      dmlex:listingOrder "2" ];
+  dmlex:indicator "medical doctor".
+

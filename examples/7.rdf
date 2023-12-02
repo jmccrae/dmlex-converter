@@ -1,0 +1,11 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
+
+[] a dmlex:LexicographicResource;
+  dmlex:langCode "de";
+  dmlex:translationLanguage "en";
+  dmlex:title "My German-English Dictionary";
+  dmlex:uri "http://example.com".
+

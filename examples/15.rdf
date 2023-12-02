@@ -1,0 +1,42 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
+
+<file:colour> a dmlex:Member,
+    dmlex:Entry;
+  dmlex:obverseListingOrder "0";
+  dmlex:listingOrder "1";
+  dmlex:headword "colour";
+  dmlex:partOfSpeech "n";
+  dmlex:sense <file:colour-1>;
+  dmlex:label "europeanSpelling".
+
+<file:colour-1> a dmlex:Sense;
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:listingOrder "1";
+      dmlex:text "red, blue, yellow etc." ];
+  dmlex:listingOrder "1";
+  dmlex:example [ a dmlex:Example;
+      dmlex:listingOrder "1";
+      dmlex:text "What is your favourite colour?" ].
+
+[] a dmlex:LexicographicResource;
+  dmlex:langCode "en";
+  dmlex:entry <file:color>,
+    <file:colour>;
+  dmlex:relation [ a dmlex:Relation;
+      dmlex:member <file:colour>,
+        <file:color>;
+      dmlex:type "variants";
+      dmlex:listingOrder "1" ];
+  dmlex:uri "http://example.com".
+
+<file:color> a dmlex:Member,
+    dmlex:Entry;
+  dmlex:partOfSpeech "n";
+  dmlex:obverseListingOrder "0";
+  dmlex:headword "color";
+  dmlex:label "americanSpelling";
+  dmlex:listingOrder "2".
+

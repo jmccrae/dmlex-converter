@@ -1,0 +1,62 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
+
+<file:glasses-1> a dmlex:Member,
+    dmlex:Sense;
+  dmlex:listingOrder "1";
+  dmlex:role "whole";
+  dmlex:obverseListingOrder "0";
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:text "an optical seeing aid";
+      dmlex:listingOrder "1" ].
+
+<file:microscope-1> a dmlex:Sense,
+    dmlex:Member;
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:listingOrder "1";
+      dmlex:text "equipment for looking at very small things" ];
+  dmlex:listingOrder "1";
+  dmlex:role "whole";
+  dmlex:obverseListingOrder "0".
+
+[] a dmlex:LexicographicResource;
+  dmlex:langCode "en";
+  dmlex:relation [ a dmlex:Relation;
+      dmlex:member <file:microscope-1>,
+        <file:lens-1>;
+      dmlex:listingOrder "2";
+      dmlex:type "meronymy" ],
+    [ a dmlex:Relation;
+      dmlex:member <file:glasses-1>,
+        <file:lens-1>;
+      dmlex:listingOrder "1";
+      dmlex:type "meronymy" ];
+  dmlex:uri "http://example.com";
+  dmlex:entry <file:lens>,
+    <file:microscope>,
+    <file:glasses>.
+
+<file:lens> a dmlex:Entry;
+  dmlex:headword "lens";
+  dmlex:sense <file:lens-1>.
+
+<file:microscope> a dmlex:Entry;
+  dmlex:sense <file:microscope-1>;
+  dmlex:headword "microscope".
+
+<file:glasses> a dmlex:Entry;
+  dmlex:sense <file:glasses-1>;
+  dmlex:headword "glasses".
+
+<file:lens-1> a dmlex:Member,
+    dmlex:Sense;
+  dmlex:listingOrder "1",
+    "2";
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:listingOrder "1";
+      dmlex:text "curved glass that makes things seem bigger" ];
+  dmlex:obverseListingOrder "0";
+  dmlex:role "part".
+

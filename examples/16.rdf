@@ -1,0 +1,73 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
+
+<file:colour-3> a dmlex:Sense,
+    dmlex:Member;
+  dmlex:listingOrder "3",
+    "2";
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:listingOrder "1";
+      dmlex:text "a sign of a person's race" ];
+  dmlex:example [ a dmlex:Example;
+      dmlex:listingOrder "1";
+      dmlex:text "People of all creeds and colours." ];
+  dmlex:role "sub";
+  dmlex:obverseListingOrder "0".
+
+<file:colour-1> a dmlex:Sense,
+    dmlex:Member;
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:text "red, blue, yellow etc.";
+      dmlex:listingOrder "1" ];
+  dmlex:example [ a dmlex:Example;
+      dmlex:text "What is your favourite colour?";
+      dmlex:listingOrder "1" ];
+  dmlex:role "super";
+  dmlex:listingOrder "1";
+  dmlex:obverseListingOrder "0".
+
+<file:colour-4> a dmlex:Sense;
+  dmlex:listingOrder "4";
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:text "interest or excitement";
+      dmlex:listingOrder "1" ];
+  dmlex:example [ a dmlex:Example;
+      dmlex:listingOrder "1";
+      dmlex:text "Examples add colour to your writing." ].
+
+[] a dmlex:LexicographicResource;
+  dmlex:relation [ a dmlex:Relation;
+      dmlex:type "subsensing";
+      dmlex:listingOrder "2";
+      dmlex:member <file:colour-1>,
+        <file:colour-3> ],
+    [ a dmlex:Relation;
+      dmlex:type "subsensing";
+      dmlex:member <file:colour-2>,
+        <file:colour-1>;
+      dmlex:listingOrder "1" ];
+  dmlex:entry <file:colour>;
+  dmlex:langCode "en";
+  dmlex:uri "http://example.com".
+
+<file:colour> a dmlex:Entry;
+  dmlex:sense <file:colour-3>,
+    <file:colour-1>,
+    <file:colour-4>,
+    <file:colour-2>;
+  dmlex:headword "colour".
+
+<file:colour-2> a dmlex:Member,
+    dmlex:Sense;
+  dmlex:example [ a dmlex:Example;
+      dmlex:listingOrder "1";
+      dmlex:text "Owning a colour TV meant you were rich." ];
+  dmlex:obverseListingOrder "0";
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:listingOrder "1";
+      dmlex:text "not being black and white" ];
+  dmlex:role "sub";
+  dmlex:listingOrder "2".
+

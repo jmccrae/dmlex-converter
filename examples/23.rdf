@@ -1,0 +1,35 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
+
+<file:cat-n> a dmlex:Entry;
+  dmlex:headword "cat";
+  dmlex:etymology [ a dmlex:Etymology;
+      dmlex:etymon [ a dmlex:Etymon;
+          dmlex:listingOrder "1";
+          dmlex:etymonUnit [ a dmlex:EtymonUnit;
+              dmlex:listingOrder "1";
+              dmlex:text "catte";
+              dmlex:langCode "enm" ] ],
+        [ a dmlex:Etymon;
+          dmlex:etymonUnit [ a dmlex:EtymonUnit;
+              dmlex:langCode "gem-x-proto";
+              dmlex:text "kattuz";
+              dmlex:listingOrder "1";
+              dmlex:reconstructed true ];
+          dmlex:listingOrder "3" ],
+        [ a dmlex:Etymon;
+          dmlex:listingOrder "2";
+          dmlex:etymonUnit [ a dmlex:EtymonUnit;
+              dmlex:translation "male cat";
+              dmlex:text "catt";
+              dmlex:langCode "ang";
+              dmlex:listingOrder "1" ],
+            [ a dmlex:EtymonUnit;
+              dmlex:translation "female cat";
+              dmlex:listingOrder "2";
+              dmlex:text "catte";
+              dmlex:langCode "ang" ] ];
+      dmlex:listingOrder "1" ].
+

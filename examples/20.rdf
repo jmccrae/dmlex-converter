@@ -1,0 +1,21 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
+
+<file:beat-up-1> a dmlex:Sense;
+  dmlex:listingOrder "1";
+  dmlex:headwordTranslation [ a dmlex:HeadwordTranslation;
+      dmlex:text "jemanden verprügeln";
+      dmlex:listingOrder "1";
+      dmlex:placeholderMarker [ 
+          dmlex:startIndex "0";
+          dmlex:endIndex "8" ] ].
+
+<file:beat-up> a dmlex:Entry;
+  dmlex:sense <file:beat-up-1>;
+  dmlex:headword "beat sb. up";
+  dmlex:placeholderMarker [ 
+      dmlex:endIndex "8";
+      dmlex:startIndex "5" ].
+

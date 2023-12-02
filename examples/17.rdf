@@ -1,0 +1,52 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
+
+<file:safe-2> a dmlex:Sense;
+  dmlex:example [ a dmlex:Example;
+      dmlex:listingOrder "1";
+      dmlex:text "Is the ride safe for a small child?" ];
+  dmlex:listingOrder "2";
+  dmlex:indicator "not likely to cause harm".
+
+<file:better-safe-1> a dmlex:Sense;
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:text "you should be careful even if it seems unnecessary";
+      dmlex:listingOrder "1" ];
+  dmlex:listingOrder "1".
+
+<file:better-safe> a dmlex:Entry,
+    dmlex:Member;
+  dmlex:sense <file:better-safe-1>;
+  dmlex:role "subentry";
+  dmlex:listingOrder "2";
+  dmlex:obverseListingOrder "0";
+  dmlex:headword "better safe than sorry".
+
+<file:safe> a dmlex:Entry;
+  dmlex:sense <file:safe-2>,
+    <file:safe-1>;
+  dmlex:headword "safe".
+
+[] a dmlex:LexicographicResource;
+  dmlex:langCode "en";
+  dmlex:entry <file:safe>,
+    <file:better-safe>;
+  dmlex:relation [ a dmlex:Relation;
+      dmlex:listingOrder "1";
+      dmlex:member <file:better-safe>,
+        <file:safe-1>;
+      dmlex:type "subentrying" ];
+  dmlex:uri "http://example.com".
+
+<file:safe-1> a dmlex:Sense,
+    dmlex:Member;
+  dmlex:role "container";
+  dmlex:listingOrder "1";
+  dmlex:example [ a dmlex:Example;
+      dmlex:listingOrder "1";
+      dmlex:text "It isn't safe to park here." ];
+  dmlex:obverseListingOrder "0";
+  dmlex:indicator "protected from harm".
+
