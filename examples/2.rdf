@@ -7,7 +7,7 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
   dmlex:headword "aardvark";
   dmlex:pronunciation [ a dmlex:Pronunciation;
       dmlex:transcription [ a dmlex:Transcription;
-          dmlex:listingOrder "1";
-          dmlex:text "a:rdva:rk" ];
-      dmlex:listingOrder "1" ].
+          dmlex:text "a:rdva:rk";
+          dmlex:listingOrder "1"^^xsd:unsignedInt ];
+      dmlex:listingOrder "1"^^xsd:unsignedInt ].
 

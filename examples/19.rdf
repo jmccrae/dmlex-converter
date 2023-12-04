@@ -6,6 +6,6 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 <file:continue-studies> a dmlex:Entry;
   dmlex:headword "continue your studies";
   dmlex:placeholderMarker [ 
-      dmlex:endIndex "13";
-      dmlex:startIndex "9" ].
+      dmlex:startIndex "9"^^xsd:unsignedInt;
+      dmlex:endIndex "13"^^xsd:unsignedInt ].
 

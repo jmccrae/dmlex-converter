@@ -3,40 +3,40 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
-<file:doctor-n-2> a dmlex:Sense;
-  dmlex:indicator "academic title";
-  dmlex:listingOrder "2";
-  dmlex:headwordTranslation [ a dmlex:HeadwordTranslation;
-      dmlex:partOfSpeech [ 
-          dmlex:tag "n-masc";
-          dmlex:listingOrder "1" ];
-      dmlex:text "Doktor";
-      dmlex:listingOrder "1" ],
-    [ a dmlex:HeadwordTranslation;
-      dmlex:partOfSpeech [ 
-          dmlex:tag "n-fem";
-          dmlex:listingOrder "1" ];
-      dmlex:listingOrder "2";
-      dmlex:text "Doktorin" ].
-
-<file:doctor-n> a dmlex:Entry;
-  dmlex:headword "doctor";
-  dmlex:sense <file:doctor-n-1>,
-    <file:doctor-n-2>.
-
 <file:doctor-n-1> a dmlex:Sense;
-  dmlex:indicator "medical doctor";
-  dmlex:listingOrder "1";
   dmlex:headwordTranslation [ a dmlex:HeadwordTranslation;
-      dmlex:listingOrder "2";
       dmlex:text "Ärztin";
+      dmlex:listingOrder "2"^^xsd:unsignedInt;
       dmlex:partOfSpeech [ 
           dmlex:tag "n-fem";
-          dmlex:listingOrder "1" ] ],
+          dmlex:listingOrder "1"^^xsd:unsignedInt ] ],
     [ a dmlex:HeadwordTranslation;
-      dmlex:listingOrder "1";
+      dmlex:listingOrder "1"^^xsd:unsignedInt;
       dmlex:text "Arzt";
       dmlex:partOfSpeech [ 
-          dmlex:tag "n-masc";
-          dmlex:listingOrder "1" ] ].
+          dmlex:listingOrder "1"^^xsd:unsignedInt;
+          dmlex:tag "n-masc" ] ];
+  dmlex:indicator "medical doctor";
+  dmlex:listingOrder "1"^^xsd:unsignedInt.
+
+<file:doctor-n-2> a dmlex:Sense;
+  dmlex:headwordTranslation [ a dmlex:HeadwordTranslation;
+      dmlex:partOfSpeech [ 
+          dmlex:listingOrder "1"^^xsd:unsignedInt;
+          dmlex:tag "n-masc" ];
+      dmlex:text "Doktor";
+      dmlex:listingOrder "1"^^xsd:unsignedInt ],
+    [ a dmlex:HeadwordTranslation;
+      dmlex:partOfSpeech [ 
+          dmlex:listingOrder "1"^^xsd:unsignedInt;
+          dmlex:tag "n-fem" ];
+      dmlex:listingOrder "2"^^xsd:unsignedInt;
+      dmlex:text "Doktorin" ];
+  dmlex:listingOrder "2"^^xsd:unsignedInt;
+  dmlex:indicator "academic title".
+
+<file:doctor-n> a dmlex:Entry;
+  dmlex:sense <file:doctor-n-1>,
+    <file:doctor-n-2>;
+  dmlex:headword "doctor".
 

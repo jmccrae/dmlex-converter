@@ -29,7 +29,7 @@ pub trait FromRDF {
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized;
 }
 
-fn read_lexicographic_resource<G : Graph, T: AsRef<str>>(g : &G, data : &Namespace<T>) -> Result<LexicographicResource> {
+pub fn read_lexicographic_resource<G : Graph, T: AsRef<str>>(g : &G, data : &Namespace<T>) -> Result<LexicographicResource> {
     let dmlex = Namespace::new(crate::DMLEX).expect("DMLEX namespace is invalid");
     for triple in g.triples_with_po(&rdf::type_, &dmlex.get("LexicographicResource")?) {
         let o = Term::copy(triple.unwrap().s());
@@ -38,7 +38,7 @@ fn read_lexicographic_resource<G : Graph, T: AsRef<str>>(g : &G, data : &Namespa
     Err(RdfError::MissingLexicographicResource)
 }
 
-fn read_entry<G : Graph, T: AsRef<str>>(g : &G, data : &Namespace<T>) -> Result<Entry> {
+pub fn read_entry<G : Graph, T: AsRef<str>>(g : &G, data : &Namespace<T>) -> Result<Entry> {
     let dmlex = Namespace::new(crate::DMLEX).expect("DMLEX namespace is invalid");
     for triple in g.triples_with_po(&rdf::type_, &dmlex.get("Entry")?) {
         let o = Term::copy(triple.unwrap().s());
@@ -220,7 +220,7 @@ impl ToRDF for &Entry {
             graph.insert(
                 &blank,
                 &dmlex.get("listingOrder")?,
-                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
+                &((i + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         for (i, label) in self.labels.iter().enumerate() {
             let blank = URIOrBlank::gen();
@@ -235,7 +235,7 @@ impl ToRDF for &Entry {
             graph.insert(
                 &blank,
                 &dmlex.get("listingOrder")?,
-                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
+                &((i + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         for (i, pronunciation) in self.pronunciations.iter().enumerate() {
             let pronunciation_id = pronunciation.to_rdf(graph, data, dmlex, i)?;
@@ -314,7 +314,7 @@ impl ToRDF for &InflectedForm {
             graph.insert(
                 &blank,
                 &dmlex.get("listingOrder")?,
-                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
+                &((i + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         for (i, pronunciation) in self.pronunciations.iter().enumerate() {
             let pronunciation_id = pronunciation.to_rdf(graph, data, dmlex, i)?;
@@ -326,7 +326,7 @@ impl ToRDF for &InflectedForm {
         graph.insert(
             &id,
             &dmlex.get("listingOrder")?,
-            &(index + 1).to_string().as_literal()).expect("Error inserting triple");
+            &((index + 1) as u32).as_literal()).expect("Error inserting triple");
         Ok(id)
     }
 }
@@ -374,7 +374,7 @@ impl ToRDF for &Sense {
             graph.insert(
                 &blank,
                 &dmlex.get("listingOrder")?,
-                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
+                &((i + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         for (i, definition) in self.definitions.iter().enumerate() {
             let definition_id = definition.to_rdf(graph, data, dmlex, i)?;
@@ -407,7 +407,7 @@ impl ToRDF for &Sense {
         graph.insert(
             &id,
             &dmlex.get("listingOrder")?,
-            &(index + 1).to_string().as_literal()).expect("Error inserting triple");
+            &((index + 1) as u32).as_literal()).expect("Error inserting triple");
         Ok(id)
     }
 }
@@ -451,7 +451,7 @@ impl ToRDF for &Definition {
         graph.insert(
             &id,
             &dmlex.get("listingOrder")?,
-            &(index + 1).to_string().as_literal()).expect("Error inserting triple");
+            &((index + 1) as u32).as_literal()).expect("Error inserting triple");
         Ok(id)
     }
 }
@@ -505,12 +505,12 @@ impl ToRDF for &Pronunciation {
             graph.insert(
                 &blank,
                 &dmlex.get("listingOrder")?,
-                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
+                &((i + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         graph.insert(
             &id,
             &dmlex.get("listingOrder")?,
-            &(index + 1).to_string().as_literal()).expect("Error inserting triple");
+            &((index + 1) as u32).as_literal()).expect("Error inserting triple");
         Ok(id)
     }
 }
@@ -551,7 +551,7 @@ impl ToRDF for &Transcription {
         graph.insert(
             &id,
             &dmlex.get("listingOrder")?,
-            &(index + 1).to_string().as_literal()).expect("Error inserting triple");
+            &((index + 1) as u32).as_literal()).expect("Error inserting triple");
         Ok(id)
     }
 }
@@ -619,7 +619,7 @@ impl ToRDF for &Example {
             graph.insert(
                 &blank,
                 &dmlex.get("listingOrder")?,
-                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
+                &((i + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         if let Some(sound_file) = &self.sound_file {
             graph.insert(
@@ -637,7 +637,7 @@ impl ToRDF for &Example {
         graph.insert(
             &id,
             &dmlex.get("listingOrder")?,
-            &(index + 1).to_string().as_literal()).expect("Error inserting triple");
+            &((index + 1) as u32).as_literal()).expect("Error inserting triple");
         Ok(id)
     }
 }
@@ -699,7 +699,7 @@ impl ToRDF for &HeadwordTranslation {
             graph.insert(
                 &blank,
                 &dmlex.get("listingOrder")?,
-                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
+                &((i + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         for (i, label) in self.labels.iter().enumerate() {
             let blank = URIOrBlank::gen();
@@ -714,7 +714,7 @@ impl ToRDF for &HeadwordTranslation {
             graph.insert(
                 &blank,
                 &dmlex.get("listingOrder")?,
-                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
+                &((i + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         for (i, pronunciation) in self.pronunciations.iter().enumerate() {
             let pronunciation_id = pronunciation.to_rdf(graph, data, dmlex, i)?;
@@ -733,7 +733,7 @@ impl ToRDF for &HeadwordTranslation {
         graph.insert(
             &id,
             &dmlex.get("listingOrder")?,
-            &(index + 1).to_string().as_literal()).expect("Error inserting triple");
+            &((index + 1) as u32).as_literal()).expect("Error inserting triple");
         Ok(id)
     }
 }
@@ -852,7 +852,7 @@ impl ToRDF for &ExampleTranslation {
             graph.insert(
                 &blank,
                 &dmlex.get("listingOrder")?,
-                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
+                &((i + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         if let Some(sound_file) = &self.sound_file {
             graph.insert(
@@ -863,7 +863,7 @@ impl ToRDF for &ExampleTranslation {
         graph.insert(
             &id,
             &dmlex.get("listingOrder")?,
-            &(index + 1).to_string().as_literal()).expect("Error inserting triple");
+            &((index + 1) as u32).as_literal()).expect("Error inserting triple");
         Ok(id)
     }
 }
@@ -920,7 +920,7 @@ impl FromRDF for DefinitionTypeTag {
         Ok((0, DefinitionTypeTag {
             tag: get_one_str(g, id, &dmlex.get("tag")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
-            same_as: read_many_str(g, id, "sameAs", data, dmlex)?,
+            same_as: read_same_as(g, id, data)?,
         }))
     }
 }
@@ -988,7 +988,7 @@ impl FromRDF for InflectedFormTag {
         Ok((0, InflectedFormTag {
             tag: get_one_str(g, id, &dmlex.get("tag")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
-            same_as: read_many_str(g, id, "sameAs", data, dmlex)?,
+            same_as: read_same_as(g, id, data)?,
             for_headwords: get_zero_one_bool(g, id, &dmlex.get("forHeadwords")?)?,
             for_translations: get_zero_one_bool(g, id, &dmlex.get("forTranslations")?)?,
             for_languages: read_many_str(g, id, "forLanguage", data, dmlex)?,
@@ -1071,7 +1071,7 @@ impl FromRDF for LabelTag {
             tag: get_one_str(g, id, &dmlex.get("tag")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
             type_tag: get_zero_one_str(g, id, &dmlex.get("typeTag")?)?,
-            same_as: read_many_str(g, id, "sameAs", data, dmlex)?,
+            same_as: read_same_as(g, id, data)?,
             for_headwords: get_zero_one_bool(g, id, &dmlex.get("forHeadwords")?)?,
             for_translations: get_zero_one_bool(g, id, &dmlex.get("forTranslations")?)?,
             for_collocates: get_zero_one_bool(g, id, &dmlex.get("forCollocates")?)?,
@@ -1119,7 +1119,7 @@ impl FromRDF for LabelTypeTag {
         Ok((0, LabelTypeTag {
             tag: get_one_str(g, id, &dmlex.get("tag")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
-            same_as: read_many_str(g, id, "sameAs", data, dmlex)?,
+            same_as: read_same_as(g, id, data)?,
         }))
     }
 }
@@ -1185,7 +1185,7 @@ impl FromRDF for PartOfSpeechTag {
         Ok((0, PartOfSpeechTag {
             tag: get_one_str(g, id, &dmlex.get("tag")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
-            same_as: read_many_str(g, id, "sameAs", data, dmlex)?,
+            same_as: read_same_as(g, id, data)?,
             for_headwords: get_zero_one_bool(g, id, &dmlex.get("forHeadwords")?)?,
             for_translations: get_zero_one_bool(g, id, &dmlex.get("forTranslations")?)?,
             for_etymology: get_zero_one_bool(g, id, &dmlex.get("forEtymology")?)?,
@@ -1232,7 +1232,7 @@ impl FromRDF for SourceIdentityTag {
         Ok((0, SourceIdentityTag {
             tag: get_one_str(g, id, &dmlex.get("tag")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
-            same_as: read_many_str(g, id, "sameAs", data, dmlex)?,
+            same_as: read_same_as(g, id, data)?,
         }))
     }
 }
@@ -1323,7 +1323,7 @@ impl ToRDF for &Relation {
         graph.insert(
             &id,
             &dmlex.get("listingOrder")?,
-            &(index + 1).to_string().as_literal()).expect("Error inserting triple");
+            &((index + 1) as u32).as_literal()).expect("Error inserting triple");
         Ok(id)
     }
 }
@@ -1364,11 +1364,11 @@ impl ToRDF for &Member {
         graph.insert(
             &id,
             &dmlex.get("listingOrder")?,
-            &(index + 1).to_string().as_literal()).expect("Error inserting triple");
+            &((index + 1) as u32).as_literal()).expect("Error inserting triple");
         graph.insert(
             &id,
             &dmlex.get("obverseListingOrder")?,
-            &self.obverse_listing_order.to_string().as_literal()).expect("Error inserting triple");
+            &(self.obverse_listing_order as u32).as_literal()).expect("Error inserting triple");
         Ok(id)
     }
 }
@@ -1460,7 +1460,7 @@ impl FromRDF for RelationType {
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
             scope_restriction,
             member_types: read_many(g, id, "memberType", data, dmlex)?,
-            same_as: read_many_str(g, id, "sameAs", data, dmlex)?,
+            same_as: read_same_as(g, id, data)?,
         }))
     }
 }
@@ -1574,7 +1574,7 @@ impl FromRDF for MemberType {
             min: get_zero_one_u32(g, id, &dmlex.get("min")?)?,
             max: get_zero_one_u32(g, id, &dmlex.get("max")?)?,
             hint,
-            same_as: read_many_str(g, id, "sameAs", data, dmlex)?,
+            same_as: read_same_as(g, id, data)?,
         }))
     }
 }
@@ -1588,11 +1588,11 @@ impl ToRDF for &Marker {
         graph.insert(
             &id,
             &dmlex.get("startIndex")?,
-            &self.start_index.to_string().as_literal()).expect("Error inserting triple");
+            &(self.start_index as u32).as_literal()).expect("Error inserting triple");
         graph.insert(
             &id,
             &dmlex.get("endIndex")?,
-            &self.end_index.to_string().as_literal()).expect("Error inserting triple");
+            &(self.end_index as u32).as_literal()).expect("Error inserting triple");
         Ok(id)
     }
 }
@@ -1616,11 +1616,11 @@ impl ToRDF for &CollocateMarker {
         graph.insert(
             &id,
             &dmlex.get("startIndex")?,
-            &self.start_index.to_string().as_literal()).expect("Error inserting triple");
+            &(self.start_index as u32).as_literal()).expect("Error inserting triple");
         graph.insert(
             &id,
             &dmlex.get("endIndex")?,
-            &self.end_index.to_string().as_literal()).expect("Error inserting triple");
+            &(self.end_index as u32).as_literal()).expect("Error inserting triple");
         if let Some(lemma) = &self.lemma {
             graph.insert(
                 &id,
@@ -1675,7 +1675,7 @@ impl ToRDF for &Etymology {
         graph.insert(
             &id,
             &dmlex.get("listingOrder")?,
-            &(index + 1).to_string().as_literal()).expect("Error inserting triple");
+            &((index + 1) as u32).as_literal()).expect("Error inserting triple");
         Ok(id)
     }
 }
@@ -1735,7 +1735,7 @@ impl ToRDF for &Etymon {
         graph.insert(
             &id,
             &dmlex.get("listingOrder")?,
-            &(index + 1).to_string().as_literal()).expect("Error inserting triple");
+            &((index + 1) as u32).as_literal()).expect("Error inserting triple");
         Ok(id)
     }
 }
@@ -1792,7 +1792,7 @@ impl ToRDF for &EtymonUnit {
         graph.insert(
             &id,
             &dmlex.get("listingOrder")?,
-            &(index + 1).to_string().as_literal()).expect("Error inserting triple");
+            &((index + 1) as u32).as_literal()).expect("Error inserting triple");
         Ok(id)
     }
 }
@@ -2065,6 +2065,23 @@ fn read_many_str<G : Graph, T1: AsRef<str>, T2: AsRef<str>>
     get_many_str(g, id, &dmlex.get(prop)?)
 }
 
+fn read_same_as<G : Graph, T1: AsRef<str>>
+    (g : &G, subj : &Term<String>, _data : &Namespace<T1>) -> Result<Vec<String>> {
+    let mut iter = g.triples_with_sp(subj, &owl::sameAs);
+    let mut result = Vec::new();
+    while let Some(triple) = iter.next() {
+        let t = triple.unwrap();
+        let obj = t.o();
+        if obj.kind() == TermKind::Iri {
+            result.push(obj.value_raw().0.to_string());
+        } else {
+            return Err(RdfError::LiteralExpected(format!("{:?}", subj), format!("owl:sameAs")))
+        }
+    }
+    Ok(result)
+}
+
+
 fn read_tag<G : Graph, T1: AsRef<str>, T2: AsRef<str>>
     (g : &G, id : &Term<String>, prop : &str, _data : &Namespace<T1>, dmlex : &Namespace<T2>) -> Result<Vec<String>> {
     let mut elems = Vec::new();
@@ -2245,4 +2262,149 @@ mod tests {
     fn test_read_rdf_23() {
         test_read_rdf_entry("examples/23.rdf");
     }
+
+    fn test_round_trip_rdf_lexicon(fname : &str) {
+        let mut buf_read = BufReader::new(File::open(fname).unwrap());
+        let graph : LightGraph = sophia::parser::turtle::parse_bufread(&mut buf_read).collect_triples().unwrap();
+        let data = Namespace::new("file:").unwrap();
+        let lexicon = read_lexicographic_resource(&graph, &data).unwrap();
+        let mut graph2 = LightGraph::new();
+        let dmlex = Namespace::new(crate::DMLEX).expect("DMLEX namespace is invalid");
+        lexicon.to_rdf(&mut graph2, &data, &dmlex, 0).unwrap();
+        assert_eq!(graph.triples().count(), graph2.triples().count());
+    }
+
+    fn test_round_trip_rdf_entry(fname : &str) {
+        let mut buf_read = BufReader::new(File::open(fname).unwrap());
+        let graph : LightGraph = sophia::parser::turtle::parse_bufread(&mut buf_read).collect_triples().unwrap();
+        let data = Namespace::new("file:").unwrap();
+        let lexicon = read_entry(&graph, &data).unwrap();
+        let mut graph2 = LightGraph::new();
+        let dmlex = Namespace::new(crate::DMLEX).expect("DMLEX namespace is invalid");
+        (&lexicon).to_rdf(&mut graph2, &data, &dmlex, 0).unwrap();
+        assert_eq!(graph.triples().count(), graph2.triples().count());
+    }
+
+
+    #[test]
+    fn test_round_trip_rdf_0() {
+        test_round_trip_rdf_lexicon("examples/0.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_1() {
+        test_round_trip_rdf_entry("examples/1.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_2() {
+        test_round_trip_rdf_entry("examples/2.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_3() {
+        test_round_trip_rdf_entry("examples/3.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_4() {
+        test_round_trip_rdf_entry("examples/4.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_5() {
+        test_round_trip_rdf_lexicon("examples/5.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_6() {
+        test_round_trip_rdf_lexicon("examples/6.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_7() {
+        test_round_trip_rdf_lexicon("examples/7.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_8() {
+        test_round_trip_rdf_entry("examples/8.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_9() {
+        test_round_trip_rdf_entry("examples/9.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_10() {
+        test_round_trip_rdf_lexicon("examples/10.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_11() {
+        test_round_trip_rdf_entry("examples/11.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_12() {
+        test_round_trip_rdf_lexicon("examples/12.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_13() {
+        test_round_trip_rdf_lexicon("examples/13.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_14() {
+        test_round_trip_rdf_lexicon("examples/14.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_15() {
+        test_round_trip_rdf_lexicon("examples/15.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_16() {
+        test_round_trip_rdf_lexicon("examples/16.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_17() {
+        test_round_trip_rdf_lexicon("examples/17.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_18() {
+        test_round_trip_rdf_lexicon("examples/18.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_19() {
+        test_round_trip_rdf_entry("examples/19.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_20() {
+        test_round_trip_rdf_entry("examples/20.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_21() {
+        test_round_trip_rdf_entry("examples/21.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_22() {
+        test_round_trip_rdf_entry("examples/22.rdf");
+    }
+
+    #[test]
+    fn test_round_trip_rdf_23() {
+        test_round_trip_rdf_entry("examples/23.rdf");
+    }
+
+ 
 }

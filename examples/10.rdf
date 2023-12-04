@@ -4,12 +4,12 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
 [] a dmlex:LexicographicResource;
-  dmlex:uri "http://example.com";
-  dmlex:entry [ a dmlex:Entry;
-      dmlex:headword "focal" ];
-  dmlex:langCode "ga";
   dmlex:title "My Irish-Multilingual Dictionary";
-  dmlex:translationLanguage "de",
-    "cs",
-    "en".
+  dmlex:uri "http://example.com";
+  dmlex:translationLanguage "cs",
+    "en",
+    "de";
+  dmlex:langCode "ga";
+  dmlex:entry [ a dmlex:Entry;
+      dmlex:headword "focal" ].
 

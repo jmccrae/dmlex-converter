@@ -4,32 +4,32 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
 <file:cat-n> a dmlex:Entry;
-  dmlex:headword "cat";
   dmlex:etymology [ a dmlex:Etymology;
       dmlex:etymon [ a dmlex:Etymon;
-          dmlex:listingOrder "2";
+          dmlex:listingOrder "1"^^xsd:unsignedInt;
           dmlex:etymonUnit [ a dmlex:EtymonUnit;
-              dmlex:translation "male cat";
-              dmlex:listingOrder "1";
-              dmlex:langCode "ang";
-              dmlex:text "catt" ],
-            [ a dmlex:EtymonUnit;
-              dmlex:translation "female cat";
+              dmlex:listingOrder "1"^^xsd:unsignedInt;
               dmlex:text "catte";
-              dmlex:listingOrder "2";
-              dmlex:langCode "ang" ] ],
+              dmlex:langCode "enm" ] ],
         [ a dmlex:Etymon;
-          dmlex:listingOrder "3";
+          dmlex:listingOrder "3"^^xsd:unsignedInt;
           dmlex:etymonUnit [ a dmlex:EtymonUnit;
-              dmlex:langCode "gem-x-proto";
-              dmlex:listingOrder "1";
+              dmlex:listingOrder "1"^^xsd:unsignedInt;
               dmlex:text "kattuz";
-              dmlex:reconstructed true ] ],
+              dmlex:reconstructed true;
+              dmlex:langCode "gem-x-proto" ] ],
         [ a dmlex:Etymon;
-          dmlex:listingOrder "1";
+          dmlex:listingOrder "2"^^xsd:unsignedInt;
           dmlex:etymonUnit [ a dmlex:EtymonUnit;
+              dmlex:listingOrder "2"^^xsd:unsignedInt;
               dmlex:text "catte";
-              dmlex:listingOrder "1";
-              dmlex:langCode "enm" ] ];
-      dmlex:listingOrder "1" ].
+              dmlex:translation "female cat";
+              dmlex:langCode "ang" ],
+            [ a dmlex:EtymonUnit;
+              dmlex:text "catt";
+              dmlex:langCode "ang";
+              dmlex:translation "male cat";
+              dmlex:listingOrder "1"^^xsd:unsignedInt ] ];
+      dmlex:listingOrder "1"^^xsd:unsignedInt ];
+  dmlex:headword "cat".
 

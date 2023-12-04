@@ -1,23 +1,26 @@
-
 mod serialization;
 mod model;
 mod model_xml;
 mod write_xml;
 mod rdf;
+
 use clap::{Parser,ValueEnum};
-use thiserror::Error;
 use crate::model::{LexicographicResource, Entry};
-use std::fs::File;
-use std::io::{Read, Write};
-use sophia::graph::inmem::{OpsWrapper, GenericGraph};
-use sophia::term::factory::RcTermFactory;
-use sophia::ns::Namespace;
 use crate::rdf::ToRDF;
-use sophia::serializer::turtle::{TurtleSerializer, TurtleConfig};
-use sophia::serializer::TripleSerializer;
-use std::convert::Infallible;
-use sophia::prefix::PrefixBox;
+use sophia::graph::inmem::LightGraph;
+use sophia::graph::inmem::{OpsWrapper, GenericGraph};
 use sophia::iri::IriBox;
+use sophia::ns::Namespace;
+use sophia::prefix::PrefixBox;
+use sophia::serializer::TripleSerializer;
+use sophia::serializer::turtle::{TurtleSerializer, TurtleConfig};
+use sophia::term::factory::RcTermFactory;
+use sophia::triple::stream::TripleSource;
+use std::convert::Infallible;
+use std::fs::File;
+use std::io::BufReader;
+use std::io::{Read, Write};
+use thiserror::Error;
 
 static DMLEX : &str = "https://www.oasis-open.org/to-be-confirmed/dmlex#";
 type Graph = OpsWrapper<GenericGraph<u16, RcTermFactory>>;
@@ -46,14 +49,22 @@ enum Format {
     JSON,
 }
 
-fn parse_file<R : Read>(input: R, format: &Format, _args : &Args) -> Result<LexicographicResource, ParseError> {
+fn parse_file<R : Read>(input: R, format: &Format, args : &Args) -> Result<LexicographicResource, ParseError> {
     match format {
         Format::XML => {
             let resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(input)?;
             Ok(resource.into())
         },
         Format::RDF => {
-            panic!("RDF not implemented yet")
+            let mut buf_read = BufReader::new(input);
+            let graph : LightGraph = sophia::parser::turtle::parse_bufread(&mut buf_read).collect_triples()
+                .map_err(|e| ParseError::TurtleError(format!("{}", e)))?;
+            if let Some(default_namespace) = &args.default_namespace {
+                let ns = Namespace::new(default_namespace)?;
+                Ok(rdf::read_lexicographic_resource(&graph, &ns)?)
+            } else {
+                panic!("No default namespace specified");
+            }
         },
         Format::JSON => {
             Ok(serde_json::from_reader(input)?)
@@ -107,14 +118,22 @@ fn write_file<W : Write>(output: W, format: &Format, resource: &LexicographicRes
 }
 
 
-fn parse_file_entry<R : Read>(input: R, format: &Format, _args : &Args) -> Result<Entry, ParseError> {
+fn parse_file_entry<R : Read>(input: R, format: &Format, args : &Args) -> Result<Entry, ParseError> {
     match format {
         Format::XML => {
             let resource : crate::model_xml::Entry = serde_xml_rs::from_reader(input)?;
             Ok(resource.into())
         },
         Format::RDF => {
-            panic!("RDF not implemented yet")
+            let mut buf_read = BufReader::new(input);
+            let graph : LightGraph = sophia::parser::turtle::parse_bufread(&mut buf_read).collect_triples()
+                .map_err(|e| ParseError::TurtleError(format!("{}", e)))?;
+            if let Some(default_namespace) = &args.default_namespace {
+                let ns = Namespace::new(default_namespace)?;
+                Ok(rdf::read_entry(&graph, &ns)?)
+            } else {
+                panic!("No default namespace specified");
+            }
         },
         Format::JSON => {
             Ok(serde_json::from_reader(input)?)
@@ -242,6 +261,12 @@ pub enum ParseError {
     XmlError(#[from] serde_xml_rs::Error),
     #[error("JSON error: {0}")]
     JsonError(#[from] serde_json::Error),
+    #[error("RDF parse error: {0}")]
+    RdfParseError(#[from] rdf::RdfError),
+    #[error("Invalid namespace: {0}")]
+    InvalidNamespace(#[from] sophia::term::iri::error::InvalidIri),
+    #[error("Turtle error: {0}")]
+    TurtleError(String),
 }
 
 #[derive(Error, Debug)]

@@ -4,29 +4,29 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
 [] a dmlex:LexicographicResource;
+  dmlex:inflectedFormTag [ a dmlex:InflectedFormTag;
+      dmlex:description "singular genitive";
+      dmlex:forPartOfSpeech "n-fem",
+        "n-masc";
+      dmlex:tag "sg-gen" ],
+    [ a dmlex:InflectedFormTag;
+      dmlex:tag "pl";
+      dmlex:forPartOfSpeech "n-masc",
+        "n-fem";
+      dmlex:description "plural" ];
   dmlex:partOfSpeechTag [ a dmlex:PartOfSpeechTag;
-      dmlex:description "feminine noun";
-      dmlex:tag "n-fem" ],
+      dmlex:tag "n-fem";
+      dmlex:description "feminine noun" ],
     [ a dmlex:PartOfSpeechTag;
       dmlex:description "masculine noun";
       dmlex:tag "n-masc" ];
+  dmlex:uri "http://example.com";
   dmlex:langCode "ga";
-  dmlex:inflectedFormTag [ a dmlex:InflectedFormTag;
-      dmlex:forPartOfSpeech "n-fem",
-        "n-masc";
-      dmlex:description "plural";
-      dmlex:tag "pl" ],
-    [ a dmlex:InflectedFormTag;
-      dmlex:tag "sg-gen";
-      dmlex:forPartOfSpeech "n-masc",
-        "n-fem";
-      dmlex:description "singular genitive" ];
-  dmlex:entry <file:folúsghlantóir-n>;
-  dmlex:uri "http://example.com".
+  dmlex:entry <file:folúsghlantóir-n>.
 
 <file:folúsghlantóir-n> a dmlex:Entry;
-  dmlex:headword "folúsghlantóir";
   dmlex:partOfSpeech [ 
-      dmlex:listingOrder "1";
-      dmlex:tag "n-masc" ].
+      dmlex:listingOrder "1"^^xsd:unsignedInt;
+      dmlex:tag "n-masc" ];
+  dmlex:headword "folúsghlantóir".
 

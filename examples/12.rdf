@@ -4,65 +4,65 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
 <file:lens-1> a dmlex:Sense;
+  dmlex:listingOrder "1"^^xsd:unsignedInt;
   dmlex:definition [ a dmlex:Definition;
-      dmlex:text "curved glass that makes things seem bigger";
-      dmlex:listingOrder "1" ];
-  dmlex:listingOrder "1".
+      dmlex:listingOrder "1"^^xsd:unsignedInt;
+      dmlex:text "curved glass that makes things seem bigger" ].
+
+<file:microscope-1> a dmlex:Sense;
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:listingOrder "1"^^xsd:unsignedInt;
+      dmlex:text "equipment for looking at very small things" ];
+  dmlex:listingOrder "1"^^xsd:unsignedInt.
 
 [] a dmlex:LexicographicResource;
   dmlex:uri "http://example.com";
+  dmlex:entry <file:glasses>,
+    <file:lens>,
+    <file:microscope>;
+  dmlex:langCode "en";
   dmlex:relation [ a dmlex:Relation;
+      dmlex:listingOrder "1"^^xsd:unsignedInt;
       dmlex:member [ a dmlex:Member;
           dmlex:role "part";
-          dmlex:listingOrder "2";
-          dmlex:obverseListingOrder "0";
+          dmlex:listingOrder "2"^^xsd:unsignedInt;
+          dmlex:obverseListingOrder "0"^^xsd:unsignedInt;
           dmlex:memberID "lens-1" ],
         [ a dmlex:Member;
-          dmlex:memberID "microscope-1";
-          dmlex:listingOrder "1";
           dmlex:role "whole";
-          dmlex:obverseListingOrder "0" ];
-      dmlex:type "meronymy";
-      dmlex:listingOrder "2" ],
-    [ a dmlex:Relation;
-      dmlex:type "meronymy";
-      dmlex:listingOrder "1";
-      dmlex:member [ a dmlex:Member;
-          dmlex:role "part";
-          dmlex:memberID "lens-1";
-          dmlex:obverseListingOrder "0";
-          dmlex:listingOrder "2" ],
-        [ a dmlex:Member;
+          dmlex:listingOrder "1"^^xsd:unsignedInt;
           dmlex:memberID "glasses-1";
-          dmlex:listingOrder "1";
+          dmlex:obverseListingOrder "0"^^xsd:unsignedInt ];
+      dmlex:type "meronymy" ],
+    [ a dmlex:Relation;
+      dmlex:listingOrder "2"^^xsd:unsignedInt;
+      dmlex:member [ a dmlex:Member;
+          dmlex:obverseListingOrder "0"^^xsd:unsignedInt;
+          dmlex:memberID "microscope-1";
           dmlex:role "whole";
-          dmlex:obverseListingOrder "0" ] ];
-  dmlex:entry <file:microscope>,
-    <file:glasses>,
-    <file:lens>;
-  dmlex:langCode "en".
+          dmlex:listingOrder "1"^^xsd:unsignedInt ],
+        [ a dmlex:Member;
+          dmlex:memberID "lens-1";
+          dmlex:role "part";
+          dmlex:obverseListingOrder "0"^^xsd:unsignedInt;
+          dmlex:listingOrder "2"^^xsd:unsignedInt ];
+      dmlex:type "meronymy" ].
+
+<file:glasses-1> a dmlex:Sense;
+  dmlex:listingOrder "1"^^xsd:unsignedInt;
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:listingOrder "1"^^xsd:unsignedInt;
+      dmlex:text "an optical seeing aid" ].
 
 <file:microscope> a dmlex:Entry;
-  dmlex:headword "microscope";
-  dmlex:sense <file:microscope-1>.
-
-<file:microscope-1> a dmlex:Sense;
-  dmlex:listingOrder "1";
-  dmlex:definition [ a dmlex:Definition;
-      dmlex:text "equipment for looking at very small things";
-      dmlex:listingOrder "1" ].
+  dmlex:sense <file:microscope-1>;
+  dmlex:headword "microscope".
 
 <file:lens> a dmlex:Entry;
-  dmlex:sense <file:lens-1>;
-  dmlex:headword "lens".
+  dmlex:headword "lens";
+  dmlex:sense <file:lens-1>.
 
 <file:glasses> a dmlex:Entry;
   dmlex:sense <file:glasses-1>;
   dmlex:headword "glasses".
-
-<file:glasses-1> a dmlex:Sense;
-  dmlex:listingOrder "1";
-  dmlex:definition [ a dmlex:Definition;
-      dmlex:listingOrder "1";
-      dmlex:text "an optical seeing aid" ].
 

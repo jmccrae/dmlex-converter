@@ -4,8 +4,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
 <file:aardvark-noun> a dmlex:Entry;
-  dmlex:headword "aardvark";
   dmlex:pronunciation [ a dmlex:Pronunciation;
-      dmlex:soundFile "aardvark.mp3";
-      dmlex:listingOrder "1" ].
+      dmlex:listingOrder "1"^^xsd:unsignedInt;
+      dmlex:soundFile "aardvark.mp3" ];
+  dmlex:headword "aardvark".
 

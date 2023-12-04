@@ -4,8 +4,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
 [] a dmlex:LexicographicResource;
-  dmlex:title "My German-English Dictionary";
+  dmlex:uri "http://example.com";
   dmlex:translationLanguage "en";
-  dmlex:langCode "de";
-  dmlex:uri "http://example.com".
+  dmlex:title "My German-English Dictionary";
+  dmlex:langCode "de".
 
