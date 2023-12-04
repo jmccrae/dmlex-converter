@@ -5,11 +5,11 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
 [] a dmlex:LexicographicResource;
   dmlex:uri "http://example.com";
-  dmlex:translationLanguage "cs",
-    "en",
-    "de";
-  dmlex:title "My Irish-Multilingual Dictionary";
-  dmlex:langCode "ga";
   dmlex:entry [ a dmlex:Entry;
-      dmlex:headword "focal" ].
+      dmlex:headword "focal" ];
+  dmlex:langCode "ga";
+  dmlex:title "My Irish-Multilingual Dictionary";
+  dmlex:translationLanguage "de",
+    "cs",
+    "en".
 

@@ -5,14 +5,14 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
 [] a dmlex:LexicographicResource;
   dmlex:partOfSpeechTag [ a dmlex:PartOfSpeechTag;
-      dmlex:description "feminine noun";
-      dmlex:tag "n-fem";
-      <http://www.w3.org/2002/07/owl#sameAs> <http://www.lexinfo.net/ontology/3.0/lexinfo#noun>,
-        <http://www.lexinfo.net/ontology/3.0/lexinfo#feminine> ],
+      <http://www.w3.org/2002/07/owl#sameAs> <http://www.lexinfo.net/ontology/3.0/lexinfo#masculine>,
+        <http://www.lexinfo.net/ontology/3.0/lexinfo#noun>;
+      dmlex:tag "n-masc";
+      dmlex:description "masculine noun" ],
     [ a dmlex:PartOfSpeechTag;
-      dmlex:description "masculine noun";
+      dmlex:description "feminine noun";
       <http://www.w3.org/2002/07/owl#sameAs> <http://www.lexinfo.net/ontology/3.0/lexinfo#noun>,
-        <http://www.lexinfo.net/ontology/3.0/lexinfo#masculine>;
-      dmlex:tag "n-masc" ];
+        <http://www.lexinfo.net/ontology/3.0/lexinfo#feminine>;
+      dmlex:tag "n-fem" ];
   dmlex:langCode "en".
 

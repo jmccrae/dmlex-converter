@@ -3,33 +3,33 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
+<file:autopsy> a dmlex:Entry;
+  dmlex:sense <file:autopsy-1>;
+  dmlex:headword "autopsy".
+
 <file:autopsy-1> a dmlex:Sense;
+  dmlex:listingOrder "1";
+  dmlex:headwordTranslation [ a dmlex:HeadwordTranslation;
+      dmlex:text "pitva";
+      dmlex:listingOrder "1" ];
   dmlex:example [ a dmlex:Example;
-      dmlex:listingOrder "1";
-      dmlex:headwordMarker [ 
-          dmlex:startIndex "25";
-          dmlex:endIndex "32" ];
       dmlex:collocateMarker [ 
           dmlex:startIndex "12";
           dmlex:lemma "perform";
           dmlex:endIndex "21" ];
+      dmlex:headwordMarker [ 
+          dmlex:endIndex "32";
+          dmlex:startIndex "25" ];
       dmlex:text "The coroner performed an autopsy.";
       dmlex:exampleTranslation [ a dmlex:ExampleTranslation;
-          dmlex:text "Koroner provedl pitvu.";
           dmlex:collocateMarker [ 
-              dmlex:startIndex "8";
               dmlex:lemma "provést";
+              dmlex:startIndex "8";
               dmlex:endIndex "15" ];
-          dmlex:listingOrder "1";
+          dmlex:text "Koroner provedl pitvu.";
           dmlex:headwordMarker [ 
               dmlex:startIndex "16";
-              dmlex:endIndex "21" ] ] ];
-  dmlex:headwordTranslation [ a dmlex:HeadwordTranslation;
-      dmlex:text "pitva";
-      dmlex:listingOrder "1" ];
-  dmlex:listingOrder "1".
-
-<file:autopsy> a dmlex:Entry;
-  dmlex:sense <file:autopsy-1>;
-  dmlex:headword "autopsy".
+              dmlex:endIndex "21" ];
+          dmlex:listingOrder "1" ];
+      dmlex:listingOrder "1" ].
 

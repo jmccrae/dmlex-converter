@@ -3,40 +3,48 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
-<file:colour> a dmlex:Member,
-    dmlex:Entry;
-  dmlex:obverseListingOrder "0";
-  dmlex:listingOrder "1";
-  dmlex:headword "colour";
-  dmlex:partOfSpeech "n";
-  dmlex:sense <file:colour-1>;
-  dmlex:label "europeanSpelling".
-
 <file:colour-1> a dmlex:Sense;
-  dmlex:definition [ a dmlex:Definition;
-      dmlex:listingOrder "1";
-      dmlex:text "red, blue, yellow etc." ];
-  dmlex:listingOrder "1";
   dmlex:example [ a dmlex:Example;
-      dmlex:listingOrder "1";
-      dmlex:text "What is your favourite colour?" ].
+      dmlex:text "What is your favourite colour?";
+      dmlex:listingOrder "1" ];
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:text "red, blue, yellow etc.";
+      dmlex:listingOrder "1" ];
+  dmlex:listingOrder "1".
 
 [] a dmlex:LexicographicResource;
+  dmlex:uri "http://example.com";
   dmlex:langCode "en";
   dmlex:entry <file:color>,
     <file:colour>;
   dmlex:relation [ a dmlex:Relation;
-      dmlex:member <file:colour>,
-        <file:color>;
       dmlex:type "variants";
-      dmlex:listingOrder "1" ];
-  dmlex:uri "http://example.com".
+      dmlex:listingOrder "1";
+      dmlex:member [ a dmlex:Member;
+          dmlex:listingOrder "1";
+          dmlex:obverseListingOrder "0";
+          dmlex:memberID "colour" ],
+        [ a dmlex:Member;
+          dmlex:listingOrder "2";
+          dmlex:obverseListingOrder "0";
+          dmlex:memberID "color" ] ].
 
-<file:color> a dmlex:Member,
-    dmlex:Entry;
-  dmlex:partOfSpeech "n";
-  dmlex:obverseListingOrder "0";
+<file:colour> a dmlex:Entry;
+  dmlex:headword "colour";
+  dmlex:sense <file:colour-1>;
+  dmlex:partOfSpeech [ 
+      dmlex:tag "n";
+      dmlex:listingOrder "1" ];
+  dmlex:label [ 
+      dmlex:listingOrder "1";
+      dmlex:tag "europeanSpelling" ].
+
+<file:color> a dmlex:Entry;
   dmlex:headword "color";
-  dmlex:label "americanSpelling";
-  dmlex:listingOrder "2".
+  dmlex:partOfSpeech [ 
+      dmlex:listingOrder "1";
+      dmlex:tag "n" ];
+  dmlex:label [ 
+      dmlex:listingOrder "1";
+      dmlex:tag "americanSpelling" ].
 

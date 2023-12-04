@@ -4,37 +4,43 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
 <file:abandon-verb-1> a dmlex:Sense;
-  dmlex:listingOrder "1";
   dmlex:example [ a dmlex:Example;
-      dmlex:label "idiom";
-      dmlex:listingOrder "2";
-      dmlex:text "Abandon ship!" ],
+      dmlex:label [ 
+          dmlex:tag "idiom";
+          dmlex:listingOrder "1" ];
+      dmlex:text "Abandon ship!";
+      dmlex:listingOrder "2" ],
     [ a dmlex:Example;
       dmlex:text "I'm sorry I abandoned you like that.";
       dmlex:listingOrder "1" ];
   dmlex:definition [ a dmlex:Definition;
-      dmlex:listingOrder "1";
-      dmlex:text "to suddenly leave a place or a person" ].
-
-<file:abandon-verb-2> a dmlex:Sense;
-  dmlex:listingOrder "2";
-  dmlex:label "mostly-passive";
-  dmlex:definition [ a dmlex:Definition;
-      dmlex:listingOrder "1";
-      dmlex:text "to stop supporting an idea" ];
-  dmlex:example [ a dmlex:Example;
-      dmlex:listingOrder "1";
-      dmlex:text "That theory has been abandoned." ].
-
-[] a dmlex:LexicographicResource;
-  dmlex:title "Example Dictionary";
-  dmlex:uri "http://example.com";
-  dmlex:entry <file:abandon-verb>;
-  dmlex:langCode "en".
+      dmlex:text "to suddenly leave a place or a person";
+      dmlex:listingOrder "1" ];
+  dmlex:listingOrder "1".
 
 <file:abandon-verb> a dmlex:Entry;
-  dmlex:headword "abandon";
   dmlex:sense <file:abandon-verb-1>,
     <file:abandon-verb-2>;
-  dmlex:partOfSpeech "verb".
+  dmlex:headword "abandon";
+  dmlex:partOfSpeech [ 
+      dmlex:listingOrder "1";
+      dmlex:tag "verb" ].
+
+[] a dmlex:LexicographicResource;
+  dmlex:langCode "en";
+  dmlex:title "Example Dictionary";
+  dmlex:uri "http://example.com";
+  dmlex:entry <file:abandon-verb>.
+
+<file:abandon-verb-2> a dmlex:Sense;
+  dmlex:example [ a dmlex:Example;
+      dmlex:listingOrder "1";
+      dmlex:text "That theory has been abandoned." ];
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:text "to stop supporting an idea";
+      dmlex:listingOrder "1" ];
+  dmlex:label [ 
+      dmlex:listingOrder "1";
+      dmlex:tag "mostly-passive" ];
+  dmlex:listingOrder "2".
 

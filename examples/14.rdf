@@ -3,59 +3,66 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
-<file:der-ozean> a dmlex:Entry;
-  dmlex:headword "Ozean";
-  dmlex:partOfSpeech "n-masc";
-  dmlex:sense <file:der-ozean-1>.
-
-<file:der-ozean-1> a dmlex:Member,
-    dmlex:Sense;
-  dmlex:obverseListingOrder "0";
-  dmlex:headwordTranslation [ a dmlex:HeadwordTranslation;
-      dmlex:listingOrder "1";
-      dmlex:text "ocean" ];
-  dmlex:listingOrder "1",
-    "3".
+[] a dmlex:LexicographicResource;
+  dmlex:entry <file:die-see>,
+    <file:das-meer>,
+    <file:der-ozean>;
+  dmlex:relation [ a dmlex:Relation;
+      dmlex:member [ a dmlex:Member;
+          dmlex:memberID "das-meer-1";
+          dmlex:obverseListingOrder "0";
+          dmlex:listingOrder "2" ],
+        [ a dmlex:Member;
+          dmlex:memberID "der-ozean-1";
+          dmlex:listingOrder "3";
+          dmlex:obverseListingOrder "0" ],
+        [ a dmlex:Member;
+          dmlex:memberID "die-see-1";
+          dmlex:obverseListingOrder "0";
+          dmlex:listingOrder "1" ];
+      dmlex:type "synonyms";
+      dmlex:description "words that mean sea and ocean";
+      dmlex:listingOrder "1" ];
+  dmlex:uri "http://example.com";
+  dmlex:langCode "de";
+  dmlex:translationLanguage "en".
 
 <file:das-meer> a dmlex:Entry;
-  dmlex:partOfSpeech "n-neut";
   dmlex:headword "Meer";
+  dmlex:partOfSpeech [ 
+      dmlex:listingOrder "1";
+      dmlex:tag "n-neut" ];
   dmlex:sense <file:das-meer-1>.
 
-<file:das-meer-1> a dmlex:Sense,
-    dmlex:Member;
+<file:das-meer-1> a dmlex:Sense;
   dmlex:headwordTranslation [ a dmlex:HeadwordTranslation;
       dmlex:listingOrder "1";
       dmlex:text "sea" ];
-  dmlex:obverseListingOrder "0";
-  dmlex:listingOrder "1",
-    "2".
+  dmlex:listingOrder "1".
+
+<file:der-ozean-1> a dmlex:Sense;
+  dmlex:listingOrder "1";
+  dmlex:headwordTranslation [ a dmlex:HeadwordTranslation;
+      dmlex:listingOrder "1";
+      dmlex:text "ocean" ].
+
+<file:die-see-1> a dmlex:Sense;
+  dmlex:listingOrder "1";
+  dmlex:headwordTranslation [ a dmlex:HeadwordTranslation;
+      dmlex:listingOrder "1";
+      dmlex:text "sea" ].
 
 <file:die-see> a dmlex:Entry;
   dmlex:sense <file:die-see-1>;
   dmlex:headword "See";
-  dmlex:partOfSpeech "n-fem".
+  dmlex:partOfSpeech [ 
+      dmlex:tag "n-fem";
+      dmlex:listingOrder "1" ].
 
-[] a dmlex:LexicographicResource;
-  dmlex:uri "http://example.com";
-  dmlex:entry <file:das-meer>,
-    <file:der-ozean>,
-    <file:die-see>;
-  dmlex:langCode "de";
-  dmlex:relation [ a dmlex:Relation;
-      dmlex:member <file:der-ozean-1>,
-        <file:die-see-1>,
-        <file:das-meer-1>;
+<file:der-ozean> a dmlex:Entry;
+  dmlex:sense <file:der-ozean-1>;
+  dmlex:headword "Ozean";
+  dmlex:partOfSpeech [ 
       dmlex:listingOrder "1";
-      dmlex:description "words that mean sea and ocean";
-      dmlex:type "synonyms" ];
-  dmlex:translationLanguage "en".
-
-<file:die-see-1> a dmlex:Sense,
-    dmlex:Member;
-  dmlex:listingOrder "1";
-  dmlex:headwordTranslation [ a dmlex:HeadwordTranslation;
-      dmlex:listingOrder "1";
-      dmlex:text "sea" ];
-  dmlex:obverseListingOrder "0".
+      dmlex:tag "n-masc" ].
 

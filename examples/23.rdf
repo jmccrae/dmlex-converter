@@ -7,29 +7,29 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
   dmlex:headword "cat";
   dmlex:etymology [ a dmlex:Etymology;
       dmlex:etymon [ a dmlex:Etymon;
-          dmlex:listingOrder "1";
-          dmlex:etymonUnit [ a dmlex:EtymonUnit;
-              dmlex:listingOrder "1";
-              dmlex:text "catte";
-              dmlex:langCode "enm" ] ],
-        [ a dmlex:Etymon;
-          dmlex:etymonUnit [ a dmlex:EtymonUnit;
-              dmlex:langCode "gem-x-proto";
-              dmlex:text "kattuz";
-              dmlex:listingOrder "1";
-              dmlex:reconstructed true ];
-          dmlex:listingOrder "3" ],
-        [ a dmlex:Etymon;
           dmlex:listingOrder "2";
           dmlex:etymonUnit [ a dmlex:EtymonUnit;
               dmlex:translation "male cat";
-              dmlex:text "catt";
+              dmlex:listingOrder "1";
               dmlex:langCode "ang";
-              dmlex:listingOrder "1" ],
+              dmlex:text "catt" ],
             [ a dmlex:EtymonUnit;
               dmlex:translation "female cat";
-              dmlex:listingOrder "2";
               dmlex:text "catte";
-              dmlex:langCode "ang" ] ];
+              dmlex:listingOrder "2";
+              dmlex:langCode "ang" ] ],
+        [ a dmlex:Etymon;
+          dmlex:listingOrder "3";
+          dmlex:etymonUnit [ a dmlex:EtymonUnit;
+              dmlex:langCode "gem-x-proto";
+              dmlex:listingOrder "1";
+              dmlex:text "kattuz";
+              dmlex:reconstructed true ] ],
+        [ a dmlex:Etymon;
+          dmlex:listingOrder "1";
+          dmlex:etymonUnit [ a dmlex:EtymonUnit;
+              dmlex:text "catte";
+              dmlex:listingOrder "1";
+              dmlex:langCode "enm" ] ];
       dmlex:listingOrder "1" ].
 

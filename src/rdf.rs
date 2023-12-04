@@ -29,6 +29,24 @@ pub trait FromRDF {
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized;
 }
 
+fn read_lexicographic_resource<G : Graph, T: AsRef<str>>(g : &G, data : &Namespace<T>) -> Result<LexicographicResource> {
+    let dmlex = Namespace::new(crate::DMLEX).expect("DMLEX namespace is invalid");
+    for triple in g.triples_with_po(&rdf::type_, &dmlex.get("LexicographicResource")?) {
+        let o = Term::copy(triple.unwrap().s());
+        return Ok(LexicographicResource::from_rdf(&o, g, &dmlex, data)?.1);
+    }
+    Err(RdfError::MissingLexicographicResource)
+}
+
+fn read_entry<G : Graph, T: AsRef<str>>(g : &G, data : &Namespace<T>) -> Result<Entry> {
+    let dmlex = Namespace::new(crate::DMLEX).expect("DMLEX namespace is invalid");
+    for triple in g.triples_with_po(&rdf::type_, &dmlex.get("Entry")?) {
+        let o = Term::copy(triple.unwrap().s());
+        return Ok(Entry::from_rdf(&o, g, &dmlex, data)?.1);
+    }
+    Err(RdfError::MissingEntry)
+}
+
 impl ToRDF for LexicographicResource {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
@@ -189,17 +207,35 @@ impl ToRDF for &Entry {
                 &dmlex.get("homographNumber")?,
                 &homograph_number.as_literal()).expect("Error inserting triple");
         }
-        for part_of_speech in &self.parts_of_speech {
+        for (i, part_of_speech) in self.parts_of_speech.iter().enumerate() {
+            let blank = URIOrBlank::gen();
             graph.insert(
                 &id,
                 &dmlex.get("partOfSpeech")?,
+                &blank).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("tag")?,
                 &part_of_speech.as_literal()).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("listingOrder")?,
+                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
         }
-        for label in &self.labels {
+        for (i, label) in self.labels.iter().enumerate() {
+            let blank = URIOrBlank::gen();
             graph.insert(
                 &id,
                 &dmlex.get("label")?,
+                &blank).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("tag")?,
                 &label.as_literal()).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("listingOrder")?,
+                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
         }
         for (i, pronunciation) in self.pronunciations.iter().enumerate() {
             let pronunciation_id = pronunciation.to_rdf(graph, data, dmlex, i)?;
@@ -235,8 +271,8 @@ impl FromRDF for Entry {
             headword: get_one_str(g, id, &dmlex.get("headword")?)?,
             placeholder_markers: read_many(g, id, "placeholderMarker", data, dmlex)?,
             homograph_number: get_zero_one_u32(g, id, &dmlex.get("homographNumber")?)?,
-            parts_of_speech: read_many_str(g, id, "partOfSpeech", data, dmlex)?,
-            labels: read_many_str(g, id, "label", data, dmlex)?,
+            parts_of_speech: read_tag(g, id, "partOfSpeech", data, dmlex)?,
+            labels: read_tag(g, id, "label", data, dmlex)?,
             pronunciations: read_many(g, id, "pronunciation", data, dmlex)?,
             inflected_forms: read_many(g, id, "inflectedForm", data, dmlex)?,
             senses: read_many(g, id, "sense", data, dmlex)?,
@@ -265,11 +301,20 @@ impl ToRDF for &InflectedForm {
                 &dmlex.get("tag")?,
                 &tag.as_literal()).expect("Error inserting triple");
         }
-        for label in &self.labels {
+        for (i, label) in self.labels.iter().enumerate() {
+            let blank = URIOrBlank::gen();
             graph.insert(
                 &id,
                 &dmlex.get("label")?,
+                &blank).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("tag")?,
                 &label.as_literal()).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("listingOrder")?,
+                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
         }
         for (i, pronunciation) in self.pronunciations.iter().enumerate() {
             let pronunciation_id = pronunciation.to_rdf(graph, data, dmlex, i)?;
@@ -291,10 +336,10 @@ impl FromRDF for InflectedForm {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
 
-        Ok((0, InflectedForm {
+        Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, InflectedForm {
             text: get_one_str(g, id, &dmlex.get("text")?)?,
             tag: get_zero_one_str(g, id, &dmlex.get("tag")?)?,
-            labels: read_many_str(g, id, "label", data, dmlex)?,
+            labels: read_tag(g, id, "label", data, dmlex)?,
             pronunciations: read_many(g, id, "pronunciation", data, dmlex)?,
         }))
     }
@@ -316,11 +361,20 @@ impl ToRDF for &Sense {
                 &dmlex.get("indicator")?,
                 &indicator.as_literal()).expect("Error inserting triple");
         }
-        for label in &self.labels {
+        for (i, label) in self.labels.iter().enumerate() {
+            let blank = URIOrBlank::gen();
             graph.insert(
                 &id,
                 &dmlex.get("label")?,
+                &blank).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("tag")?,
                 &label.as_literal()).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("listingOrder")?,
+                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
         }
         for (i, definition) in self.definitions.iter().enumerate() {
             let definition_id = definition.to_rdf(graph, data, dmlex, i)?;
@@ -362,10 +416,10 @@ impl ToRDF for &Sense {
 impl FromRDF for Sense {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
-        Ok((0, Sense {
+        Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, Sense {
             id: get_id(id, data),
             indicator: read_many_str(g, id, "indicator", data, dmlex)?,
-            labels: read_many_str(g, id, "label", data, dmlex)?,
+            labels: read_tag(g, id, "label", data, dmlex)?,
             definitions: read_many(g, id, "definition", data, dmlex)?,
             examples: read_many(g, id, "example", data, dmlex)?,
             headword_explanations: read_many(g, id, "headwordExplanation", data, dmlex)?,
@@ -405,9 +459,9 @@ impl ToRDF for &Definition {
 
 impl FromRDF for Definition {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
-        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
 
-        Ok((0, Definition {
+        Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, Definition {
             text: get_one_str(g, id, &dmlex.get("text")?)?,
             definition_type: get_zero_one_str(g, id, &dmlex.get("definitionType")?)?,
         }))
@@ -438,11 +492,20 @@ impl ToRDF for &Pronunciation {
                 &dmlex.get("transcription")?,
                 &transcription_id).expect("Error inserting triple");
         }
-        for label in &self.labels {
+        for (i, label) in self.labels.iter().enumerate() {
+            let blank = URIOrBlank::gen();
             graph.insert(
                 &id,
                 &dmlex.get("label")?,
+                &blank).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("tag")?,
                 &label.as_literal()).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("listingOrder")?,
+                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
         }
         graph.insert(
             &id,
@@ -457,10 +520,10 @@ impl FromRDF for Pronunciation {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
 
-        Ok((0, Pronunciation {
+        Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, Pronunciation {
             sound_file: get_zero_one_str(g, id, &dmlex.get("soundFile")?)?,
             transcriptions: read_many(g, id, "transcription", data, dmlex)?,
-            labels: read_many_str(g, id, "label", data, dmlex)?,
+            labels: read_tag(g, id, "label", data, dmlex)?,
         }))
     }
 }
@@ -495,8 +558,8 @@ impl ToRDF for &Transcription {
 
 impl FromRDF for Transcription {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
-        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
-        Ok((0, Transcription {
+        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, Transcription {
             text: get_one_str(g, id, &dmlex.get("text")?)?,
             scheme: get_zero_one_str(g, id, &dmlex.get("scheme")?)?,
         }))
@@ -543,11 +606,20 @@ impl ToRDF for &Example {
                 &dmlex.get("sourceElaboration")?,
                 &source_elaboration.as_literal()).expect("Error inserting triple");
         }
-        for label in &self.labels {
+        for (i, label) in self.labels.iter().enumerate() {
+            let blank = URIOrBlank::gen();
             graph.insert(
                 &id,
                 &dmlex.get("label")?,
+                &blank).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("tag")?,
                 &label.as_literal()).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("listingOrder")?,
+                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
         }
         if let Some(sound_file) = &self.sound_file {
             graph.insert(
@@ -574,13 +646,13 @@ impl ToRDF for &Example {
 impl FromRDF for Example {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
-        Ok((0, Example {
+        Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, Example {
             text: get_one_str(g, id, &dmlex.get("text")?)?,
             collocate_markers: read_many(g, id, "collocateMarker", data, dmlex)?,
             headword_markers: read_many(g, id, "headwordMarker", data, dmlex)?,
             source_identity: get_zero_one_str(g, id, &dmlex.get("sourceIdentity")?)?,
             source_elaboration: get_zero_one_str(g, id, &dmlex.get("sourceElaboration")?)?,
-            labels: read_many_str(g, id, "label", data, dmlex)?,
+            labels: read_tag(g, id, "label", data, dmlex)?,
             sound_file: get_zero_one_str(g, id, &dmlex.get("soundFile")?)?,
             example_translations: read_many(g, id, "exampleTranslation", data, dmlex)?,
         }))
@@ -614,17 +686,35 @@ impl ToRDF for &HeadwordTranslation {
                 &dmlex.get("langCode")?,
                 &lang_code.as_literal()).expect("Error inserting triple");
         }
-        for part_of_speech in &self.parts_of_speech {
+        for (i, part_of_speech) in self.parts_of_speech.iter().enumerate() {
+            let blank = URIOrBlank::gen();
             graph.insert(
                 &id,
                 &dmlex.get("partOfSpeech")?,
+                &blank).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("tag")?,
                 &part_of_speech.as_literal()).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("listingOrder")?,
+                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
         }
-        for label in &self.labels {
+        for (i, label) in self.labels.iter().enumerate() {
+            let blank = URIOrBlank::gen();
             graph.insert(
                 &id,
                 &dmlex.get("label")?,
+                &blank).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("tag")?,
                 &label.as_literal()).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("listingOrder")?,
+                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
         }
         for (i, pronunciation) in self.pronunciations.iter().enumerate() {
             let pronunciation_id = pronunciation.to_rdf(graph, data, dmlex, i)?;
@@ -652,12 +742,12 @@ impl ToRDF for &HeadwordTranslation {
 impl FromRDF for HeadwordTranslation {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
-        Ok((0, HeadwordTranslation {
+        Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, HeadwordTranslation {
             text: get_one_str(g, id, &dmlex.get("text")?)?,
             placeholder_markers: read_many(g, id, "placeholderMarker", data, dmlex)?,
             lang_code: get_zero_one_str(g, id, &dmlex.get("langCode")?)?.map(|x| LangCode(x)),
-            parts_of_speech: read_many_str(g, id, "partOfSpeech", data, dmlex)?,
-            labels: read_many_str(g, id, "label", data, dmlex)?,
+            parts_of_speech: read_tag(g, id, "partOfSpeech", data, dmlex)?,
+            labels: read_tag(g, id, "label", data, dmlex)?,
             pronunciations: read_many(g, id, "pronunciation", data, dmlex)?,
             inflected_forms: read_many(g, id, "inflectedForm", data, dmlex)?,
         }))
@@ -749,11 +839,20 @@ impl ToRDF for &ExampleTranslation {
                 &dmlex.get("langCode")?,
                 &lang_code.as_literal()).expect("Error inserting triple");
         }
-        for label in &self.labels {
+        for (i, label) in self.labels.iter().enumerate() {
+            let blank = URIOrBlank::gen();
             graph.insert(
                 &id,
                 &dmlex.get("label")?,
+                &blank).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("tag")?,
                 &label.as_literal()).expect("Error inserting triple");
+            graph.insert(
+                &blank,
+                &dmlex.get("listingOrder")?,
+                &(i + 1).to_string().as_literal()).expect("Error inserting triple");
         }
         if let Some(sound_file) = &self.sound_file {
             graph.insert(
@@ -773,12 +872,12 @@ impl ToRDF for &ExampleTranslation {
 impl FromRDF for ExampleTranslation {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
-        Ok((0, ExampleTranslation {
+        Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, ExampleTranslation {
             text: get_one_str(g, id, &dmlex.get("text")?)?,
             collocate_markers: read_many(g, id, "collocateMarker", data, dmlex)?,
             headword_markers: read_many(g, id, "headwordMarker", data, dmlex)?,
             lang_code: get_zero_one_str(g, id, &dmlex.get("langCode")?)?.map(|x| LangCode(x)),
-            labels: read_many_str(g, id, "label", data, dmlex)?,
+            labels: read_tag(g, id, "label", data, dmlex)?,
             sound_file: get_zero_one_str(g, id, &dmlex.get("soundFile")?)?,
         }))
     }
@@ -1233,7 +1332,7 @@ impl FromRDF for Relation {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>,
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
 
-        Ok((0, Relation {
+        Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, Relation {
             _type: get_one_str(g, id, &dmlex.get("type")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
             members: read_many(g, id, "member", data, dmlex)?,
@@ -1244,10 +1343,14 @@ impl FromRDF for Relation {
 
 impl ToRDF for &Member {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
-        graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
+        graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
         index : usize) -> 
         Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::URI(data.get(&self.member_id)?);
+        let id = URIOrBlank::gen();
+        graph.insert(
+            &id,
+            &dmlex.get("memberID")?,
+            &self.member_id.as_literal()).expect("Error inserting triple");
         graph.insert(
             &id,
             &rdf::type_,
@@ -1272,10 +1375,10 @@ impl ToRDF for &Member {
 
 impl FromRDF for Member {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>,
-        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
 
-        Ok((0, Member {
-            member_id: get_one_str(g, id, &dmlex.get("member")?)?,
+        Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, Member {
+            member_id: get_one_str(g, id, &dmlex.get("memberID")?)?,
             role: get_zero_one_str(g, id, &dmlex.get("role")?)?,
             obverse_listing_order: get_one_u32(g, id, &dmlex.get("obverseListingOrder")?)?,
         }))
@@ -1580,7 +1683,7 @@ impl ToRDF for &Etymology {
 impl FromRDF for Etymology {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
-        Ok((0, Etymology {
+        Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, Etymology {
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
             etymons: read_many(g, id, "etymon", data, dmlex)?,
         }))
@@ -1640,7 +1743,7 @@ impl ToRDF for &Etymon {
 impl FromRDF for Etymon {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
-        Ok((0, Etymon {
+        Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, Etymon {
             when: get_zero_one_str(g, id, &dmlex.get("when")?)?,
             _type: get_zero_one_str(g, id, &dmlex.get("type")?)?,
             note: get_zero_one_str(g, id, &dmlex.get("note")?)?,
@@ -1697,7 +1800,7 @@ impl ToRDF for &EtymonUnit {
 impl FromRDF for EtymonUnit {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
         g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
-        Ok((0, EtymonUnit {
+        Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, EtymonUnit {
             lang_code: LangCode(get_one_str(g, id, &dmlex.get("langCode")?)?),
             text: get_one_str(g, id, &dmlex.get("text")?)?,
             reconstructed: get_zero_one_bool(g, id, &dmlex.get("reconstructed")?)?,
@@ -1866,15 +1969,15 @@ fn get_zero_one_u32<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt
     }
 }
 
-
-fn get_zero_one_usize<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<Option<usize>> {
-    match get_zero_one_str(g, subj, prop) {
-        Ok(Some(s)) => Ok(Some(s.parse::<usize>()?)),
-        Ok(None) => Ok(None),
-        Err(e) => Err(e),
-    }
-}
-
+//
+//fn get_zero_one_usize<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<Option<usize>> {
+//    match get_zero_one_str(g, subj, prop) {
+//        Ok(Some(s)) => Ok(Some(s.parse::<usize>()?)),
+//        Ok(None) => Ok(None),
+//        Err(e) => Err(e),
+//    }
+//}
+//
 
 fn get_zero_one_bool<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<Option<bool>> {
     match get_zero_one_str(g, subj, prop) {
@@ -1958,8 +2061,20 @@ fn read_many<E : FromRDF, G : Graph, T1: AsRef<str>, T2: AsRef<str>>
 }
 
 fn read_many_str<G : Graph, T1: AsRef<str>, T2: AsRef<str>>
-    (g : &G, id : &Term<String>, prop : &str, data : &Namespace<T1>, dmlex : &Namespace<T2>) -> Result<Vec<String>> {
+    (g : &G, id : &Term<String>, prop : &str, _data : &Namespace<T1>, dmlex : &Namespace<T2>) -> Result<Vec<String>> {
     get_many_str(g, id, &dmlex.get(prop)?)
+}
+
+fn read_tag<G : Graph, T1: AsRef<str>, T2: AsRef<str>>
+    (g : &G, id : &Term<String>, prop : &str, _data : &Namespace<T1>, dmlex : &Namespace<T2>) -> Result<Vec<String>> {
+    let mut elems = Vec::new();
+    for elem_id in get_many(g, id, &dmlex.get(prop)?)? {
+        let tag = get_one_str(g, &elem_id, &dmlex.get("tag")?)?;
+        let listing_order = get_one_usize(g, &elem_id, &dmlex.get("listingOrder")?)?;
+        elems.push((listing_order, tag));
+    }
+    elems.sort_by_key(|(listing_order, _)| *listing_order);
+    Ok(elems.into_iter().map(|(_, tag)| tag).collect())
 }
 
 #[derive(Error, Debug)]
@@ -1982,4 +2097,152 @@ pub enum RdfError {
     InvalidMemberType(String),
     #[error("Invalid hint: {0}")]
     InvalidHint(String),
+    #[error("No resource of type dmlex:LexicographicResource in the graph")]
+    MissingLexicographicResource,
+    #[error("No resource of type dmlex:Entry in the graph")]
+    MissingEntry,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs::File;
+    use std::io::BufReader;
+    use sophia::triple::stream::TripleSource;
+    use sophia::graph::inmem::LightGraph;
+
+    fn test_read_rdf_lexicon(fname : &str) {
+        let mut buf_read = BufReader::new(File::open(fname).unwrap());
+        let graph : LightGraph = sophia::parser::turtle::parse_bufread(&mut buf_read).collect_triples().unwrap();
+        let data = Namespace::new("file:").unwrap();
+        read_lexicographic_resource(&graph, &data).unwrap();
+    }
+
+    fn test_read_rdf_entry(fname : &str) {
+        let mut buf_read = BufReader::new(File::open(fname).unwrap());
+        let graph : LightGraph = sophia::parser::turtle::parse_bufread(&mut buf_read).collect_triples().unwrap();
+        let data = Namespace::new("file:").unwrap();
+        read_entry(&graph, &data).unwrap();
+    }
+
+
+    #[test]
+    fn test_read_rdf_0() {
+        test_read_rdf_lexicon("examples/0.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_1() {
+        test_read_rdf_entry("examples/1.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_2() {
+        test_read_rdf_entry("examples/2.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_3() {
+        test_read_rdf_entry("examples/3.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_4() {
+        test_read_rdf_entry("examples/4.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_5() {
+        test_read_rdf_lexicon("examples/5.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_6() {
+        test_read_rdf_lexicon("examples/6.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_7() {
+        test_read_rdf_lexicon("examples/7.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_8() {
+        test_read_rdf_entry("examples/8.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_9() {
+        test_read_rdf_entry("examples/9.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_10() {
+        test_read_rdf_lexicon("examples/10.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_11() {
+        test_read_rdf_entry("examples/11.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_12() {
+        test_read_rdf_lexicon("examples/12.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_13() {
+        test_read_rdf_lexicon("examples/13.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_14() {
+        test_read_rdf_lexicon("examples/14.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_15() {
+        test_read_rdf_lexicon("examples/15.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_16() {
+        test_read_rdf_lexicon("examples/16.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_17() {
+        test_read_rdf_lexicon("examples/17.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_18() {
+        test_read_rdf_lexicon("examples/18.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_19() {
+        test_read_rdf_entry("examples/19.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_20() {
+        test_read_rdf_entry("examples/20.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_21() {
+        test_read_rdf_entry("examples/21.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_22() {
+        test_read_rdf_entry("examples/22.rdf");
+    }
+
+    #[test]
+    fn test_read_rdf_23() {
+        test_read_rdf_entry("examples/23.rdf");
+    }
 }

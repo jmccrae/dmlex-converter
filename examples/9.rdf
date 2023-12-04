@@ -4,15 +4,17 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
 <file:treppenwitz> a dmlex:Entry;
-  dmlex:sense <file:treppenwitz-1>;
-  dmlex:partOfSpeech "n-masc";
-  dmlex:headword "Treppenwitz".
+  dmlex:partOfSpeech [ 
+      dmlex:tag "n-masc";
+      dmlex:listingOrder "1" ];
+  dmlex:headword "Treppenwitz";
+  dmlex:sense <file:treppenwitz-1>.
 
 <file:treppenwitz-1> a dmlex:Sense;
   dmlex:headwordTranslation [ a dmlex:HeadwordTranslation;
       dmlex:listingOrder "1";
       dmlex:text "staircase wit" ];
+  dmlex:listingOrder "1";
   dmlex:headwordExplanation [ a dmlex:HeadwordExplanation;
-      dmlex:text "belated realisation of what one could have said" ];
-  dmlex:listingOrder "1".
+      dmlex:text "belated realisation of what one could have said" ].
 

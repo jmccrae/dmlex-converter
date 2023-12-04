@@ -3,45 +3,46 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
-<file:bible-2> a dmlex:Sense;
-  dmlex:definition [ a dmlex:Definition;
-      dmlex:text "a book considered important for a subject";
-      dmlex:listingOrder "1" ];
-  dmlex:listingOrder "2".
+<file:bible> a dmlex:Entry;
+  dmlex:sense <file:bible-1>,
+    <file:bible-2>;
+  dmlex:headword "bible".
 
 [] a dmlex:LexicographicResource;
-  dmlex:relation [ a dmlex:Relation;
-      dmlex:member <file:bible-1>,
-        <file:the-bible>;
-      dmlex:listingOrder "1";
-      dmlex:type "subentrying" ];
   dmlex:langCode "en";
+  dmlex:relation [ a dmlex:Relation;
+      dmlex:member [ a dmlex:Member;
+          dmlex:role "container";
+          dmlex:obverseListingOrder "0";
+          dmlex:memberID "bible-1";
+          dmlex:listingOrder "1" ],
+        [ a dmlex:Member;
+          dmlex:obverseListingOrder "0";
+          dmlex:listingOrder "2";
+          dmlex:role "subentry";
+          dmlex:memberID "the-bible" ];
+      dmlex:type "subentrying";
+      dmlex:listingOrder "1" ];
+  dmlex:uri "http://example.com";
   dmlex:entry <file:the-bible>,
-    <file:bible>;
-  dmlex:uri "http://example.com".
+    <file:bible>.
+
+<file:bible-1> a dmlex:Sense;
+  dmlex:listingOrder "1".
+
+<file:bible-2> a dmlex:Sense;
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:listingOrder "1";
+      dmlex:text "a book considered important for a subject" ];
+  dmlex:listingOrder "2".
+
+<file:the-bible> a dmlex:Entry;
+  dmlex:headword "the Bible";
+  dmlex:sense <file:the-bible-1>.
 
 <file:the-bible-1> a dmlex:Sense;
   dmlex:listingOrder "1";
   dmlex:definition [ a dmlex:Definition;
       dmlex:text "the book considered holy by Christians";
       dmlex:listingOrder "1" ].
-
-<file:the-bible> a dmlex:Entry,
-    dmlex:Member;
-  dmlex:obverseListingOrder "0";
-  dmlex:headword "the Bible";
-  dmlex:role "subentry";
-  dmlex:sense <file:the-bible-1>;
-  dmlex:listingOrder "2".
-
-<file:bible-1> a dmlex:Member,
-    dmlex:Sense;
-  dmlex:listingOrder "1";
-  dmlex:role "container";
-  dmlex:obverseListingOrder "0".
-
-<file:bible> a dmlex:Entry;
-  dmlex:sense <file:bible-1>,
-    <file:bible-2>;
-  dmlex:headword "bible".
 

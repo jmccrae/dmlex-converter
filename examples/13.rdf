@@ -3,39 +3,40 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
-<file:sell> a dmlex:Entry;
-  dmlex:headword "sell";
-  dmlex:sense <file:sell-1>.
+<file:buy-1> a dmlex:Sense;
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:listingOrder "1";
+      dmlex:text "get something by paying money for it" ];
+  dmlex:listingOrder "1".
 
-[] a dmlex:LexicographicResource;
-  dmlex:langCode "en";
-  dmlex:uri "http://example.com";
-  dmlex:relation [ a dmlex:Relation;
-      dmlex:type "antonyms";
-      dmlex:member <file:buy-1>,
-        <file:sell-1>;
+<file:sell-1> a dmlex:Sense;
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:text "exchange something for money";
       dmlex:listingOrder "1" ];
-  dmlex:entry <file:sell>,
-    <file:buy>.
+  dmlex:listingOrder "1".
 
 <file:buy> a dmlex:Entry;
   dmlex:sense <file:buy-1>;
   dmlex:headword "buy".
 
-<file:sell-1> a dmlex:Member,
-    dmlex:Sense;
-  dmlex:listingOrder "2",
-    "1";
-  dmlex:definition [ a dmlex:Definition;
-      dmlex:text "exchange something for money";
-      dmlex:listingOrder "1" ];
-  dmlex:obverseListingOrder "0".
-
-<file:buy-1> a dmlex:Sense,
-    dmlex:Member;
-  dmlex:definition [ a dmlex:Definition;
+[] a dmlex:LexicographicResource;
+  dmlex:uri "http://example.com";
+  dmlex:relation [ a dmlex:Relation;
       dmlex:listingOrder "1";
-      dmlex:text "get something by paying money for it" ];
-  dmlex:listingOrder "1";
-  dmlex:obverseListingOrder "0".
+      dmlex:member [ a dmlex:Member;
+          dmlex:listingOrder "1";
+          dmlex:memberID "buy-1";
+          dmlex:obverseListingOrder "0" ],
+        [ a dmlex:Member;
+          dmlex:listingOrder "2";
+          dmlex:memberID "sell-1";
+          dmlex:obverseListingOrder "0" ];
+      dmlex:type "antonyms" ];
+  dmlex:langCode "en";
+  dmlex:entry <file:sell>,
+    <file:buy>.
+
+<file:sell> a dmlex:Entry;
+  dmlex:headword "sell";
+  dmlex:sense <file:sell-1>.
 

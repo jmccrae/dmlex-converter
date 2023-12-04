@@ -5,5 +5,7 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
 <file:folúsghlantóir-n> a dmlex:Entry;
   dmlex:headword "folúsghlantóir";
-  dmlex:partOfSpeech "n-masc".
+  dmlex:partOfSpeech [ 
+      dmlex:tag "n-masc";
+      dmlex:listingOrder "1" ].
 

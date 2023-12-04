@@ -10,21 +10,23 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
     [ a dmlex:PartOfSpeechTag;
       dmlex:description "masculine noun";
       dmlex:tag "n-masc" ];
-  dmlex:uri "http://example.com";
   dmlex:langCode "ga";
   dmlex:inflectedFormTag [ a dmlex:InflectedFormTag;
-      dmlex:forPartOfSpeech "n-masc",
-        "n-fem";
+      dmlex:forPartOfSpeech "n-fem",
+        "n-masc";
       dmlex:description "plural";
       dmlex:tag "pl" ],
     [ a dmlex:InflectedFormTag;
-      dmlex:forPartOfSpeech "n-fem",
-        "n-masc";
-      dmlex:description "singular genitive";
-      dmlex:tag "sg-gen" ];
-  dmlex:entry <file:folúsghlantóir-n>.
+      dmlex:tag "sg-gen";
+      dmlex:forPartOfSpeech "n-masc",
+        "n-fem";
+      dmlex:description "singular genitive" ];
+  dmlex:entry <file:folúsghlantóir-n>;
+  dmlex:uri "http://example.com".
 
 <file:folúsghlantóir-n> a dmlex:Entry;
   dmlex:headword "folúsghlantóir";
-  dmlex:partOfSpeech "n-masc".
+  dmlex:partOfSpeech [ 
+      dmlex:listingOrder "1";
+      dmlex:tag "n-masc" ].
 
