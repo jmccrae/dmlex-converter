@@ -1,12 +1,6 @@
-mod serialization;
-mod model;
-mod model_xml;
-mod write_xml;
-mod rdf;
-
 use clap::{Parser,ValueEnum};
-use crate::model::{LexicographicResource, Entry};
-use crate::rdf::ToRDF;
+use dmlex::model::{LexicographicResource, Entry};
+use dmlex::rdf::ToRDF;
 use sophia::graph::inmem::LightGraph;
 use sophia::graph::inmem::{OpsWrapper, GenericGraph};
 use sophia::iri::IriBox;
@@ -22,7 +16,6 @@ use std::io::BufReader;
 use std::io::{Read, Write};
 use thiserror::Error;
 
-static DMLEX : &str = "https://www.oasis-open.org/to-be-confirmed/dmlex#";
 type Graph = OpsWrapper<GenericGraph<u16, RcTermFactory>>;
 
 #[derive(Parser, Debug)]
@@ -52,7 +45,7 @@ enum Format {
 fn parse_file<R : Read>(input: R, format: &Format, args : &Args) -> Result<LexicographicResource, ParseError> {
     match format {
         Format::XML => {
-            let resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(input)?;
+            let resource : dmlex::model_xml::LexicographicResource = serde_xml_rs::from_reader(input)?;
             Ok(resource.into())
         },
         Format::RDF => {
@@ -61,7 +54,7 @@ fn parse_file<R : Read>(input: R, format: &Format, args : &Args) -> Result<Lexic
                 .map_err(|e| ParseError::TurtleError(format!("{}", e)))?;
             if let Some(default_namespace) = &args.default_namespace {
                 let ns = Namespace::new(default_namespace)?;
-                Ok(rdf::read_lexicographic_resource(&graph, &ns)?)
+                Ok(dmlex::rdf::read_lexicographic_resource(&graph, &ns)?)
             } else {
                 panic!("No default namespace specified");
             }
@@ -82,7 +75,7 @@ fn write_file<W : Write>(output: W, format: &Format, resource: &LexicographicRes
             if let Some(ns) = &args.default_namespace {
                 let mut g = Graph::new();
                 let ns2 = Namespace::new(ns)?;
-                let dmlex = Namespace::new(DMLEX).expect("DMLEX namespace is invalid");
+                let dmlex = Namespace::new(dmlex::rdf::DMLEX).expect("DMLEX namespace is invalid");
                 resource.to_rdf(&mut g, &ns2, &dmlex, 0)?;
                 let mut serializer = TurtleSerializer::new_with_config(output,
                     TurtleConfig::new().with_pretty(true)
@@ -102,7 +95,7 @@ fn write_file<W : Write>(output: W, format: &Format, resource: &LexicographicRes
                                 ),
                                 (
                                     PrefixBox::new_unchecked("dmlex".into()),
-                                    IriBox::new_unchecked(DMLEX.into()),
+                                    IriBox::new_unchecked(dmlex::rdf::DMLEX.into()),
                                 ),
                             ]));
                 serializer.serialize_graph(&g)?;
@@ -121,7 +114,7 @@ fn write_file<W : Write>(output: W, format: &Format, resource: &LexicographicRes
 fn parse_file_entry<R : Read>(input: R, format: &Format, args : &Args) -> Result<Entry, ParseError> {
     match format {
         Format::XML => {
-            let resource : crate::model_xml::Entry = serde_xml_rs::from_reader(input)?;
+            let resource : dmlex::model_xml::Entry = serde_xml_rs::from_reader(input)?;
             Ok(resource.into())
         },
         Format::RDF => {
@@ -130,7 +123,7 @@ fn parse_file_entry<R : Read>(input: R, format: &Format, args : &Args) -> Result
                 .map_err(|e| ParseError::TurtleError(format!("{}", e)))?;
             if let Some(default_namespace) = &args.default_namespace {
                 let ns = Namespace::new(default_namespace)?;
-                Ok(rdf::read_entry(&graph, &ns)?)
+                Ok(dmlex::rdf::read_entry(&graph, &ns)?)
             } else {
                 panic!("No default namespace specified");
             }
@@ -151,7 +144,7 @@ fn write_file_entry<W : Write>(output: W, format: &Format, resource: &Entry,
             if let Some(ns) = &args.default_namespace {
                 let mut g = Graph::new();
                 let ns2 = Namespace::new(ns)?;
-                let dmlex = Namespace::new(DMLEX).expect("DMLEX namespace is invalid");
+                let dmlex = Namespace::new(dmlex::rdf::DMLEX).expect("DMLEX namespace is invalid");
                 resource.to_rdf(&mut g, &ns2, &dmlex, 0)?;
                 let mut serializer = TurtleSerializer::new_with_config(output,
                     TurtleConfig::new().with_pretty(true)
@@ -171,7 +164,7 @@ fn write_file_entry<W : Write>(output: W, format: &Format, resource: &Entry,
                                 ),
                                 (
                                     PrefixBox::new_unchecked("dmlex".into()),
-                                    IriBox::new_unchecked(DMLEX.into()),
+                                    IriBox::new_unchecked(dmlex::rdf::DMLEX.into()),
                                 ),
                             ]));
                 serializer.serialize_graph(&g)?;
@@ -262,7 +255,7 @@ pub enum ParseError {
     #[error("JSON error: {0}")]
     JsonError(#[from] serde_json::Error),
     #[error("RDF parse error: {0}")]
-    RdfParseError(#[from] rdf::RdfError),
+    RdfParseError(#[from] dmlex::rdf::RdfError),
     #[error("Invalid namespace: {0}")]
     InvalidNamespace(#[from] sophia::term::iri::error::InvalidIri),
     #[error("Turtle error: {0}")]
@@ -276,7 +269,7 @@ pub enum WriteError {
     #[error("JSON error: {0}")]
     JsonError(#[from] serde_json::Error),
     #[error("RDF error: {0}")]
-    RdfError(#[from] crate::rdf::RdfError),
+    RdfError(#[from] dmlex::rdf::RdfError),
     #[error("No default namespace specified")]
     NoDefaultNamespace,
     #[error("Invalid namespace: {0}")]

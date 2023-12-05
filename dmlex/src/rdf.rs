@@ -16,6 +16,7 @@ use sophia::triple::Triple;
 use thiserror::Error;
 
 type Result<T> = std::result::Result<T, RdfError>;
+pub static DMLEX : &str = "https://www.oasis-open.org/to-be-confirmed/dmlex#";
 
 pub trait ToRDF {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
@@ -30,7 +31,7 @@ pub trait FromRDF {
 }
 
 pub fn read_lexicographic_resource<G : Graph, T: AsRef<str>>(g : &G, data : &Namespace<T>) -> Result<LexicographicResource> {
-    let dmlex = Namespace::new(crate::DMLEX).expect("DMLEX namespace is invalid");
+    let dmlex = Namespace::new(DMLEX).expect("DMLEX namespace is invalid");
     for triple in g.triples_with_po(&rdf::type_, &dmlex.get("LexicographicResource")?) {
         let o = Term::copy(triple.unwrap().s());
         return Ok(LexicographicResource::from_rdf(&o, g, &dmlex, data)?.1);
@@ -39,7 +40,7 @@ pub fn read_lexicographic_resource<G : Graph, T: AsRef<str>>(g : &G, data : &Nam
 }
 
 pub fn read_entry<G : Graph, T: AsRef<str>>(g : &G, data : &Namespace<T>) -> Result<Entry> {
-    let dmlex = Namespace::new(crate::DMLEX).expect("DMLEX namespace is invalid");
+    let dmlex = Namespace::new(DMLEX).expect("DMLEX namespace is invalid");
     for triple in g.triples_with_po(&rdf::type_, &dmlex.get("Entry")?) {
         let o = Term::copy(triple.unwrap().s());
         return Ok(Entry::from_rdf(&o, g, &dmlex, data)?.1);
