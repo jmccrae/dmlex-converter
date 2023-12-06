@@ -6,6 +6,7 @@ pub mod write_xml;
 
 use crate::model::{LexicographicResource, Entry};
 use crate::rdf::ToRDF;
+use crate::write_xml::WriteXML;
 use sophia::graph::inmem::LightGraph;
 use sophia::graph::inmem::{OpsWrapper, GenericGraph};
 use sophia::iri::IriBox;
@@ -22,7 +23,7 @@ use thiserror::Error;
 
 type Graph = OpsWrapper<GenericGraph<u16, RcTermFactory>>;
 
-#[derive(Debug,Clone)]
+#[derive(Debug,Clone,PartialEq,Eq)]
 pub enum Format {
     XML,
     RDF,
@@ -52,11 +53,13 @@ pub fn parse<R : Read>(input: R, format: &Format, default_namespace : &Option<St
     }
 }
 
-pub fn write<W : Write>(output: W, format: &Format, resource: &LexicographicResource,
+pub fn write<W : Write>(mut output: W, format: &Format, resource: &LexicographicResource,
     default_namespace : &Option<String>) -> Result<(), WriteError> {
     match format {
         Format::XML => {
-            Ok(serde_xml_rs::to_writer(output, resource)?)
+
+            let mut writer = xml::EmitterConfig::new().perform_indent(true).create_writer(&mut output);
+            Ok(resource.write_xml(&mut writer)?)
         },
         Format::RDF => {
             if let Some(ns) = &default_namespace {
@@ -121,11 +124,12 @@ pub fn parse_entry<R : Read>(input: R, format: &Format, default_namespace : &Opt
     }
 }
 
-pub fn write_entry<W : Write>(output: W, format: &Format, resource: &Entry,
+pub fn write_entry<W : Write>(mut output: W, format: &Format, resource: &Entry,
     default_namespace : &Option<String>) -> Result<(), WriteError> {
     match format {
         Format::XML => {
-            Ok(serde_xml_rs::to_writer(output, resource)?)
+            let mut writer = xml::EmitterConfig::new().perform_indent(true).create_writer(&mut output);
+            Ok(resource.write_xml(&mut writer)?)
         },
         Format::RDF => {
             if let Some(ns) = &default_namespace {
@@ -195,4 +199,7 @@ pub enum WriteError {
     InvalidNamespace(#[from] sophia::term::iri::error::InvalidIri),
     #[error("Turtle error: {0}")]
     TurtleError(#[from] sophia::triple::stream::StreamError<Infallible, std::io::Error>),
+    #[error("XML Write error: {0}")]
+    XmlWriteError(#[from] xml::writer::Error),
 }
+

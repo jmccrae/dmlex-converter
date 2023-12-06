@@ -1,12 +1,13 @@
 use xml::writer::{EventWriter, XmlEvent};
 use crate::model::*;
+use std::io::Write;
 
 pub trait WriteXML {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error>;
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error>;
 }
 
 impl WriteXML for &LexicographicResource {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("lexicographicResource");
         if let Some(id) = &self.id {
             e = e.attr("id", id);
@@ -66,7 +67,7 @@ impl WriteXML for &LexicographicResource {
 } 
 
 impl WriteXML for &Entry {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("entry");
         if let Some(id) = &self.id {
             e = e.attr("id", id);
@@ -109,7 +110,7 @@ impl WriteXML for &Entry {
 }
 
 impl WriteXML for &InflectedForm {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("inflectedForm");
         if let Some(tag) = &self.tag {
             e = e.attr("tag", tag);
@@ -132,7 +133,7 @@ impl WriteXML for &InflectedForm {
 }
 
 impl WriteXML for &Sense {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("sense");
         if let Some(id) = &self.id {
             e = e.attr("id", id);
@@ -166,7 +167,7 @@ impl WriteXML for &Sense {
 }
 
 impl WriteXML for &Definition {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("definition");
         if let Some(definition_type) = &self.definition_type {
             e = e.attr("definitionType", definition_type);
@@ -179,7 +180,7 @@ impl WriteXML for &Definition {
 }
 
 impl WriteXML for &Pronunciation {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("pronunciation");
         if let Some(sound_file) = &self.sound_file {
             e = e.attr("soundFile", sound_file);
@@ -199,7 +200,7 @@ impl WriteXML for &Pronunciation {
 }
 
 impl WriteXML for &Transcription {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("transcription");
         if let Some(scheme) = &self.scheme {
             e = e.attr("scheme", scheme);
@@ -212,7 +213,7 @@ impl WriteXML for &Transcription {
 }
 
 impl WriteXML for &Example {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("example");
         if let Some(ref source_identity) = &self.source_identity {
             e = e.attr("sourceIdentity", source_identity);
@@ -238,7 +239,7 @@ impl WriteXML for &Example {
 }
 
 impl WriteXML for HeadwordTranslation {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("headwordTranslation");
         if let Some(ref lang_code) = &self.lang_code {
             e = e.attr("langCode", &lang_code.0);
@@ -269,7 +270,7 @@ impl WriteXML for HeadwordTranslation {
 }
 
 impl WriteXML for &HeadwordExplanation {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("headwordExplanation");
         if let Some(lang_code) = &self.lang_code {
             e = e.attr("langCode", &lang_code.0);
@@ -284,7 +285,7 @@ impl WriteXML for &HeadwordExplanation {
 }
 
 impl WriteXML for &ExampleTranslation {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("exampleTranslation");
         if let Some(ref lang_code) = &self.lang_code {
             e = e.attr("langCode", &lang_code.0);
@@ -307,7 +308,7 @@ impl WriteXML for &ExampleTranslation {
 }
 
 impl WriteXML for &DefinitionTypeTag {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("definitionTypeTag");
         e = e.attr("tag", &self.tag);
         writer.write(e)?;
@@ -327,7 +328,7 @@ impl WriteXML for &DefinitionTypeTag {
 }
 
 impl WriteXML for &InflectedFormTag {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("inflectedFormTag");
         e = e.attr("tag", &self.tag);
         if let Some(for_headwords) = &self.for_headwords {
@@ -363,7 +364,7 @@ impl WriteXML for &InflectedFormTag {
 }
 
 impl WriteXML for &LabelTag {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("labelTag")
             .attr("tag", &self.tag);
         if let Some(type_tag) = &self.type_tag {
@@ -405,7 +406,7 @@ impl WriteXML for &LabelTag {
 }
 
 impl WriteXML for &LabelTypeTag {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let e = XmlEvent::start_element("labelTypeTag")
             .attr("tag", &self.tag);
         writer.write(e)?;
@@ -425,7 +426,7 @@ Ok(())
 }
 
 impl WriteXML for &PartOfSpeechTag {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("partOfSpeechTag")
             .attr("tag", &self.tag);
         if let Some(for_headwords) = &self.for_headwords {
@@ -459,7 +460,7 @@ impl WriteXML for &PartOfSpeechTag {
 }
 
 impl WriteXML for &SourceIdentityTag {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let e = XmlEvent::start_element("sourceIdentityTag")
             .attr("tag", &self.tag);
         writer.write(e)?;
@@ -479,7 +480,7 @@ impl WriteXML for &SourceIdentityTag {
 }
 
 impl WriteXML for &TranscriptionSchemeTag {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("transcriptionSchemeTag")
             .attr("tag", &self.tag);
         if let Some(for_headwords) = &self.for_headwords {
@@ -505,7 +506,7 @@ impl WriteXML for &TranscriptionSchemeTag {
 }
 
 impl  WriteXML for &Relation {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let e = XmlEvent::start_element("relation")
 .attr("type", &self._type);
         writer.write(e)?;
@@ -523,7 +524,7 @@ impl  WriteXML for &Relation {
 }
 
 impl WriteXML for &Member {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("member")
             .attr("memberID", &self.member_id);
         if let Some(role) = &self.role {
@@ -538,7 +539,7 @@ impl WriteXML for &Member {
 }
 
 impl WriteXML for &RelationType {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("relationType")
             .attr("type", &self._type);
         match self.scope_restriction {
@@ -568,7 +569,7 @@ impl WriteXML for &RelationType {
 
 impl WriteXML for &MemberType {
     #[allow(unused_assignments)]
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("memberType")
             .attr("role", &self.role);
         match self._type {
@@ -609,7 +610,7 @@ impl WriteXML for &MemberType {
 }
 
 impl WriteXML for &Etymology {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         writer.write(XmlEvent::start_element("etymology"))?;
         if let Some(description) = &self.description {
             writer.write(XmlEvent::start_element("description"))?;
@@ -625,7 +626,7 @@ impl WriteXML for &Etymology {
 }
 
 impl WriteXML for &Etymon {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("etymon");
         if let Some(when) = &self.when {
             e = e.attr("when", when);
@@ -653,7 +654,7 @@ impl WriteXML for &Etymon {
 }
 
 impl WriteXML for &EtymonUnit {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("etymonUnit")
             .attr("langCode", &self.lang_code.0);
         if let Some(reconstructed) = &self.reconstructed {
@@ -679,7 +680,7 @@ impl WriteXML for &EtymonUnit {
 }
 
 impl WriteXML for &EtymonType {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         writer.write(XmlEvent::start_element("etymonType")
             .attr("type", &self._type))?;
         if let Some(description) = &self.description {
@@ -693,7 +694,7 @@ impl WriteXML for &EtymonType {
 }
 
 impl WriteXML for &EtymonLanguage {
-    fn write_xml(&self, writer: &mut EventWriter<&mut Vec<u8>>) -> Result<(), xml::writer::Error> {
+    fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         writer.write(XmlEvent::start_element("etymonLanguage")
             .attr("langCode", &self.lang_code.0))?;
         if let Some(display_name) = &self.display_name {
@@ -706,7 +707,7 @@ impl WriteXML for &EtymonLanguage {
     }
 }
 
-fn write_headword_string(writer: &mut EventWriter<&mut Vec<u8>>,
+fn write_headword_string<W : Write>(writer: &mut EventWriter<&mut W>,
     string : &String, placeholder_markers : &Vec<Marker>) -> Result<(), xml::writer::Error> {
     let str_chars : Vec<char> = string.chars().collect();
     let mut i = 0;
@@ -733,7 +734,7 @@ fn write_headword_string(writer: &mut EventWriter<&mut Vec<u8>>,
     Ok(())
 }
 
-fn write_text_string(writer : &mut EventWriter<&mut Vec<u8>>,
+fn write_text_string<W : Write>(writer : &mut EventWriter<&mut W>,
     string : &String, headword_markers : &Vec<Marker>,
     collocate_markers : &Vec<CollocateMarker>) -> Result<(), xml::writer::Error>  {
     let str_chars : Vec<char> = string.chars().collect();
