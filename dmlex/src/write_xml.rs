@@ -763,7 +763,7 @@ fn write_text_string<W : Write>(writer : &mut EventWriter<&mut W>,
             writer.write(e)?;
             let s : String = str_chars[collocate_marker.start_index..collocate_marker.end_index].iter().collect();
             writer.write(XmlEvent::characters(&s))?;
-            for label in collocate_marker.label.iter() {
+            for label in collocate_marker.labels.iter() {
                 writer.write(XmlEvent::start_element("label")
                     .attr("tag", label))?;
                 writer.write(XmlEvent::end_element())?;

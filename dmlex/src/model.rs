@@ -515,7 +515,7 @@ pub struct CollocateMarker {
     pub lemma: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub label: Vec<String>
+    pub labels: Vec<String>
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]

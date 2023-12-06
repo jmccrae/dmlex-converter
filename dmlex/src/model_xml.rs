@@ -198,7 +198,7 @@ impl TextString {
                         start_index: len,
                         end_index: (len + marker_len),
                         lemma: lemma.clone(),
-                        label: label.into_iter().map(|x| x.tag.clone()).collect()
+                        labels: label.into_iter().map(|x| x.tag.clone()).collect()
                     });
                     normalized.push_str(marker);
                     len += marker_len;

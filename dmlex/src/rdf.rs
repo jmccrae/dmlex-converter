@@ -1628,7 +1628,7 @@ impl ToRDF for &CollocateMarker {
                 &dmlex.get("lemma")?,
                 &lemma.as_literal()).expect("Error inserting triple");
         }
-        for label in &self.label {
+        for label in &self.labels {
             graph.insert(
                 &id,
                 &dmlex.get("label")?,
@@ -1645,7 +1645,7 @@ impl FromRDF for CollocateMarker {
             start_index: get_one_usize(g, id, &dmlex.get("startIndex")?)?,
             end_index: get_one_usize(g, id, &dmlex.get("endIndex")?)?,
             lemma: get_zero_one_str(g, id, &dmlex.get("lemma")?)?,
-            label: read_many_str(g, id, "label", _data, dmlex)?,
+            labels: read_many_str(g, id, "label", _data, dmlex)?,
         }))
     }
 }
