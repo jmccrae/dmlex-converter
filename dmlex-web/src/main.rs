@@ -48,7 +48,7 @@ impl Component for App {
         App {
             input_format : Format::XML,
             output_format : Format::JSON,
-            input: String::from("foo"),
+            input: String::new(),
             output: Ok(String::new()),
             default_namespace: String::new(),
         }
