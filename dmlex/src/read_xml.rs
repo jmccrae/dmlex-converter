@@ -4,6 +4,50 @@ use crate::model::*;
 use thiserror::Error;
 use xml::reader::XmlEvent::{StartElement, EndElement, Characters, StartDocument, EndDocument, ProcessingInstruction, Comment, Whitespace, CData};
 use xml::attribute::OwnedAttribute;
+use xml::common::Position;
+
+fn read_xml<R: Read, E : XMLVisitor>(input: R, element_name : &'static str) -> std::result::Result<E, XMLErrorWithPosition> {
+    let mut reader = EventReader::new(input);
+    loop {
+        match reader.next() {
+            Ok(StartElement { name, attributes, .. }) => {
+                if name.local_name == element_name {
+                    return E::from_event_reader(&mut reader, attributes)
+                        .map_err(|e| XMLErrorWithPosition::E(e, reader.position().row, reader.position().column));
+                }
+            },
+            Ok(StartDocument { .. }) => { },
+            Ok(ProcessingInstruction { .. }) => { },
+            Ok(Comment(_)) => { },
+            Ok(Whitespace(_)) => { },
+            Ok(Characters(chars)) => { 
+                return Err(XMLErrorWithPosition::E(
+                        FromXMLError::UnexpectedCharacters(chars),
+                        reader.position().row, reader.position().column));
+            },
+            Ok(CData(chars)) => { 
+                return Err(XMLErrorWithPosition::E(
+                        FromXMLError::UnexpectedCData(chars),
+                        reader.position().row, reader.position().column));
+            },
+            Ok(EndElement { name }) => { 
+                return Err(XMLErrorWithPosition::E(
+                        FromXMLError::MismatchedEndElement(name.local_name),
+                        reader.position().row, reader.position().column));
+            },
+            Ok(EndDocument { .. }) => { 
+                return Err(XMLErrorWithPosition::E(
+                        FromXMLError::UnexpectedEndDocument,
+                        reader.position().row, reader.position().column));
+            },
+            Err(e) => { 
+                return Err(XMLErrorWithPosition::E(
+                        FromXMLError::XML(e),
+                        reader.position().row, reader.position().column));
+            },
+        }
+    }
+}
 
 type Result<T> = std::result::Result<T, FromXMLError>;
 
@@ -1197,6 +1241,12 @@ fn u32_attr(name: &str, attributes: &mut Vec<OwnedAttribute>) -> Result<Option<u
         }
     }
     Ok(None)
+}
+
+#[derive(Debug, Error)]
+pub enum XMLErrorWithPosition {
+    #[error("{0} at row {1}, column {2}")]
+    E(FromXMLError, u64, u64)
 }
 
 #[derive(Debug, Error)]
