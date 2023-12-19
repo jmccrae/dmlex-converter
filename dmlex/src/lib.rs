@@ -1,5 +1,4 @@
 pub mod model;
-pub mod model_xml;
 pub mod rdf;
 pub mod serialization;
 pub mod read_xml;
@@ -34,8 +33,7 @@ pub enum Format {
 pub fn parse<R : Read>(input: R, format: &Format, default_namespace : &Option<String>) -> Result<LexicographicResource, ParseError> {
     match format {
         Format::XML => {
-            let resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(input)?;
-            Ok(resource.into())
+            Ok(read_xml::read_xml(input, "lexicographicResource")?)
         },
         Format::RDF => {
             let mut buf_read = BufReader::new(input);
@@ -58,7 +56,6 @@ pub fn write<W : Write>(mut output: W, format: &Format, resource: &Lexicographic
     default_namespace : &Option<String>) -> Result<(), WriteError> {
     match format {
         Format::XML => {
-
             let mut writer = xml::EmitterConfig::new().perform_indent(true).create_writer(&mut output);
             Ok(resource.write_xml(&mut writer)?)
         },
@@ -105,8 +102,7 @@ pub fn write<W : Write>(mut output: W, format: &Format, resource: &Lexicographic
 pub fn parse_entry<R : Read>(input: R, format: &Format, default_namespace : &Option<String>) -> Result<Entry, ParseError> {
     match format {
         Format::XML => {
-            let resource : crate::model_xml::Entry = serde_xml_rs::from_reader(input)?;
-            Ok(resource.into())
+            Ok(read_xml::read_xml(input, "entry")?)
         },
         Format::RDF => {
             let mut buf_read = BufReader::new(input);
@@ -175,7 +171,7 @@ pub fn write_entry<W : Write>(mut output: W, format: &Format, resource: &Entry,
 #[derive(Error, Debug)]
 pub enum ParseError {
     #[error("XML error: {0}")]
-    XmlError(#[from] serde_xml_rs::Error),
+    XmlError(#[from] read_xml::XMLErrorWithPosition),
     #[error("JSON error: {0}")]
     JsonError(#[from] serde_json::Error),
     #[error("RDF parse error: {0}")]
