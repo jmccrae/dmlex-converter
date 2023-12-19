@@ -173,7 +173,6 @@ impl<'de> Deserialize<'de> for TextString {
 #[cfg(test)]
 mod tests {
     use crate::model::*;
-    use serde_xml_rs;
     use std::fs::File;
     use serde::Deserialize;
     use crate::write_xml::WriteXML;
@@ -181,7 +180,7 @@ mod tests {
     #[test]
     fn test_read_xml_0() {
         let file = File::open("examples/0.xml").unwrap();
-        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : LexicographicResource = crate::read_xml::read_xml(file, "lexicographicResource").unwrap();
     }
 
     #[test]
@@ -193,7 +192,7 @@ mod tests {
     #[test]
     fn test_read_xml_1() {
         let file = File::open("examples/1.xml").unwrap();
-        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : Entry = crate::read_xml::read_xml(file, "entry").unwrap();
     }
 
     #[test]
@@ -205,7 +204,7 @@ mod tests {
     #[test]
     fn test_read_xml_2() {
         let file = File::open("examples/2.xml").unwrap();
-        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : Entry = crate::read_xml::read_xml(file, "entry").unwrap();
     }
 
     #[test]
@@ -217,7 +216,7 @@ mod tests {
     #[test]
     fn test_read_xml_3() {
         let file = File::open("examples/3.xml").unwrap();
-        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : Entry = crate::read_xml::read_xml(file, "entry").unwrap();
     }
 
     #[test]
@@ -229,7 +228,7 @@ mod tests {
     #[test]
     fn test_read_xml_4() {
         let file = File::open("examples/4.xml").unwrap();
-        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : Entry = crate::read_xml::read_xml(file, "entry").unwrap();
     }
 
     #[test]
@@ -241,7 +240,7 @@ mod tests {
     #[test]
     fn test_read_xml_5() {
         let file = File::open("examples/5.xml").unwrap();
-        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : LexicographicResource = crate::read_xml::read_xml(file, "lexicographicResource").unwrap();
     }
 
     #[test]
@@ -253,7 +252,7 @@ mod tests {
     #[test]
     fn test_read_xml_6() {
         let file = File::open("examples/6.xml").unwrap();
-        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : LexicographicResource = crate::read_xml::read_xml(file, "lexicographicResource").unwrap();
     }
 
     #[test]
@@ -265,7 +264,7 @@ mod tests {
     #[test]
     fn test_read_xml_7() {
         let file = File::open("examples/7.xml").unwrap();
-        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : LexicographicResource = crate::read_xml::read_xml(file, "lexicographicResource").unwrap();
     }
 
     #[test]
@@ -277,7 +276,7 @@ mod tests {
     #[test]
     fn test_read_xml_8() {
         let file = File::open("examples/8.xml").unwrap();
-        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : Entry = crate::read_xml::read_xml(file, "entry").unwrap();
     }
 
     #[test]
@@ -289,7 +288,7 @@ mod tests {
     #[test]
     fn test_read_xml_9() {
         let file = File::open("examples/9.xml").unwrap();
-        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : Entry = crate::read_xml::read_xml(file, "entry").unwrap();
     }
 
     #[test]
@@ -301,7 +300,7 @@ mod tests {
     #[test]
     fn test_read_xml_10() {
         let file = File::open("examples/10.xml").unwrap();
-        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : LexicographicResource = crate::read_xml::read_xml(file, "lexicographicResource").unwrap();
     }
 
     #[test]
@@ -313,7 +312,7 @@ mod tests {
     #[test]
     fn test_read_xml_11() {
         let file = File::open("examples/11.xml").unwrap();
-        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : Entry = crate::read_xml::read_xml(file, "entry").unwrap();
     }
 
     #[test]
@@ -325,7 +324,7 @@ mod tests {
     #[test]
     fn test_read_xml_12() {
         let file = File::open("examples/12.xml").unwrap();
-        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : LexicographicResource = crate::read_xml::read_xml(file, "lexicographicResource").unwrap();
     }
 
     #[test]
@@ -337,7 +336,7 @@ mod tests {
     #[test]
     fn test_read_xml_13() {
         let file = File::open("examples/13.xml").unwrap();
-        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : LexicographicResource = crate::read_xml::read_xml(file, "lexicographicResource").unwrap();
     }
 
     #[test]
@@ -349,7 +348,7 @@ mod tests {
     #[test]
     fn test_read_xml_14() {
         let file = File::open("examples/14.xml").unwrap();
-        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : LexicographicResource = crate::read_xml::read_xml(file, "lexicographicResource").unwrap();
     }
 
     #[test]
@@ -361,7 +360,7 @@ mod tests {
     #[test]
     fn test_read_xml_15() {
         let file = File::open("examples/15.xml").unwrap();
-        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : LexicographicResource = crate::read_xml::read_xml(file, "lexicographicResource").unwrap();
     }
 
     #[test]
@@ -373,7 +372,7 @@ mod tests {
     #[test]
     fn test_read_xml_16() {
         let file = File::open("examples/16.xml").unwrap();
-        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : LexicographicResource = crate::read_xml::read_xml(file, "lexicographicResource").unwrap();
     }
 
     #[test]
@@ -385,7 +384,7 @@ mod tests {
     #[test]
     fn test_read_xml_17() {
         let file = File::open("examples/17.xml").unwrap();
-        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : LexicographicResource = crate::read_xml::read_xml(file, "lexicographicResource").unwrap();
     }
 
     #[test]
@@ -397,7 +396,7 @@ mod tests {
     #[test]
     fn test_read_xml_18() {
         let file = File::open("examples/18.xml").unwrap();
-        let _resource : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : LexicographicResource = crate::read_xml::read_xml(file, "lexicographicResource").unwrap();
     }
 
     #[test]
@@ -409,7 +408,7 @@ mod tests {
     #[test]
     fn test_read_xml_19() {
         let file = File::open("examples/19.xml").unwrap();
-        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : Entry = crate::read_xml::read_xml(file, "entry").unwrap();
     }
 
     #[test]
@@ -421,7 +420,7 @@ mod tests {
     #[test]
     fn test_read_xml_20() {
         let file = File::open("examples/20.xml").unwrap();
-        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : Entry = crate::read_xml::read_xml(file, "entry").unwrap();
     }
 
     #[test]
@@ -433,7 +432,7 @@ mod tests {
     #[test]
     fn test_read_xml_21() {
         let file = File::open("examples/21.xml").unwrap();
-        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : Entry = crate::read_xml::read_xml(file, "entry").unwrap();
     }
 
     #[test]
@@ -445,7 +444,7 @@ mod tests {
     #[test]
     fn test_read_xml_22() {
         let file = File::open("examples/22.xml").unwrap();
-        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : Entry = crate::read_xml::read_xml(file, "entry").unwrap();
     }
 
     #[test]
@@ -457,7 +456,7 @@ mod tests {
     #[test]
     fn test_read_xml_23() {
         let file = File::open("examples/23.xml").unwrap();
-        let _resource : crate::model_xml::Entry = serde_xml_rs::from_reader(file).unwrap();
+        let _resource : Entry = crate::read_xml::read_xml(file, "entry").unwrap();
     }
 
     #[test]
@@ -469,8 +468,7 @@ mod tests {
     fn test_equivalent_lexicon(fname : &str) {
         let file1 = File::open(format!("examples/{}.xml", fname)).unwrap();
         let file2 = File::open(format!("examples/{}.json", fname)).unwrap();
-        let resource1 : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file1).unwrap();
-        let resource1 : LexicographicResource = resource1.into();
+        let resource1 : LexicographicResource = crate::read_xml::read_xml(file1, "lexicographicResource").unwrap();
         let resource2 : LexicographicResource = serde_json::from_reader(file2).unwrap();
         assert_eq!(resource1, resource2);
     }
@@ -478,12 +476,7 @@ mod tests {
     fn test_equivalent_entry(fname : &str) {
         let file1 = File::open(format!("examples/{}.xml", fname)).unwrap();
         let file2 = File::open(format!("examples/{}.json", fname)).unwrap();
-        let mut deserializer = serde_xml_rs::de::Deserializer::new(
-            serde_xml_rs::EventReader::new_with_config(file1, 
-                serde_xml_rs::ParserConfig::new().trim_whitespace(false)));
-        
-        let resource1 : crate::model_xml::Entry = crate::model_xml::Entry::deserialize(&mut deserializer).unwrap();
-        let resource1 : Entry = resource1.into();
+        let resource1 : Entry = crate::read_xml::read_xml(file1, "entry").unwrap();
         let resource2 : Entry = serde_json::from_reader(file2).unwrap();
         assert_eq!(resource1, resource2);
     }
@@ -748,29 +741,21 @@ mod tests {
 
     fn xml_round_trip_lexicon(fname: &str) {
         let file1 = File::open(format!("examples/{}.xml", fname)).unwrap();
-        let resource1 : crate::model_xml::LexicographicResource = serde_xml_rs::from_reader(file1).unwrap();
+        let resource1 : LexicographicResource = crate::read_xml::read_xml(file1, "lexicographicResource").unwrap();
         let mut out = Vec::new();
         let mut writer = xml::EmitterConfig::new().perform_indent(true).create_writer(&mut out);
-        let resource1 : LexicographicResource = resource1.into();
         (&resource1).write_xml(&mut writer).unwrap();
-        let resource2 : crate::model_xml::LexicographicResource = serde_xml_rs::from_str(&String::from_utf8(out).unwrap()).unwrap();
-        let resource2 : LexicographicResource = resource2.into();
+        let resource2 : LexicographicResource = crate::read_xml::read_xml(&out[..], "lexicographicResource").unwrap();
         assert_eq!(resource1, resource2);
     }
 
     fn xml_round_trip_entry(fname: &str) {
         let file1 = File::open(format!("examples/{}.xml", fname)).unwrap();
-        let mut deserializer = serde_xml_rs::de::Deserializer::new(
-            serde_xml_rs::EventReader::new_with_config(file1, 
-                serde_xml_rs::ParserConfig::new().trim_whitespace(false)));
-        
-        let resource1 : crate::model_xml::Entry = crate::model_xml::Entry::deserialize(&mut deserializer).unwrap();
+        let resource1 : Entry = crate::read_xml::read_xml(file1, "entry").unwrap();
         let mut out = Vec::new();
         let mut writer = xml::EmitterConfig::new().perform_indent(true).create_writer(&mut out);
-        let resource1 : Entry = resource1.into();
         (&resource1).write_xml(&mut writer).unwrap();
-        let resource2 : crate::model_xml::Entry = serde_xml_rs::from_str(&String::from_utf8(out).unwrap()).unwrap();
-        let resource2 : Entry = resource2.into();
+        let resource2 : Entry = crate::read_xml::read_xml(&out[..], "entry").unwrap();
         assert_eq!(resource1, resource2);
     }
 
@@ -869,25 +854,25 @@ mod tests {
         xml_round_trip_lexicon("18");
     }
 
-    //#[test]
-    //fn test_xml_round_trip_19() {
-    //    xml_round_trip_entry("19");
-    //}
+    #[test]
+    fn test_xml_round_trip_19() {
+        xml_round_trip_entry("19");
+    }
 
-    //#[test]
-    //fn test_xml_round_trip_20() {
-    //    xml_round_trip_entry("20");
-    //}
+    #[test]
+    fn test_xml_round_trip_20() {
+        xml_round_trip_entry("20");
+    }
 
-    //#[test]
-    //fn test_xml_round_trip_21() {
-    //    xml_round_trip_entry("21");
-    //}
+    #[test]
+    fn test_xml_round_trip_21() {
+        xml_round_trip_entry("21");
+    }
 
-    //#[test]
-    //fn test_xml_round_trip_22() {
-    //    xml_round_trip_entry("22");
-    //}
+    #[test]
+    fn test_xml_round_trip_22() {
+        xml_round_trip_entry("22");
+    }
 
     #[test]
     fn test_xml_round_trip_23() {

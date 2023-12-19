@@ -12,14 +12,16 @@ impl WriteXML for &LexicographicResource {
         if let Some(id) = &self.id {
             e = e.attr("id", id);
         }
-        if let Some(title) = &self.title {
-            e = e.attr("title", title);
-        }
         if let Some(uri) = &self.uri {
             e = e.attr("uri", uri);
         }
         e = e.attr("langCode", self.lang_code.0.as_str());
         writer.write(e)?;
+        if let Some(title) = &self.title {
+            writer.write(XmlEvent::start_element("title"))?;
+            writer.write(XmlEvent::characters(title))?;
+            writer.write(XmlEvent::end_element())?;
+        }
         for entry in self.entries.iter() {
             entry.write_xml(writer)?;
         }
@@ -233,6 +235,9 @@ impl WriteXML for &Example {
                 .attr("tag", label))?;
             writer.write(XmlEvent::end_element())?;
         }
+        for example_translation in self.example_translations.iter() {
+            example_translation.write_xml(writer)?;
+        }
         writer.write(XmlEvent::end_element())?;
         Ok(())
     }
@@ -276,9 +281,9 @@ impl WriteXML for &HeadwordExplanation {
             e = e.attr("langCode", &lang_code.0);
         }
         writer.write(e)?;
-        writer.write(XmlEvent::start_element("text"))?;
+        //writer.write(XmlEvent::start_element("text"))?;
         write_text_string(writer, &self.text, &self.headword_markers, &self.collocate_markers)?;
-        writer.write(XmlEvent::end_element())?;
+        //writer.write(XmlEvent::end_element())?;
         writer.write(XmlEvent::end_element())?;
         Ok(())
     }

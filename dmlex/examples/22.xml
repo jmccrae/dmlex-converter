@@ -7,8 +7,8 @@
                 The coroner <collocateMarker lemma="perform">performed</collocateMarker> an <headwordMarker>autopsy</headwordMarker>.
             </text>
             <exampleTranslation>
-                <text xml:space="preserve">
-                    Koroner <collocateMarker lemma="provést">provedl</collocateMarker>&#xa0;<headwordMarker>pitvu</headwordMarker>.
+                <text>
+                    Koroner <collocateMarker lemma="provést">provedl</collocateMarker> <headwordMarker>pitvu</headwordMarker>.
                 </text>
             </exampleTranslation>
         </example>
