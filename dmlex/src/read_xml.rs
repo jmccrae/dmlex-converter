@@ -197,11 +197,11 @@ impl XMLVisitor for LexicographicResource {
                 Ok(())
             },
             "etymonLanguage" => {
-                self.etymon_language.push(EtymonLanguage::from_event_reader(reader, attributes)?);
+                self.etymon_languages.push(EtymonLanguage::from_event_reader(reader, attributes)?);
                 Ok(())
             },
             "etymonType" => {
-                self.etymon_type.push(EtymonType::from_event_reader(reader, attributes)?);
+                self.etymon_types.push(EtymonType::from_event_reader(reader, attributes)?);
                 Ok(())
             },
             _ => Err(FromXMLError::UnexpectedElement(name.to_string())),
@@ -251,7 +251,7 @@ impl XMLVisitor for Entry {
                 Ok(())
             },
             "etymology" => {
-                self.etymology.push(Etymology::from_event_reader(reader, attributes)?);
+                self.etymologies.push(Etymology::from_event_reader(reader, attributes)?);
                 Ok(())
             },
             _ => Err(FromXMLError::UnexpectedElement(name.to_string())),
@@ -305,7 +305,7 @@ impl XMLVisitor for Sense {
         -> Result<()> {
         match name {
             "indicator" => {
-                self.indicator.push(text(reader, attributes)?);
+                self.indicator = Some(text(reader, attributes)?);
                 Ok(())
             },
             "label" => {

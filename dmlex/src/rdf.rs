@@ -136,14 +136,14 @@ impl ToRDF for LexicographicResource {
                 &dmlex.get("relation")?,
                 &relation_id).expect("Error inserting triple");
         }
-        for  (i, etymon_language) in self.etymon_language.iter().enumerate() {
+        for  (i, etymon_language) in self.etymon_languages.iter().enumerate() {
             let etymon_language_id = etymon_language.to_rdf(graph, data, dmlex, i)?;
             graph.insert(
                 &id,
                 &dmlex.get("etymonLanguage")?,
                 &etymon_language_id).expect("Error inserting triple");
         }
-        for (i, etymon_type) in self.etymon_type.iter().enumerate() {
+        for (i, etymon_type) in self.etymon_types.iter().enumerate() {
             let etymon_type_id = etymon_type.to_rdf(graph, data, dmlex, i)?;
             graph.insert(
                 &id,
@@ -173,8 +173,8 @@ impl FromRDF for LexicographicResource {
             transcription_scheme_tags: read_many(g, id, "transcriptionSchemeTag", data, dmlex)?,
             relations: read_many(g, id, "relation", data, dmlex)?,
             relation_types: read_many(g, id, "relationType", data, dmlex)?,
-            etymon_language: read_many(g, id, "etymonLanguage", data, dmlex)?,
-            etymon_type: read_many(g, id, "etymonType", data, dmlex)?,
+            etymon_languages: read_many(g, id, "etymonLanguage", data, dmlex)?,
+            etymon_types: read_many(g, id, "etymonType", data, dmlex)?,
         }))
 
     }
@@ -252,7 +252,7 @@ impl ToRDF for &Entry {
                 &dmlex.get("sense")?,
                 &sense_id).expect("Error inserting triple");
         }
-        for (i, etymology) in self.etymology.iter().enumerate() {
+        for (i, etymology) in self.etymologies.iter().enumerate() {
             let etymology_id = etymology.to_rdf(graph, data, dmlex, i)?;
             graph.insert(
                 &id,
@@ -277,7 +277,7 @@ impl FromRDF for Entry {
             pronunciations: read_many(g, id, "pronunciation", data, dmlex)?,
             inflected_forms: read_many(g, id, "inflectedForm", data, dmlex)?,
             senses: read_many(g, id, "sense", data, dmlex)?,
-            etymology: read_many(g, id, "etymology", data, dmlex)?,
+            etymologies: read_many(g, id, "etymology", data, dmlex)?,
         }))
     }
 }
@@ -419,7 +419,7 @@ impl FromRDF for Sense {
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
         Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, Sense {
             id: get_id(id, data),
-            indicator: read_many_str(g, id, "indicator", data, dmlex)?,
+            indicator: get_zero_one_str(g, id, &dmlex.get("indicator")?)?,
             labels: read_tag(g, id, "label", data, dmlex)?,
             definitions: read_many(g, id, "definition", data, dmlex)?,
             examples: read_many(g, id, "example", data, dmlex)?,

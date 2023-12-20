@@ -1,4 +1,4 @@
-/// This module contains the data model for the lexicon.
+/// This module containss the data model for the lexicon.
 use serde::{Deserialize, Serialize};
 
 
@@ -51,10 +51,10 @@ pub struct LexicographicResource {
     pub relation_types: Vec<RelationType>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub etymon_language: Vec<EtymonLanguage>,
+    pub etymon_languages: Vec<EtymonLanguage>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub etymon_type: Vec<EtymonType>,
+    pub etymon_types: Vec<EtymonType>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
@@ -92,7 +92,7 @@ pub struct Entry {
     pub senses: Vec<Sense>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub etymology: Vec<Etymology>,
+    pub etymologies: Vec<Etymology>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
@@ -118,9 +118,9 @@ pub struct Sense {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub id: Option<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub indicator: Vec<String>,
+    pub indicator: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub labels: Vec<String>,

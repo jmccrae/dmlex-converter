@@ -57,10 +57,10 @@ impl WriteXML for &LexicographicResource {
         for relation_type in self.relation_types.iter() {
             relation_type.write_xml(writer)?;
         }
-        for etymon_language in self.etymon_language.iter() {
+        for etymon_language in self.etymon_languages.iter() {
             etymon_language.write_xml(writer)?;
         }
-        for etymon_type in self.etymon_type.iter() {
+        for etymon_type in self.etymon_types.iter() {
             etymon_type.write_xml(writer)?;
         }
         writer.write(XmlEvent::end_element())?;
@@ -103,7 +103,7 @@ impl WriteXML for &Entry {
         for sense in self.senses.iter() {
             sense.write_xml(writer)?;
         }
-        for etymology in self.etymology.iter() {
+        for etymology in self.etymologies.iter() {
             etymology.write_xml(writer)?;
         }
         writer.write(XmlEvent::end_element())?;

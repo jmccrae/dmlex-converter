@@ -6,11 +6,11 @@
         "headword": "safe",
         "senses": [{
             "id": "safe-1",
-            "indicator": ["protected from harm"],
+            "indicator": "protected from harm",
             "examples": [{"text": "It isn't safe to park here."}]
         }, {
             "id": "safe-2",
-            "indicator": ["not likely to cause harm"],
+            "indicator": "not likely to cause harm",
             "examples": [{"text": "Is the ride safe for a small child?"}]
         }]
     }, {
