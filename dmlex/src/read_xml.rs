@@ -137,7 +137,6 @@ impl XMLVisitor for LexicographicResource {
     }
 
     fn visit_attributes(&mut self, attributes: &mut Vec<OwnedAttribute>) -> Result<()> {
-        self.id = str_attr("id", attributes);
         self.uri = str_attr("uri", attributes);
         self.lang_code = LangCode(str_attr("langCode", attributes)
             .ok_or(FromXMLError::MissingAttribute("langCode"))?);
@@ -1278,6 +1277,7 @@ fn text_string<R: Read>(input: &mut EventReader<R>, attributes: Vec<OwnedAttribu
                     collocate_markers.push(CollocateMarker {
                         start_index: headword.chars().count(),
                         end_index: 0,
+                        id: str_attr("id", &mut attributes),
                         lemma: str_attr("lemma", &mut attributes),
                         labels: Vec::new(),
                     });

@@ -8,9 +8,6 @@ use serde::{Deserialize, Serialize};
 pub struct LexicographicResource {
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub id: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
     pub title: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
@@ -514,6 +511,9 @@ pub struct Marker {
 pub struct CollocateMarker {
     pub start_index: usize,
     pub end_index: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub lemma: Option<String>,

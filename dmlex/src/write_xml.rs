@@ -9,9 +9,6 @@ pub trait WriteXML {
 impl WriteXML for &LexicographicResource {
     fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("lexicographicResource");
-        if let Some(id) = &self.id {
-            e = e.attr("id", id);
-        }
         if let Some(uri) = &self.uri {
             e = e.attr("uri", uri);
         }
@@ -764,6 +761,9 @@ fn write_text_string<W : Write>(writer : &mut EventWriter<&mut W>,
             let mut e = XmlEvent::start_element("collocateMarker"); 
             if let Some(lemma) = &collocate_marker.lemma {
                 e = e.attr("lemma", lemma);
+            }
+            if let Some(id) = &collocate_marker.id {
+                e = e.attr("id", id);
             }
             writer.write(e)?;
             let s : String = str_chars[collocate_marker.start_index..collocate_marker.end_index].iter().collect();

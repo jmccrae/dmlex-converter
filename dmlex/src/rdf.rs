@@ -53,7 +53,7 @@ impl ToRDF for LexicographicResource {
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
         _index : usize) -> 
         Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::make(&self.id, data)?;
+        let id = URIOrBlank::gen();
         graph.insert(
             &id,
             &rdf::type_,
@@ -158,7 +158,6 @@ impl FromRDF for LexicographicResource {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
         Ok((0, LexicographicResource {
-            id: get_id(id, data),
             title: get_zero_one_str(g, id, &dmlex.get("title")?)?,
             uri: get_zero_one_str(g, id, &dmlex.get("uri")?)?,
             lang_code: LangCode(get_one_str(g, id, &dmlex.get("langCode")?)?),
@@ -1610,10 +1609,10 @@ impl FromRDF for Marker {
 
 impl ToRDF for &CollocateMarker {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
-        graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
+        graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
         _index : usize) -> 
         Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        let id = URIOrBlank::make(&self.id, data)?;
         graph.insert(
             &id,
             &dmlex.get("startIndex")?,
@@ -1640,12 +1639,13 @@ impl ToRDF for &CollocateMarker {
 
 impl FromRDF for CollocateMarker {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
-        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
         Ok((0, CollocateMarker {
+            id: get_id(id, data),
             start_index: get_one_usize(g, id, &dmlex.get("startIndex")?)?,
             end_index: get_one_usize(g, id, &dmlex.get("endIndex")?)?,
             lemma: get_zero_one_str(g, id, &dmlex.get("lemma")?)?,
-            labels: read_many_str(g, id, "label", _data, dmlex)?,
+            labels: read_many_str(g, id, "label", data, dmlex)?,
         }))
     }
 }
