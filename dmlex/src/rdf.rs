@@ -2407,5 +2407,11 @@ mod tests {
         test_round_trip_rdf_entry("examples/23.rdf");
     }
 
+    #[test]
+    fn test_round_trip_rdf_24() {
+        test_round_trip_rdf_lexicon("examples/24.rdf");
+    }
+
+
  
 }

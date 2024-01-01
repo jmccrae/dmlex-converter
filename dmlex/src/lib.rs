@@ -93,7 +93,7 @@ pub fn write<W : Write>(mut output: W, format: &Format, resource: &Lexicographic
             }
         },
         Format::JSON => {
-            Ok(serde_json::to_writer(output, resource)?)
+            Ok(serde_json::to_writer_pretty(output, resource)?)
         }
     }
 }

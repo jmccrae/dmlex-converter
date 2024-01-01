@@ -292,6 +292,19 @@ mod tests {
         let _resource : Entry = serde_json::from_reader(file).unwrap();
     }
 
+    #[test]
+    fn test_read_xml_24() {
+        let file = File::open("examples/24.xml").unwrap();
+        let _resource : LexicographicResource = crate::read_xml::read_xml(file, "lexicographicResource").unwrap();
+    }
+
+    #[test]
+    fn test_read_json_24() {
+        let file = File::open("examples/24.json").unwrap();
+        let _resource : LexicographicResource = serde_json::from_reader(file).unwrap();
+    }
+
+ 
     fn test_equivalent_lexicon(fname : &str) {
         let file1 = File::open(format!("examples/{}.xml", fname)).unwrap();
         let file2 = File::open(format!("examples/{}.json", fname)).unwrap();
@@ -429,6 +442,12 @@ mod tests {
         test_equivalent_entry("23");
     }
 
+    #[test]
+    fn test_equivalent_24() {
+        test_equivalent_lexicon("24");
+    }
+
+
     fn json_round_trip_lexicon(fname : &str) {
         let file = File::open(format!("examples/{}.json", fname)).unwrap();
         let resource1 : LexicographicResource = serde_json::from_reader(file).unwrap();
@@ -565,6 +584,12 @@ mod tests {
     fn test_json_round_trip_23() {
         json_round_trip_entry("23");
     }
+
+    #[test]
+    fn test_json_round_trip_24() {
+        json_round_trip_lexicon("24");
+    }
+
 
     fn xml_round_trip_lexicon(fname: &str) {
         let file1 = File::open(format!("examples/{}.xml", fname)).unwrap();
@@ -704,5 +729,10 @@ mod tests {
     #[test]
     fn test_xml_round_trip_23() {
         xml_round_trip_entry("23");
+    }
+
+    #[test]
+    fn test_xml_round_trip_24() {
+        xml_round_trip_lexicon("24");
     }
 }
