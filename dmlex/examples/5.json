@@ -9,8 +9,8 @@
             "tag": "sg-gen",
             "text": "folúsghlantóra"
         }, {
-        "tag": "pl",
-        "text": "folúsghlantóirí"
+            "tag": "pl",
+            "text": "folúsghlantóirí"
         }],
         "senses": []
     }],
@@ -26,8 +26,8 @@
         "description": "singular genitive",
         "forPartsOfSpeech": ["n-masc", "n-fem"]
     }, {
-    "tag": "pl",
-    "description": "plural",
-    "forPartsOfSpeech": ["n-masc", "n-fem"]
+        "tag": "pl",
+        "description": "plural",
+        "forPartsOfSpeech": ["n-masc", "n-fem"]
     }]
 }

@@ -6,7 +6,8 @@
         "headword": "the Bible",
         "senses": [{
             "id": "the-bible-1",
-            "definitions": [{"text": "the book considered holy by Christians"}]
+            "definitions": [{"text": 
+                "the book considered holy by Christians"}]
         }]
     }, {
         "id": "bible",
@@ -15,14 +16,17 @@
             "id": "bible-1"
         }, {
             "id": "bible-2",
-            "definitions": [{"text": "a book considered important for a subject"}]
+            "definitions": [{"text": 
+                "a book considered important for a subject"}]
         }]
     }],
     "relations": [{
         "type": "subentrying",
         "members": [
-          {"role": "container", "memberID": "bible-1", "obverseListingOrder": 0},
-          {"role": "subentry", "memberID": "the-bible", "obverseListingOrder": 0}
+          {"role": "container", "memberID": "bible-1", 
+              "obverseListingOrder": 0},
+          {"role": "subentry", "memberID": "the-bible", 
+              "obverseListingOrder": 0}
         ]
     }],
     "relationTypes": [{

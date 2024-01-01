@@ -6,7 +6,8 @@
         "headword": "buy",
         "senses": [{
             "id": "buy-1",
-            "definitions": [{"text": "get something by paying money for it"}]
+            "definitions": [{"text": 
+                "get something by paying money for it"}]
         }]}, {
         "id": "sell",
         "headword": "sell",

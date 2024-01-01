@@ -18,12 +18,12 @@
             "labels": ["idiom"]
             }]
         }, {
-        "id": "abandon-verb-2",
-        "labels": ["mostly-passive"],
-        "definitions": [{"text":"to stop supporting an idea"}],
-        "examples": [{
-            "text": "That theory has been abandoned."
-        }]
+            "id": "abandon-verb-2",
+            "labels": ["mostly-passive"],
+            "definitions": [{"text":"to stop supporting an idea"}],
+            "examples": [{
+                "text": "That theory has been abandoned."
+            }]
         }]
     }]
 }

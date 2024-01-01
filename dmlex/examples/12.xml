@@ -8,26 +8,36 @@
     <entry id="microscope">
         <headword>microscope</headword>
         <sense id="microscope-1">
-            <definition>equipment for looking at very small things</definition>
+            <definition>
+                equipment for looking at very small things
+            </definition>
         </sense>
     </entry>
     <entry id="lens">
         <headword>lens</headword>
         <sense id="lens-1">
-            <definition>curved glass that makes things seem bigger</definition>
+            <definition>
+                    curved glass that makes things seem bigger
+            </definition>
         </sense>
     </entry>
     <relation type="meronymy">
-        <member memberID="glasses-1" role="whole" obverseListingOrder="0"/>
-        <member memberID="lens-1" role="part" obverseListingOrder="0"/>
+        <member memberID="glasses-1" role="whole" 
+            obverseListingOrder="0"/>
+        <member memberID="lens-1" role="part" 
+            obverseListingOrder="0"/>
     </relation>
     <relation type="meronymy">
-        <member memberID="microscope-1" role="whole" obverseListingOrder="0"/>
-        <member memberID="lens-1" role="part" obverseListingOrder="0"/>
+        <member memberID="microscope-1" role="whole" 
+            obverseListingOrder="0"/>
+        <member memberID="lens-1" role="part" 
+            obverseListingOrder="0"/>
     </relation>
     <relationType type="meronymy">
         <description>part-whole relationship</description>
-        <memberType role="whole" type="sense" min="1" max="1" hint="navigate"/>
-        <memberType role="part" type="sense" min="1" max="1" hint="navigate"/>
+        <memberType role="whole" type="sense" min="1" max="1" 
+            hint="navigate"/>
+        <memberType role="part" type="sense" min="1" max="1" 
+            hint="navigate"/>
     </relationType>
 </lexicographicResource>

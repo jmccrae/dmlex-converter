@@ -12,13 +12,15 @@
         "headword": "microscope",
         "senses": [{
             "id": "microscope-1",
-            "definitions": [{"text": "equipment for looking at very small things"}]
+            "definitions": [{"text": 
+                "equipment for looking at very small things"}]
         }]}, {
         "id": "lens",
         "headword": "lens",
         "senses": [{
             "id": "lens-1",
-            "definitions": [{"text": "curved glass that makes things seem bigger"}]
+            "definitions": [{"text": 
+                "curved glass that makes things seem bigger"}]
         }]
     }],
     "relations": [{

@@ -1,26 +1,4 @@
 <lexicographicResource langCode="en">
-    <entry id="school-noun-1">
-        <headword>school</headword>
-        <etymology>
-            <description>Old English scōl, scolu, via Latin from Greek skholē ‘leisure, philosophy, lecture-place’</description>
-            <etymon type="derivation">
-                <etymonUnit langCode="ang">
-                    <text>scōl</text>
-                </etymonUnit>
-            </etymon>
-            <etymon type="derivation">
-                <etymonUnit langCode="ang">
-                    <text>scolu</text>
-                </etymonUnit>
-            </etymon>
-            <etymon type="derivation">
-                <etymonUnit langCode="grc">
-                    <text>skholē</text>
-                    <translation>leisure, philosophy, lecture-place</translation>
-                </etymonUnit>
-            </etymon>
-        </etymology>
-    </entry>
     <entry id="school-noun-2">
         <headword>school</headword>
         <etymology>
@@ -49,12 +27,6 @@
     <etymonType type="doublet">
         <description>Two words derived from the same etymological root</description>
     </etymonType>
-    <etymonLanguage langCode="ang">
-        <displayName>Old English</displayName>
-    </etymonLanguage>
-    <etymonLanguage langCode="grc">
-        <displayName>Ancient Greek</displayName>
-    </etymonLanguage>
     <etymonLanguage langCode="dum">
         <displayName>Middle Dutch</displayName>
     </etymonLanguage>

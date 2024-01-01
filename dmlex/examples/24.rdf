@@ -5,20 +5,13 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
 <file:resource> a dmlex:LexicographicResource;
   dmlex:etymonLanguage [ a dmlex:EtymonLanguage;
-      dmlex:langCode "grc";
-      dmlex:displayName "Ancient Greek" ],
-    [ a dmlex:EtymonLanguage;
       dmlex:langCode "dum";
       dmlex:displayName "Middle Dutch" ],
     [ a dmlex:EtymonLanguage;
       dmlex:langCode "gem-pro";
-      dmlex:displayName "Proto-Germanic" ],
-    [ a dmlex:EtymonLanguage;
-      dmlex:langCode "ang";
-      dmlex:displayName "Old English" ];
+      dmlex:displayName "Proto-Germanic" ];
   dmlex:langCode "en";
-  dmlex:entry <file:school-noun-1>,
-    <file:school-noun-2>;
+  dmlex:entry <file:school-noun-2>;
   dmlex:etymonType [ a dmlex:EtymonType;
       dmlex:description "Two words derived from the same etymological root";
       dmlex:type "doublet" ],
@@ -54,32 +47,3 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
           dmlex:type "doublet";
           dmlex:listingOrder "3"^^xsd:unsignedInt ];
       dmlex:listingOrder "1"^^xsd:unsignedInt ].
-
-<file:school-noun-1> a dmlex:Entry;
-  dmlex:headword "school";
-  dmlex:etymology [ a dmlex:Etymology;
-      dmlex:etymon [ a dmlex:Etymon;
-          dmlex:listingOrder "2"^^xsd:unsignedInt;
-          dmlex:etymonUnit [ a dmlex:EtymonUnit;
-              dmlex:listingOrder "1"^^xsd:unsignedInt;
-              dmlex:text "scolu";
-              dmlex:langCode "ang" ];
-          dmlex:type "derivation" ],
-        [ a dmlex:Etymon;
-          dmlex:listingOrder "1"^^xsd:unsignedInt;
-          dmlex:etymonUnit [ a dmlex:EtymonUnit;
-              dmlex:langCode "ang";
-              dmlex:listingOrder "1"^^xsd:unsignedInt;
-              dmlex:text "scōl" ];
-          dmlex:type "derivation" ],
-        [ a dmlex:Etymon;
-          dmlex:etymonUnit [ a dmlex:EtymonUnit;
-              dmlex:text "skholē";
-              dmlex:langCode "grc";
-              dmlex:translation "leisure, philosophy, lecture-place";
-              dmlex:listingOrder "1"^^xsd:unsignedInt ];
-          dmlex:listingOrder "3"^^xsd:unsignedInt;
-          dmlex:type "derivation" ];
-      dmlex:description "Old English scōl, scolu, via Latin from Greek skholē ‘leisure, philosophy, lecture-place’";
-      dmlex:listingOrder "1"^^xsd:unsignedInt ].
-

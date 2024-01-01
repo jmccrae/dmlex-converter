@@ -4,10 +4,8 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 
 <file:colour> a dmlex:Entry;
-  dmlex:sense <file:colour-1>,
-    <file:colour-2>,
-    <file:colour-4>,
-    <file:colour-3>;
+  dmlex:sense <file:colour-1>, <file:colour-2>, <file:colour-4>, 
+  <file:colour-3>;
   dmlex:headword "colour".
 
 <file:colour-4> a dmlex:Sense;

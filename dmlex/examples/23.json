@@ -14,7 +14,8 @@
       ]
     }, {
       "etymonUnits": [
-        {"langCode": "gem-x-proto", "text": "kattuz", "reconstructed": true}
+        {"langCode": "gem-x-proto", "text": "kattuz", 
+            "reconstructed": true}
       ]
     }]
   }]
