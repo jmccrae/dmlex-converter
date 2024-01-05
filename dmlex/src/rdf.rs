@@ -1455,7 +1455,7 @@ impl ToRDF for &RelationType {
 impl FromRDF for RelationType {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>,
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
-        let scope_restriction = match get_zero_one_str(g, id, &dmlex.get("scopeRestriction")?)? {
+        let scope_restriction = match get_zero_one_dmlex_uri(g, id, &dmlex.get("scopeRestriction")?)? {
             None => None,
             Some(s) => match s.as_str() {
                 "sameEntry" => Some(ScopeRestriction::SameEntry),
@@ -1563,13 +1563,13 @@ impl ToRDF for &MemberType {
 impl FromRDF for MemberType {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
-        let _type = match get_one_str(g, id, &dmlex.get("type")?)?.as_str() {
+        let _type = match get_one_dmlex_uri(g, id, &dmlex.get("type")?)?.as_str() {
             "sense" => MemberTypeType::Sense,
             "collocate" => MemberTypeType::Collocate,
             "entry" => MemberTypeType::Entry,
             s => return Err(RdfError::InvalidMemberType(s.to_string()))
         };
-        let hint = match get_zero_one_str(g, id, &dmlex.get("hint")?)? {
+        let hint = match get_zero_one_dmlex_uri(g, id, &dmlex.get("hint")?)? {
             None => None,
             Some(s) => match s.as_str() {
                 "embed" => Some(Hint::Embed),
@@ -1973,6 +1973,27 @@ fn get_zero_one_str<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt
     }
 }
 
+fn get_zero_one_dmlex_uri<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<Option<String>> {
+    let mut iter = g.triples_with_sp(subj, prop);
+    if let Some(triple) = iter.next() {
+        let t = triple.unwrap();
+        let obj = t.o();
+        if obj.kind() == TermKind::Iri {
+            let iri = obj.value_raw().0.to_string();
+            if iri.starts_with(&DMLEX.to_string()) {
+                Ok(Some(iri[DMLEX.to_string().len()..].to_string()))
+            } else {
+                Err(RdfError::IriExpected(format!("{:?}", subj), format!("{:?}", prop)))
+            }
+        } else {
+            Err(RdfError::IriExpected(format!("{:?}", subj), format!("{:?}", prop)))
+        }
+    } else {
+        Ok(None)
+    }
+}
+
+
 fn get_zero_one_u32<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<Option<u32>> {
     match get_zero_one_str(g, subj, prop) {
         Ok(Some(s)) => Ok(Some(s.parse::<u32>()?)),
@@ -2013,6 +2034,27 @@ fn get_one_str<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Deb
         Err(RdfError::MissingTriple(format!("{:?}", subj), format!("{:?}", prop)))
     }
 }
+
+fn get_one_dmlex_uri<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<String> {
+    let mut iter = g.triples_with_sp(subj, prop);
+    if let Some(triple) = iter.next() {
+        let t = triple.unwrap();
+        let obj = t.o();
+        if obj.kind() ==  TermKind::Iri {
+            let iri = obj.value_raw().0.to_string();
+            if iri.starts_with(&DMLEX.to_string()) {
+                Ok(iri[DMLEX.to_string().len()..].to_string())
+            } else {
+                Err(RdfError::IriExpected(format!("{:?}", subj), format!("{:?}", prop)))
+            }
+        } else {
+            Err(RdfError::IriExpected(format!("{:?}", subj), format!("{:?}", prop)))
+        }
+    } else {
+        Err(RdfError::MissingTriple(format!("{:?}", subj), format!("{:?}", prop)))
+    }
+}
+
 
 fn get_one_usize<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<usize> {
     match get_one_str(g, subj, prop) {
@@ -2107,6 +2149,8 @@ pub enum RdfError {
     TermError(#[from] sophia::term::TermError),
     #[error("Literal expected as value of {0} ={1}=>")]
     LiteralExpected(String, String),
+    #[error("DMLEX Iri expected as value of {0} ={1}=>")]
+    IriExpected(String, String),
     #[error("Missing triple for {0} ={1}=>")]
     MissingTriple(String, String),
     #[error("Value expected as object of {0} ={1}=>")]
