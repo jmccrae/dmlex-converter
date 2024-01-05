@@ -2,25 +2,12 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
+PREFIX ex: <http://www.example.com/#>
 
-<file:bible-1> a dmlex:Sense;
-  dmlex:listingOrder "1"^^xsd:unsignedInt.
-
-<file:bible-2> a dmlex:Sense;
-  dmlex:definition [ a dmlex:Definition;
-      dmlex:text "a book considered important for a subject";
-      dmlex:listingOrder "1"^^xsd:unsignedInt ];
-  dmlex:listingOrder "2"^^xsd:unsignedInt.
-
-<file:bible> a dmlex:Entry;
-  dmlex:sense <file:bible-1>,
-    <file:bible-2>;
-  dmlex:headword "bible".
-
-[] a dmlex:LexicographicResource;
+ex:lexicon a dmlex:LexicographicResource;
   dmlex:langCode "en";
-  dmlex:entry <file:the-bible>,
-    <file:bible>;
+  dmlex:entry ex:the-bible,
+    ex:bible;
   dmlex:relationType [ a dmlex:RelationType;
       dmlex:type "subentrying";
       dmlex:memberType [ a dmlex:MemberType;
@@ -49,13 +36,26 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
           dmlex:ref "bible-1";
           dmlex:role "container" ] ].
 
-<file:the-bible-1> a dmlex:Sense;
+ex:bible a dmlex:Entry;
+  dmlex:sense ex:bible-1,
+    ex:bible-2;
+  dmlex:headword "bible".
+
+ex:bible-1 a dmlex:Sense;
+  dmlex:listingOrder "1"^^xsd:unsignedInt.
+
+ex:bible-2 a dmlex:Sense;
+  dmlex:definition [ a dmlex:Definition;
+      dmlex:text "a book considered important for a subject";
+      dmlex:listingOrder "1"^^xsd:unsignedInt ];
+  dmlex:listingOrder "2"^^xsd:unsignedInt.
+
+ex:the-bible a dmlex:Entry;
+  dmlex:sense ex:the-bible-1;
+  dmlex:headword "the Bible".
+
+ex:the-bible-1 a dmlex:Sense;
   dmlex:listingOrder "1"^^xsd:unsignedInt;
   dmlex:definition [ a dmlex:Definition;
       dmlex:text "the book considered holy by Christians";
       dmlex:listingOrder "1"^^xsd:unsignedInt ].
-
-<file:the-bible> a dmlex:Entry;
-  dmlex:sense <file:the-bible-1>;
-  dmlex:headword "the Bible".
-

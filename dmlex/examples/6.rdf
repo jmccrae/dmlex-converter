@@ -3,8 +3,9 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
+PREFIX ex: <http://www.example.com/#>
 
-[] a dmlex:LexicographicResource;
+ex:lexicon a dmlex:LexicographicResource;
   dmlex:langCode "en";
   dmlex:partOfSpeechTag [ a dmlex:PartOfSpeechTag;
       dmlex:tag "n-masc";

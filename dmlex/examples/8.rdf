@@ -2,8 +2,14 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
+PREFIX ex: <http://www.example.com/#>
 
-<file:doctor-n-1> a dmlex:Sense;
+ex:doctor-n a dmlex:Entry;
+  dmlex:sense ex:doctor-n-1,
+    ex:doctor-n-2;
+  dmlex:headword "doctor".
+
+ex:doctor-n-1 a dmlex:Sense;
   dmlex:headwordTranslation [ a dmlex:HeadwordTranslation;
       dmlex:text "Ärztin";
       dmlex:listingOrder "2"^^xsd:unsignedInt;
@@ -19,7 +25,7 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
   dmlex:indicator "medical doctor";
   dmlex:listingOrder "1"^^xsd:unsignedInt.
 
-<file:doctor-n-2> a dmlex:Sense;
+ex:doctor-n-2 a dmlex:Sense;
   dmlex:headwordTranslation [ a dmlex:HeadwordTranslation;
       dmlex:partOfSpeech [ 
           dmlex:listingOrder "1"^^xsd:unsignedInt;
@@ -34,9 +40,4 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
       dmlex:text "Doktorin" ];
   dmlex:listingOrder "2"^^xsd:unsignedInt;
   dmlex:indicator "academic title".
-
-<file:doctor-n> a dmlex:Entry;
-  dmlex:sense <file:doctor-n-1>,
-    <file:doctor-n-2>;
-  dmlex:headword "doctor".
 

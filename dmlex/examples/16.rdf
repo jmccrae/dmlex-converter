@@ -2,9 +2,10 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
+PREFIX ex: <http://www.example.com/#>
 
-[] a dmlex:LexicographicResource;
-  dmlex:entry <file:colour>;
+ex:lexicon a dmlex:LexicographicResource;
+  dmlex:entry ex:colour;
   dmlex:relation [ a dmlex:Relation;
       dmlex:member [ a dmlex:Member;
           dmlex:ref "colour-3";
@@ -45,7 +46,11 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
           dmlex:type dmlex:sense;
           dmlex:role "super" ] ].
 
-<file:colour-1> a dmlex:Sense;
+ex:colour a dmlex:Entry;
+  dmlex:sense ex:colour-3, ex:colour-2, ex:colour-1;
+  dmlex:headword "colour".
+
+ex:colour-1 a dmlex:Sense;
   dmlex:definition [ a dmlex:Definition;
       dmlex:listingOrder "1"^^xsd:unsignedInt;
       dmlex:text "red, blue, yellow etc." ];
@@ -54,7 +59,7 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
       dmlex:listingOrder "1"^^xsd:unsignedInt;
       dmlex:text "What is your favourite colour?" ].
 
-<file:colour-2> a dmlex:Sense;
+ex:colour-2 a dmlex:Sense;
   dmlex:example [ a dmlex:Example;
       dmlex:listingOrder "1"^^xsd:unsignedInt;
       dmlex:text "Owning a colour TV meant you were rich." ];
@@ -63,11 +68,7 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
       dmlex:text "not being black and white";
       dmlex:listingOrder "1"^^xsd:unsignedInt ].
 
-<file:colour> a dmlex:Entry;
-  dmlex:sense <file:colour-3>, <file:colour-2>, <file:colour-1>;
-  dmlex:headword "colour".
-
-<file:colour-3> a dmlex:Sense;
+ex:colour-3 a dmlex:Sense;
   dmlex:listingOrder "3"^^xsd:unsignedInt;
   dmlex:definition [ a dmlex:Definition;
       dmlex:text "a sign of a person's race";

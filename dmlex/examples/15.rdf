@@ -2,19 +2,11 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
+PREFIX ex: <http://www.example.com/#>
 
-<file:color> a dmlex:Entry;
-  dmlex:partOfSpeech [ 
-      dmlex:listingOrder "1"^^xsd:unsignedInt;
-      dmlex:tag "n" ];
-  dmlex:headword "color";
-  dmlex:label [ 
-      dmlex:tag "americanSpelling";
-      dmlex:listingOrder "1"^^xsd:unsignedInt ].
-
-[] a dmlex:LexicographicResource;
-  dmlex:entry <file:color>,
-    <file:colour>;
+ex:lexicon a dmlex:LexicographicResource;
+  dmlex:entry ex:color,
+    ex:colour;
   dmlex:relation [ a dmlex:Relation;
       dmlex:type "variants";
       dmlex:member [ a dmlex:Member;
@@ -34,7 +26,16 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
   dmlex:langCode "en";
   dmlex:uri "http://example.com".
 
-<file:colour> a dmlex:Entry;
+ex:color a dmlex:Entry;
+  dmlex:partOfSpeech [ 
+      dmlex:listingOrder "1"^^xsd:unsignedInt;
+      dmlex:tag "n" ];
+  dmlex:headword "color";
+  dmlex:label [ 
+      dmlex:tag "americanSpelling";
+      dmlex:listingOrder "1"^^xsd:unsignedInt ].
+
+ex:colour a dmlex:Entry;
   dmlex:headword "colour";
   dmlex:partOfSpeech [ 
       dmlex:tag "n";
@@ -42,9 +43,9 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
   dmlex:label [ 
       dmlex:listingOrder "1"^^xsd:unsignedInt;
       dmlex:tag "europeanSpelling" ];
-  dmlex:sense <file:colour-1>.
+  dmlex:sense ex:colour-1.
 
-<file:colour-1> a dmlex:Sense;
+ex:colour-1 a dmlex:Sense;
   dmlex:example [ a dmlex:Example;
       dmlex:listingOrder "1"^^xsd:unsignedInt;
       dmlex:text "What is your favourite colour?" ];

@@ -2,8 +2,9 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
+PREFIX ex: <http://www.example.com/#>
 
-<file:resource> a dmlex:LexicographicResource;
+ex:lexicon a dmlex:LexicographicResource;
   dmlex:etymonLanguage [ a dmlex:EtymonLanguage;
       dmlex:langCode "dum";
       dmlex:displayName "Middle Dutch" ],
@@ -11,7 +12,7 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
       dmlex:langCode "gem-pro";
       dmlex:displayName "Proto-Germanic" ];
   dmlex:langCode "en";
-  dmlex:entry <file:school-noun-2>;
+  dmlex:entry ex:school-noun-2;
   dmlex:etymonType [ a dmlex:EtymonType;
       dmlex:description "Two words derived from the same etymological root";
       dmlex:type "doublet" ],
@@ -19,7 +20,7 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
       dmlex:description "A historical form of the word";
       dmlex:type "derivation" ].
 
-<file:school-noun-2> a dmlex:Entry;
+ex:school-noun-2 a dmlex:Entry;
   dmlex:headword "school";
   dmlex:etymology [ a dmlex:Etymology;
       dmlex:description "Middle Dutch scole (\"multitude, troop, crowd, school\") from Proto-Germanic *skulō; doublet of shoal";

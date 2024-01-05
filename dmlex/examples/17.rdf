@@ -2,21 +2,11 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
+PREFIX ex: <http://www.example.com/#>
 
-<file:safe-1> a dmlex:Sense;
-  dmlex:listingOrder "1"^^xsd:unsignedInt;
-  dmlex:indicator "protected from harm";
-  dmlex:example [ a dmlex:Example;
-      dmlex:listingOrder "1"^^xsd:unsignedInt;
-      dmlex:text "It isn't safe to park here." ].
-
-<file:better-safe> a dmlex:Entry;
-  dmlex:sense <file:better-safe-1>;
-  dmlex:headword "better safe than sorry".
-
-[] a dmlex:LexicographicResource;
-  dmlex:entry <file:safe>,
-    <file:better-safe>;
+ex:lexicon a dmlex:LexicographicResource;
+  dmlex:entry ex:safe,
+    ex:better-safe;
   dmlex:relation [ a dmlex:Relation;
       dmlex:member [ a dmlex:Member;
           dmlex:ref "safe-1";
@@ -46,19 +36,30 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
       dmlex:scopeRestriction dmlex:sameResource ];
   dmlex:langCode "en".
 
-<file:safe> a dmlex:Entry;
+ex:safe a dmlex:Entry;
   dmlex:headword "safe";
-  dmlex:sense <file:safe-1>,
-    <file:safe-2>.
+  dmlex:sense ex:safe-1,
+    ex:safe-2.
 
-<file:safe-2> a dmlex:Sense;
+ex:safe-1 a dmlex:Sense;
+  dmlex:listingOrder "1"^^xsd:unsignedInt;
+  dmlex:indicator "protected from harm";
+  dmlex:example [ a dmlex:Example;
+      dmlex:listingOrder "1"^^xsd:unsignedInt;
+      dmlex:text "It isn't safe to park here." ].
+
+ex:safe-2 a dmlex:Sense;
   dmlex:example [ a dmlex:Example;
       dmlex:text "Is the ride safe for a small child?";
       dmlex:listingOrder "1"^^xsd:unsignedInt ];
   dmlex:listingOrder "2"^^xsd:unsignedInt;
   dmlex:indicator "not likely to cause harm".
 
-<file:better-safe-1> a dmlex:Sense;
+ex:better-safe a dmlex:Entry;
+  dmlex:sense ex:better-safe-1;
+  dmlex:headword "better safe than sorry".
+
+ex:better-safe-1 a dmlex:Sense;
   dmlex:listingOrder "1"^^xsd:unsignedInt;
   dmlex:definition [ a dmlex:Definition;
       dmlex:listingOrder "1"^^xsd:unsignedInt;
