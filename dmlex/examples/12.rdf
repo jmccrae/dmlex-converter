@@ -26,25 +26,21 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
       dmlex:member [ a dmlex:Member;
           dmlex:role "part";
           dmlex:listingOrder "2"^^xsd:unsignedInt;
-          dmlex:obverseListingOrder "0"^^xsd:unsignedInt;
           dmlex:ref "lens-1" ],
         [ a dmlex:Member;
           dmlex:role "whole";
           dmlex:listingOrder "1"^^xsd:unsignedInt;
-          dmlex:ref "glasses-1";
-          dmlex:obverseListingOrder "0"^^xsd:unsignedInt ];
+          dmlex:ref "glasses-1" ];
       dmlex:type "meronymy" ],
     [ a dmlex:Relation;
       dmlex:listingOrder "2"^^xsd:unsignedInt;
       dmlex:member [ a dmlex:Member;
-          dmlex:obverseListingOrder "0"^^xsd:unsignedInt;
           dmlex:ref "microscope-1";
           dmlex:role "whole";
           dmlex:listingOrder "1"^^xsd:unsignedInt ],
         [ a dmlex:Member;
           dmlex:ref "lens-1";
           dmlex:role "part";
-          dmlex:obverseListingOrder "0"^^xsd:unsignedInt;
           dmlex:listingOrder "2"^^xsd:unsignedInt ];
       dmlex:type "meronymy" ].
 

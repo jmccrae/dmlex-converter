@@ -1372,10 +1372,12 @@ impl ToRDF for &Member {
             &id,
             &dmlex.get("listingOrder")?,
             &((index + 1) as u32).as_literal()).expect("Error inserting triple");
-        graph.insert(
-            &id,
-            &dmlex.get("obverseListingOrder")?,
-            &(self.obverse_listing_order as u32).as_literal()).expect("Error inserting triple");
+        if let Some(obverse_listing_order) = &self.obverse_listing_order {
+            graph.insert(
+                &id,
+                &dmlex.get("obverseListingOrder")?,
+                &obverse_listing_order.as_literal()).expect("Error inserting triple");
+        }
         Ok(id)
     }
 }
@@ -1387,7 +1389,7 @@ impl FromRDF for Member {
         Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, Member {
             ref_: get_one_str(g, id, &dmlex.get("ref")?)?,
             role: get_zero_one_str(g, id, &dmlex.get("role")?)?,
-            obverse_listing_order: get_one_u32(g, id, &dmlex.get("obverseListingOrder")?)?,
+            obverse_listing_order: get_zero_one_u32(g, id, &dmlex.get("obverseListingOrder")?)?,
         }))
     }
 }
@@ -2019,13 +2021,6 @@ fn get_one_usize<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::D
     }
 }
 
-
-fn get_one_u32<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<u32> {
-    match get_one_str(g, subj, prop) {
-        Ok(s) => Ok(s.parse::<u32>()?),
-        Err(e) => Err(e),
-    }
-}
 
 fn get_many_str<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<Vec<String>> {
     let mut iter = g.triples_with_sp(subj, prop);

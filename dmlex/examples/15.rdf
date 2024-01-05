@@ -15,12 +15,10 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
 [] a dmlex:LexicographicResource;
   dmlex:relation [ a dmlex:Relation;
       dmlex:member [ a dmlex:Member;
-          dmlex:obverseListingOrder "0"^^xsd:unsignedInt;
           dmlex:listingOrder "1"^^xsd:unsignedInt;
           dmlex:ref "colour" ],
         [ a dmlex:Member;
           dmlex:ref "color";
-          dmlex:obverseListingOrder "0"^^xsd:unsignedInt;
           dmlex:listingOrder "2"^^xsd:unsignedInt ];
       dmlex:listingOrder "1"^^xsd:unsignedInt;
       dmlex:type "variants" ];

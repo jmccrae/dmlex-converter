@@ -532,9 +532,13 @@ impl WriteXML for &Member {
         if let Some(role) = &self.role {
             e = e.attr("role", role);
         }
-        let x = self.obverse_listing_order.to_string();
-        e = e.attr("obverseListingOrder", &x);
-        writer.write(e)?;
+        if let Some(obverse_listing_order) = &self.obverse_listing_order {
+            let x = obverse_listing_order.to_string();   
+            e = e.attr("obverseListingOrder", &x);
+            writer.write(e)?;
+        } else {
+            writer.write(e)?;
+        }
         writer.write(XmlEvent::end_element())?;
         Ok(())
     }

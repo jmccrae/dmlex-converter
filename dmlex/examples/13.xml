@@ -12,8 +12,8 @@
         </sense>
     </entry>
     <relation type="antonyms">
-        <member ref="buy-1" obverseListingOrder="0"/>
-        <member ref="sell-1" obverseListingOrder="0"/>
+        <member ref="buy-1"/>
+        <member ref="sell-1"/>
     </relation>
     <relationType type="antonyms">
         <memberType type="sense" min="2" max="2" hint="navigate"

@@ -22,16 +22,12 @@
         </sense>
     </entry>
     <relation type="meronymy">
-        <member ref="glasses-1" role="whole" 
-            obverseListingOrder="0"/>
-        <member ref="lens-1" role="part" 
-            obverseListingOrder="0"/>
+        <member ref="glasses-1" role="whole"/>
+        <member ref="lens-1" role="part"/>
     </relation>
     <relation type="meronymy">
-        <member ref="microscope-1" role="whole" 
-            obverseListingOrder="0"/>
-        <member ref="lens-1" role="part" 
-            obverseListingOrder="0"/>
+        <member ref="microscope-1" role="whole"/>
+        <member ref="lens-1" role="part"/>
     </relation>
     <relationType type="meronymy">
         <description>part-whole relationship</description>

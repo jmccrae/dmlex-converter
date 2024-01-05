@@ -14,8 +14,8 @@
         <label tag="americanSpelling"/>
     </entry>
     <relation type="variants">
-        <member ref="colour" obverseListingOrder="0"/>
-        <member ref="color" obverseListingOrder="0"/>
+        <member ref="colour"/>
+        <member ref="color"/>
     </relation>
     <relationType type="variants">
         <description>words which differ only in spelling</description>

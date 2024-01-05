@@ -20,8 +20,8 @@
     "relations": [{
         "type": "variants",
         "members": [
-          {"ref": "colour", "obverseListingOrder": 0},
-          {"ref": "color", "obverseListingOrder": 0}
+          {"ref": "colour"},
+          {"ref": "color"}
         ]
     }],
     "relationTypes": [{

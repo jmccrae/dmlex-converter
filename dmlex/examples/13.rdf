@@ -30,11 +30,9 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
   dmlex:relation [ a dmlex:Relation;
       dmlex:member [ a dmlex:Member;
           dmlex:ref "buy-1";
-          dmlex:obverseListingOrder "0"^^xsd:unsignedInt;
           dmlex:listingOrder "1"^^xsd:unsignedInt ],
         [ a dmlex:Member;
           dmlex:ref "sell-1";
-          dmlex:obverseListingOrder "0"^^xsd:unsignedInt;
           dmlex:listingOrder "2"^^xsd:unsignedInt ];
       dmlex:listingOrder "1"^^xsd:unsignedInt;
       dmlex:type "antonyms" ];
