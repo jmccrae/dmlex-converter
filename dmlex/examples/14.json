@@ -40,7 +40,6 @@
         "type": "synonyms",
         "description": "synonyms and near synonyms",
         "memberTypes": [{
-            "role": "whole",
             "type": "sense",
             "min": 2,
             "hint": "navigate"

@@ -856,8 +856,7 @@ impl XMLVisitor for MemberType {
     }
 
     fn visit_attributes(&mut self, attributes: &mut Vec<OwnedAttribute>) -> Result<()> {
-        self.role = str_attr("role", attributes)
-            .ok_or(FromXMLError::MissingAttribute("role"))?;
+        self.role = str_attr("role", attributes);
         self._type = match str_attr("type", attributes)
             .ok_or(FromXMLError::MissingAttribute("type"))? {
             s => {

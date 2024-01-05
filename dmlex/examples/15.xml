@@ -19,7 +19,7 @@
     </relation>
     <relationType type="variants">
         <description>words which differ only in spelling</description>
-        <memberType type="entry" min="2" hint="navigate" role="obverse"/>
+        <memberType type="entry" min="2" hint="navigate"/>
     </relationType>
 </lexicographicResource>
 

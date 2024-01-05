@@ -136,6 +136,13 @@ impl ToRDF for LexicographicResource {
                 &dmlex.get("relation")?,
                 &relation_id).expect("Error inserting triple");
         }
+        for (i, relation) in self.relation_types.iter().enumerate() {
+            let relation_type_id = relation.to_rdf(graph, data, dmlex, i)?;
+            graph.insert(
+                &id,
+                &dmlex.get("relationType")?,
+                &relation_type_id).expect("Error inserting triple");
+        }
         for  (i, etymon_language) in self.etymon_languages.iter().enumerate() {
             let etymon_language_id = etymon_language.to_rdf(graph, data, dmlex, i)?;
             graph.insert(
@@ -1476,10 +1483,12 @@ impl ToRDF for &MemberType {
             &id,
             &rdf::type_,
             &dmlex.get("MemberType")?).expect("Error inserting triple");
-        graph.insert(
-            &id,
-            &dmlex.get("role")?,
-            &self.role.as_literal()).expect("Error inserting triple");
+        if let Some(role) = &self.role {
+            graph.insert(
+                &id,
+                &dmlex.get("role")?,
+                &role.as_literal()).expect("Error inserting triple");
+        }
         if let Some(description) = &self.description {
             graph.insert(
                 &id,
@@ -1568,7 +1577,7 @@ impl FromRDF for MemberType {
             }
         };
         Ok((0, MemberType {
-            role: get_one_str(g, id, &dmlex.get("role")?)?,
+            role: get_zero_one_str(g, id, &dmlex.get("role")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
             _type,
             min: get_zero_one_u32(g, id, &dmlex.get("min")?)?,

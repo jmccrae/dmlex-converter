@@ -457,7 +457,9 @@ pub enum ScopeRestriction {
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct MemberType {
-    pub role: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default)]
+    pub role: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub description: Option<String>,

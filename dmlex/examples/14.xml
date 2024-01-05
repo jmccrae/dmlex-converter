@@ -29,6 +29,6 @@
     </relation>
     <relationType type="synonyms">
         <description>synonyms and near synonyms</description>
-        <memberType type="sense" min="2" hint="navigate" role="whole"/>
+        <memberType type="sense" min="2" hint="navigate"/>
     </relationType>
 </lexicographicResource>

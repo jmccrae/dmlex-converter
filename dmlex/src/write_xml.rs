@@ -572,8 +572,10 @@ impl WriteXML for &RelationType {
 impl WriteXML for &MemberType {
     #[allow(unused_assignments)]
     fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
-        let mut e = XmlEvent::start_element("memberType")
-            .attr("role", &self.role);
+        let mut e = XmlEvent::start_element("memberType");
+        if let Some(role) = &self.role {
+            e = e.attr("role", role);
+        }
         match self._type {
             MemberTypeType::Sense => e = e.attr("type", "sense"),
             MemberTypeType::Entry => e = e.attr("type", "entry"),
