@@ -19,12 +19,6 @@
                 <text>People of all creeds and colours.</text>
             </example>
         </sense>
-        <sense id="colour-4">
-            <definition>interest or excitement</definition>
-            <example>
-                <text>Examples add colour to your writing.</text>
-            </example>
-        </sense>
     </entry>
     <relation type="subsensing">
         <member ref="colour-1" role="super"/>
@@ -35,7 +29,9 @@
         <member ref="colour-3" role="sub"/>
     </relation>
     <relationType type="subsensing" scopeRestriction="sameEntry">
-        <memberType role="super" type="sense" min="1" max="1" hint="none"/>
-        <memberType role="sub" type="sense" min="1" max="1" hint="embed"/>
+        <memberType role="super" type="sense" min="1" 
+            max="1" hint="none"/>
+        <memberType role="sub" type="sense" min="1" 
+            max="1" hint="embed"/>
     </relationType>
 </lexicographicResource>
