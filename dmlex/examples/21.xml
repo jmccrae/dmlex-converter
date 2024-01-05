@@ -3,13 +3,9 @@
     <sense id="autopsy-1">
         <headwordTranslation><text>pitva</text></headwordTranslation>
         <example>
-            <text>
-    The coroner performed an <headwordMarker>autopsy</headwordMarker>.
-            </text>
+            <text>The coroner performed an <headwordMarker>autopsy</headwordMarker>.</text>
             <exampleTranslation>
-                <text>
-    Koroner provedl <headwordMarker>pitvu</headwordMarker>.
-                </text>
+                <text>Koroner provedl <headwordMarker>pitvu</headwordMarker>.</text>
             </exampleTranslation>
         </example>
     </sense>

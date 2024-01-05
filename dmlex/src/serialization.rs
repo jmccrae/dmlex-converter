@@ -595,7 +595,7 @@ mod tests {
         let file1 = File::open(format!("examples/{}.xml", fname)).unwrap();
         let resource1 : LexicographicResource = crate::read_xml::read_xml(file1, "lexicographicResource").unwrap();
         let mut out = Vec::new();
-        let mut writer = xml::EmitterConfig::new().perform_indent(true).create_writer(&mut out);
+        let mut writer = xml::EmitterConfig::new().create_writer(&mut out);
         (&resource1).write_xml(&mut writer).unwrap();
         let resource2 : LexicographicResource = crate::read_xml::read_xml(&out[..], "lexicographicResource").unwrap();
         assert_eq!(resource1, resource2);
@@ -605,7 +605,7 @@ mod tests {
         let file1 = File::open(format!("examples/{}.xml", fname)).unwrap();
         let resource1 : Entry = crate::read_xml::read_xml(file1, "entry").unwrap();
         let mut out = Vec::new();
-        let mut writer = xml::EmitterConfig::new().perform_indent(true).create_writer(&mut out);
+        let mut writer = xml::EmitterConfig::new().create_writer(&mut out);
         (&resource1).write_xml(&mut writer).unwrap();
         let resource2 : Entry = crate::read_xml::read_xml(&out[..], "entry").unwrap();
         assert_eq!(resource1, resource2);

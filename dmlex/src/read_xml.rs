@@ -1208,25 +1208,17 @@ fn headword_string<R: Read>(input: &mut EventReader<R>, attributes: Vec<OwnedAtt
                 }
             },
             Ok(Characters(characters)) => {
-                if headword.len() == 0 {
-                    headword.push_str(&characters.trim_start());
-                } else {
-                    headword.push_str(&characters);
-                }
+                headword.push_str(&characters);
             },
             Ok(CData(cdata)) => {
-                if headword.len() == 0 {
-                    headword.push_str(&cdata.trim_start());
-                } else {
-                    headword.push_str(&cdata);
-                }
+                headword.push_str(&cdata);
             },
             Ok(EndElement { name, .. }) => {
                 if name.local_name == "headword" || name.local_name == "text" {
                     if markers.len() > 0 && markers.last().unwrap().end_index == 0 {
                         return Err(FromXMLError::UnclosedPlaceholderMarker);
                     }
-                    return Ok((headword.trim().to_string(), markers));
+                    return Ok((headword.to_string(), markers));
                 } else if name.local_name == "placeholderMarker" {
                     if markers.len() == 0 {
                         return Err(FromXMLError::MismatchedEndElement("placeholderMarker".to_string()));
@@ -1237,9 +1229,7 @@ fn headword_string<R: Read>(input: &mut EventReader<R>, attributes: Vec<OwnedAtt
                 }
             },
             Ok(Whitespace(s)) => {
-                if headword.len() == 0 {
-                    headword.push_str(&s);
-                }
+                headword.push_str(&s);
             },
             Ok(StartDocument { .. }) => {
                 return Err(FromXMLError::UnexpectedStartDocument);
@@ -1290,25 +1280,17 @@ fn text_string<R: Read>(input: &mut EventReader<R>, attributes: Vec<OwnedAttribu
                 }
             },
             Ok(Characters(characters)) => {
-                if headword.len() == 0 {
-                    headword.push_str(&characters.trim_start());
-                } else {
-                    headword.push_str(&characters);
-                }
+                headword.push_str(&characters);
             },
             Ok(CData(cdata)) => {
-                if headword.len() == 0 {
-                    headword.push_str(&cdata.trim_start());
-                } else {
-                    headword.push_str(&cdata);
-                }
+                headword.push_str(&cdata);
             },
             Ok(EndElement { name, .. }) => {
                 if name.local_name == "text" || name.local_name == "headwordExplanation" {
                     if markers.len() > 0 && markers.last().unwrap().end_index == 0 {
                         return Err(FromXMLError::UnclosedPlaceholderMarker);
                     }
-                    return Ok((headword.trim().to_string(), markers, collocate_markers));
+                    return Ok((headword.to_string(), markers, collocate_markers));
                 } else if name.local_name == "headwordMarker" {
                     if markers.len() == 0 {
                         return Err(FromXMLError::MismatchedEndElement("headwordMarker".to_string()));
@@ -1326,9 +1308,7 @@ fn text_string<R: Read>(input: &mut EventReader<R>, attributes: Vec<OwnedAttribu
                 }
             },
             Ok(Whitespace(s)) => {
-                if headword.len() == 0 {
-                    headword.push_str(&s);
-                }
+                headword.push_str(&s);
             },
             Ok(StartDocument { .. }) => {
                 return Err(FromXMLError::UnexpectedStartDocument);
