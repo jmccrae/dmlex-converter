@@ -795,8 +795,8 @@ impl XMLVisitor for Member {
     }
 
     fn visit_attributes(&mut self, attributes: &mut Vec<OwnedAttribute>) -> Result<()> {
-        self.member_id = str_attr("memberID", attributes)
-            .ok_or(FromXMLError::MissingAttribute("memberID"))?;
+        self.ref_ = str_attr("ref", attributes)
+            .ok_or(FromXMLError::MissingAttribute("ref"))?;
         self.role = str_attr("role", attributes);
         self.obverse_listing_order = u32_attr("obverseListingOrder", attributes)?
             .ok_or(FromXMLError::MissingAttribute("obverseListingOrder"))?;

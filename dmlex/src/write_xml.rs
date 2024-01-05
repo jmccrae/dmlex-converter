@@ -528,7 +528,7 @@ impl  WriteXML for &Relation {
 impl WriteXML for &Member {
     fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("member")
-            .attr("memberID", &self.member_id);
+            .attr("ref", &self.ref_);
         if let Some(role) = &self.role {
             e = e.attr("role", role);
         }

@@ -23,9 +23,9 @@
     "relations": [{
         "type": "subentrying",
         "members": [
-          {"role": "container", "memberID": "bible-1", 
+          {"role": "container", "ref": "bible-1", 
               "obverseListingOrder": 0},
-          {"role": "subentry", "memberID": "the-bible", 
+          {"role": "subentry", "ref": "the-bible", 
               "obverseListingOrder": 0}
         ]
     }],

@@ -55,14 +55,14 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
       dmlex:member [ a dmlex:Member;
           dmlex:obverseListingOrder "0"^^xsd:unsignedInt;
           dmlex:listingOrder "2"^^xsd:unsignedInt;
-          dmlex:memberID "das-meer-1" ],
+          dmlex:ref "das-meer-1" ],
         [ a dmlex:Member;
           dmlex:listingOrder "3"^^xsd:unsignedInt;
           dmlex:obverseListingOrder "0"^^xsd:unsignedInt;
-          dmlex:memberID "der-ozean-1" ],
+          dmlex:ref "der-ozean-1" ],
         [ a dmlex:Member;
           dmlex:obverseListingOrder "0"^^xsd:unsignedInt;
           dmlex:listingOrder "1"^^xsd:unsignedInt;
-          dmlex:memberID "die-see-1" ];
+          dmlex:ref "die-see-1" ];
       dmlex:description "words that mean sea and ocean" ].
 

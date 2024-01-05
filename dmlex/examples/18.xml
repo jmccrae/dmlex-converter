@@ -17,9 +17,9 @@
         </sense>
     </entry>
     <relation type="subentrying">
-        <member memberID="bible-1" role="container" 
+        <member ref="bible-1" role="container" 
             obverseListingOrder="0"/>
-        <member memberID="the-bible" role="subentry" 
+        <member ref="the-bible" role="subentry" 
             obverseListingOrder="0"/>
     </relation>
     <relationType type="subentrying" scopeRestriction="sameResource">

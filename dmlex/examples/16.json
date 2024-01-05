@@ -29,17 +29,17 @@
     "relations": [{
         "type": "subsensing",
         "members": [
-          {"role": "super", "memberID": "colour-1", 
+          {"role": "super", "ref": "colour-1", 
               "obverseListingOrder": 0},
-          {"role": "sub", "memberID": "colour-2", 
+          {"role": "sub", "ref": "colour-2", 
               "obverseListingOrder": 0}
         ]
     }, {
         "type": "subsensing",
         "members": [
-          {"role": "super", "memberID": "colour-1", 
+          {"role": "super", "ref": "colour-1", 
               "obverseListingOrder": 0},
-          {"role": "sub", "memberID": "colour-3", 
+          {"role": "sub", "ref": "colour-3", 
               "obverseListingOrder": 0}
         ]
     }],

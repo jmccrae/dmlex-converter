@@ -28,10 +28,10 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
           dmlex:role "container";
           dmlex:listingOrder "1"^^xsd:unsignedInt;
           dmlex:obverseListingOrder "0"^^xsd:unsignedInt;
-          dmlex:memberID "safe-1" ],
+          dmlex:ref "safe-1" ],
         [ a dmlex:Member;
           dmlex:listingOrder "2"^^xsd:unsignedInt;
-          dmlex:memberID "better-safe";
+          dmlex:ref "better-safe";
           dmlex:role "subentry";
           dmlex:obverseListingOrder "0"^^xsd:unsignedInt ];
       dmlex:type "subentrying" ];

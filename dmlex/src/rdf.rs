@@ -1314,11 +1314,11 @@ impl ToRDF for &Relation {
                 &description.as_literal()).expect("Error inserting triple");
         }
         for (i, member) in self.members.iter().enumerate() {
-            let member_id = member.to_rdf(graph, data, dmlex, i)?;
+            let ref_ = member.to_rdf(graph, data, dmlex, i)?;
             graph.insert(
                 &id,
                 &dmlex.get("member")?,
-                &member_id).expect("Error inserting triple");
+                &ref_).expect("Error inserting triple");
         }
         graph.insert(
             &id,
@@ -1349,8 +1349,8 @@ impl ToRDF for &Member {
         let id = URIOrBlank::gen();
         graph.insert(
             &id,
-            &dmlex.get("memberID")?,
-            &self.member_id.as_literal()).expect("Error inserting triple");
+            &dmlex.get("ref")?,
+            &self.ref_.as_literal()).expect("Error inserting triple");
         graph.insert(
             &id,
             &rdf::type_,
@@ -1378,7 +1378,7 @@ impl FromRDF for Member {
         g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
 
         Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, Member {
-            member_id: get_one_str(g, id, &dmlex.get("memberID")?)?,
+            ref_: get_one_str(g, id, &dmlex.get("ref")?)?,
             role: get_zero_one_str(g, id, &dmlex.get("role")?)?,
             obverse_listing_order: get_one_u32(g, id, &dmlex.get("obverseListingOrder")?)?,
         }))

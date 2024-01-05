@@ -26,22 +26,22 @@
     "relations": [{
         "type": "meronymy",
         "members": [{
-            "memberID": "glasses-1",
+            "ref": "glasses-1",
             "role": "whole",
             "obverseListingOrder": 0
         }, {
-            "memberID": "lens-1",
+            "ref": "lens-1",
             "role": "part",
             "obverseListingOrder": 0
         }]
     }, {
         "type": "meronymy",
         "members": [{
-            "memberID": "microscope-1",
+            "ref": "microscope-1",
             "role": "whole",
             "obverseListingOrder": 0
         }, {
-            "memberID": "lens-1",
+            "ref": "lens-1",
             "role": "part",
             "obverseListingOrder": 0
         }]

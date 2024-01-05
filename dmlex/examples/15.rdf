@@ -17,9 +17,9 @@ PREFIX dmlex: <https://www.oasis-open.org/to-be-confirmed/dmlex#>
       dmlex:member [ a dmlex:Member;
           dmlex:obverseListingOrder "0"^^xsd:unsignedInt;
           dmlex:listingOrder "1"^^xsd:unsignedInt;
-          dmlex:memberID "colour" ],
+          dmlex:ref "colour" ],
         [ a dmlex:Member;
-          dmlex:memberID "color";
+          dmlex:ref "color";
           dmlex:obverseListingOrder "0"^^xsd:unsignedInt;
           dmlex:listingOrder "2"^^xsd:unsignedInt ];
       dmlex:listingOrder "1"^^xsd:unsignedInt;

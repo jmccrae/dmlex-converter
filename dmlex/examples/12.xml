@@ -22,15 +22,15 @@
         </sense>
     </entry>
     <relation type="meronymy">
-        <member memberID="glasses-1" role="whole" 
+        <member ref="glasses-1" role="whole" 
             obverseListingOrder="0"/>
-        <member memberID="lens-1" role="part" 
+        <member ref="lens-1" role="part" 
             obverseListingOrder="0"/>
     </relation>
     <relation type="meronymy">
-        <member memberID="microscope-1" role="whole" 
+        <member ref="microscope-1" role="whole" 
             obverseListingOrder="0"/>
-        <member memberID="lens-1" role="part" 
+        <member ref="lens-1" role="part" 
             obverseListingOrder="0"/>
     </relation>
     <relationType type="meronymy">
