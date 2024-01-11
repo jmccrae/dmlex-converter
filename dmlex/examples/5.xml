@@ -15,14 +15,10 @@
     <partOfSpeechTag tag="n-fem">
         <description>feminine noun</description>
     </partOfSpeechTag>
-    <inflectedFormTag tag="sg-gen">
+    <inflectedFormTag tag="sg-gen" for="n-masc n-fem">
         <description>singular genitive</description>
-        <forPartOfSpeech tag="n-masc"/>
-        <forPartOfSpeech tag="n-fem"/>
     </inflectedFormTag>
-    <inflectedFormTag tag="pl">
+    <inflectedFormTag tag="pl" for="n-masc n-fem">
         <description>plural</description>
-        <forPartOfSpeech tag="n-masc"/>
-        <forPartOfSpeech tag="n-fem"/>
     </inflectedFormTag>
 </lexicographicResource>

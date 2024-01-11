@@ -287,16 +287,8 @@ pub struct InflectedFormTag {
     pub same_as: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub for_headwords: Option<bool>,
-    #[serde(default)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub for_translations: Option<bool>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    #[serde(default)]
-    pub for_languages: Vec<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    #[serde(default)]
-    pub for_parts_of_speech: Vec<String>,
+    #[serde(rename = "for")]
+    pub for_ : Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
@@ -315,19 +307,8 @@ pub struct LabelTag {
     pub same_as: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub for_headwords: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    pub for_translations: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    pub for_collocates: Option<bool>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    #[serde(default)]
-    pub for_languages: Vec<String>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    #[serde(default)]
-    pub for_parts_of_speech: Vec<String>,
+    #[serde(rename = "for")]
+    pub for_ : Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
@@ -356,16 +337,8 @@ pub struct PartOfSpeechTag {
     pub same_as: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub for_headwords: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    pub for_translations: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    pub for_etymology: Option<bool>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    #[serde(default)]
-    pub for_languages: Vec<String>,
+    #[serde(rename = "for")]
+    pub for_ : Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
@@ -391,14 +364,10 @@ pub struct TranscriptionSchemeTag {
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
-    pub for_headwords: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    #[serde(default)]
-    pub for_translations: Option<bool>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    #[serde(default)]
-    pub for_languages: Vec<String>,
+    #[serde(rename = "for")]
+    pub for_ : Option<String>,
 }
+
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]

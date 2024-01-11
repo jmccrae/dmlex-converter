@@ -959,29 +959,11 @@ impl ToRDF for &InflectedFormTag {
                 &owl::sameAs,
                 &Iri::new(same_as)?).expect("Error inserting triple");
         }
-        if let Some(for_headwords) = &self.for_headwords {
+        if let Some(for_) = &self.for_ {
             graph.insert(
                 &id,
-                &dmlex.get("forHeadwords")?,
-                &for_headwords.as_literal()).expect("Error inserting triple");
-        }
-        if let Some(for_translations) = &self.for_translations {
-            graph.insert(
-                &id,
-                &dmlex.get("forTranslations")?,
-                &for_translations.as_literal()).expect("Error inserting triple");
-        }
-        for for_language in &self.for_languages {
-            graph.insert(
-                &id,
-                &dmlex.get("forLanguage")?,
-                &for_language.as_literal()).expect("Error inserting triple");
-        }
-        for for_part_of_speech in &self.for_parts_of_speech {
-            graph.insert(
-                &id,
-                &dmlex.get("forPartOfSpeech")?,
-                &for_part_of_speech.as_literal()).expect("Error inserting triple");
+                &dmlex.get("for")?,
+                &for_.as_literal()).expect("Error inserting triple");
         }
 
         Ok(id)
@@ -996,10 +978,7 @@ impl FromRDF for InflectedFormTag {
             tag: get_one_str(g, id, &dmlex.get("tag")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
             same_as: read_same_as(g, id, data)?,
-            for_headwords: get_zero_one_bool(g, id, &dmlex.get("forHeadwords")?)?,
-            for_translations: get_zero_one_bool(g, id, &dmlex.get("forTranslations")?)?,
-            for_languages: read_many_str(g, id, "forLanguage", data, dmlex)?,
-            for_parts_of_speech: read_many_str(g, id, "forPartOfSpeech", data, dmlex)?,
+            for_: get_zero_one_str(g, id, &dmlex.get("for")?)?,
         }))
     }
 }
@@ -1036,35 +1015,11 @@ impl ToRDF for &LabelTag {
                 &owl::sameAs,
                 &Iri::new(same_as)?).expect("Error inserting triple");
         }
-        if let Some(for_headwords) = &self.for_headwords {
+        if let Some(for_) = &self.for_{
             graph.insert(
                 &id,
-                &dmlex.get("forHeadwords")?,
-                &for_headwords.as_literal()).expect("Error inserting triple");
-        }
-        if let Some(for_translations) = &self.for_translations {
-            graph.insert(
-                &id,
-                &dmlex.get("forTranslations")?,
-                &for_translations.as_literal()).expect("Error inserting triple");
-        }
-        if let Some(for_collocates) = &self.for_collocates {
-            graph.insert(
-                &id,
-                &dmlex.get("forCollocates")?,
-                &for_collocates.as_literal()).expect("Error inserting triple");
-        }
-        for for_language in &self.for_languages {
-            graph.insert(
-                &id,
-                &dmlex.get("forLanguage")?,
-                &for_language.as_literal()).expect("Error inserting triple");
-        }
-        for for_part_of_speech in &self.for_parts_of_speech {
-            graph.insert(
-                &id,
-                &dmlex.get("forPartOfSpeech")?,
-                &for_part_of_speech.as_literal()).expect("Error inserting triple");
+                &dmlex.get("for")?,
+                &for_.as_literal()).expect("Error inserting triple");
         }
         Ok(id)
     }
@@ -1079,11 +1034,7 @@ impl FromRDF for LabelTag {
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
             type_tag: get_zero_one_str(g, id, &dmlex.get("typeTag")?)?,
             same_as: read_same_as(g, id, data)?,
-            for_headwords: get_zero_one_bool(g, id, &dmlex.get("forHeadwords")?)?,
-            for_translations: get_zero_one_bool(g, id, &dmlex.get("forTranslations")?)?,
-            for_collocates: get_zero_one_bool(g, id, &dmlex.get("forCollocates")?)?,
-            for_languages: read_many_str(g, id, "forLanguage", data, dmlex)?,
-            for_parts_of_speech: read_many_str(g, id, "forPartOfSpeech", data, dmlex)?,
+            for_: get_zero_one_str(g, id, &dmlex.get("for")?)?,
         }))
     }
 }
@@ -1157,29 +1108,11 @@ impl ToRDF for &PartOfSpeechTag {
                 &owl::sameAs,
                 &Iri::new(same_as)?).expect("Error inserting triple");
         }
-        if let Some(for_headwords) = &self.for_headwords {
+        if let Some(for_) = &self.for_{
             graph.insert(
                 &id,
-                &dmlex.get("forHeadwords")?,
-                &for_headwords.as_literal()).expect("Error inserting triple");
-        }
-        if let Some(for_translations) = &self.for_translations {
-            graph.insert(
-                &id,
-                &dmlex.get("forTranslations")?,
-                &for_translations.as_literal()).expect("Error inserting triple");
-        }
-        if let Some(for_etymology) = &self.for_etymology {
-            graph.insert(
-                &id,
-                &dmlex.get("forEtymology")?,
-                &for_etymology.as_literal()).expect("Error inserting triple");
-        }
-        for for_language in &self.for_languages {
-            graph.insert(
-                &id,
-                &dmlex.get("forLanguage")?,
-                &for_language.as_literal()).expect("Error inserting triple");
+                &dmlex.get("for")?,
+                &for_.as_literal()).expect("Error inserting triple");
         }
         Ok(id)
     }
@@ -1193,10 +1126,7 @@ impl FromRDF for PartOfSpeechTag {
             tag: get_one_str(g, id, &dmlex.get("tag")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
             same_as: read_same_as(g, id, data)?,
-            for_headwords: get_zero_one_bool(g, id, &dmlex.get("forHeadwords")?)?,
-            for_translations: get_zero_one_bool(g, id, &dmlex.get("forTranslations")?)?,
-            for_etymology: get_zero_one_bool(g, id, &dmlex.get("forEtymology")?)?,
-            for_languages: read_many_str(g, id, "forLanguage", data, dmlex)?,
+            for_: get_zero_one_str(g, id, &dmlex.get("for")?)?,
         }))
     }
 }
@@ -1264,23 +1194,11 @@ impl ToRDF for &TranscriptionSchemeTag {
                 &dmlex.get("description")?,
                 &description.as_literal()).expect("Error inserting triple");
         }
-        if let Some(for_headwords) = &self.for_headwords {
+        if let Some(for_) = &self.for_{
             graph.insert(
                 &id,
-                &dmlex.get("forHeadwords")?,
-                &for_headwords.as_literal()).expect("Error inserting triple");
-        }
-        if let Some(for_translations) = &self.for_translations {
-            graph.insert(
-                &id,
-                &dmlex.get("forTranslations")?,
-                &for_translations.as_literal()).expect("Error inserting triple");
-        }
-        for for_language in &self.for_languages {
-            graph.insert(
-                &id,
-                &dmlex.get("forLanguage")?,
-                &for_language.as_literal()).expect("Error inserting triple");
+                &dmlex.get("for")?,
+                &for_.as_literal()).expect("Error inserting triple");
         }
         Ok(id)
     }
@@ -1288,14 +1206,12 @@ impl ToRDF for &TranscriptionSchemeTag {
 
 impl FromRDF for TranscriptionSchemeTag {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>,
-        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
 
         Ok((0, TranscriptionSchemeTag {
             tag: get_one_str(g, id, &dmlex.get("tag")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
-            for_headwords: get_zero_one_bool(g, id, &dmlex.get("forHeadwords")?)?,
-            for_translations: get_zero_one_bool(g, id, &dmlex.get("forTranslations")?)?,
-            for_languages: read_many_str(g, id, "forLanguage", data, dmlex)?,
+            for_: get_zero_one_str(g, id, &dmlex.get("for")?)?,
         }))
     }
 }
@@ -2415,15 +2331,16 @@ mod tests {
         test_round_trip_rdf_lexicon("examples/15.rdf");
     }
 
-    #[test]
-    fn test_round_trip_rdf_16() {
-        test_round_trip_rdf_lexicon("examples/16.rdf");
-    }
+    // Example truncated for spec
+    //#[test]
+    //fn test_round_trip_rdf_16() {
+    //    test_round_trip_rdf_lexicon("examples/16.rdf");
+    //}
 
-    #[test]
-    fn test_round_trip_rdf_17() {
-        test_round_trip_rdf_lexicon("examples/17.rdf");
-    }
+    //#[test]
+    //fn test_round_trip_rdf_17() {
+    //    test_round_trip_rdf_lexicon("examples/17.rdf");
+    //}
 
     #[test]
     fn test_round_trip_rdf_18() {

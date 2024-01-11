@@ -569,8 +569,7 @@ impl XMLVisitor for InflectedFormTag {
     fn visit_attributes(&mut self, attributes: &mut Vec<OwnedAttribute>) -> Result<()> {
         self.tag = str_attr("tag", attributes)
             .ok_or(FromXMLError::MissingAttribute("tag"))?;
-        self.for_headwords = bool_attr("forHeadwords", attributes)?;
-        self.for_translations = bool_attr("forTranslations", attributes)?;
+        self.for_= str_attr("for", attributes);
         Ok(())
     }
 
@@ -580,14 +579,6 @@ impl XMLVisitor for InflectedFormTag {
         match name {
             "description" => {
                 self.description = Some(text(reader, attributes)?);
-                Ok(())
-            },
-            "forLanguage" => {
-                self.for_languages.push(lang_code_tag(reader, attributes)?);
-                Ok(())
-            },
-            "forPartOfSpeech" => {
-                self.for_parts_of_speech.push(tag(reader, attributes)?);
                 Ok(())
             },
             "sameAs" => {
@@ -607,9 +598,7 @@ impl XMLVisitor for LabelTag {
     fn visit_attributes(&mut self, attributes: &mut Vec<OwnedAttribute>) -> Result<()> {
         self.tag = str_attr("tag", attributes)
             .ok_or(FromXMLError::MissingAttribute("tag"))?;
-        self.for_headwords = bool_attr("forHeadwords", attributes)?;
-        self.for_translations = bool_attr("forTranslations", attributes)?;
-        self.for_collocates = bool_attr("forCollocates", attributes)?;
+        self.for_= str_attr("for", attributes);
         Ok(())
     }
 
@@ -619,14 +608,6 @@ impl XMLVisitor for LabelTag {
         match name {
             "description" => {
                 self.description = Some(text(reader, attributes)?);
-                Ok(())
-            },
-            "forLanguage" => {
-                self.for_languages.push(lang_code_tag(reader, attributes)?);
-                Ok(())
-            },
-            "forPartOfSpeech" => {
-                self.for_parts_of_speech.push(tag(reader, attributes)?);
                 Ok(())
             },
             "sameAs" => {
@@ -674,9 +655,7 @@ impl XMLVisitor for PartOfSpeechTag {
     fn visit_attributes(&mut self, attributes: &mut Vec<OwnedAttribute>) -> Result<()> {
         self.tag = str_attr("tag", attributes)
             .ok_or(FromXMLError::MissingAttribute("tag"))?;
-        self.for_headwords = bool_attr("forHeadwords", attributes)?;
-        self.for_translations = bool_attr("forTranslations", attributes)?;
-        self.for_etymology = bool_attr("forEtymology", attributes)?;
+        self.for_= str_attr("for", attributes);
         Ok(())
     }
 
@@ -686,10 +665,6 @@ impl XMLVisitor for PartOfSpeechTag {
         match name {
             "description" => {
                 self.description = Some(text(reader, attributes)?);
-                Ok(())
-            },
-            "forLanguage" => {
-                self.for_languages.push(lang_code_tag(reader, attributes)?);
                 Ok(())
             },
             "sameAs" => {
@@ -738,8 +713,7 @@ impl XMLVisitor for TranscriptionSchemeTag {
     fn visit_attributes(&mut self, attributes: &mut Vec<OwnedAttribute>) -> Result<()> {
         self.tag = str_attr("tag", attributes)
             .ok_or(FromXMLError::MissingAttribute("tag"))?;
-        self.for_headwords = bool_attr("forHeadwords", attributes)?;
-        self.for_translations = bool_attr("forTranslations", attributes)?;
+        self.for_= str_attr("for", attributes);
         Ok(())
     }
 
@@ -749,10 +723,6 @@ impl XMLVisitor for TranscriptionSchemeTag {
         match name {
             "description" => {
                 self.description = Some(text(reader, attributes)?);
-                Ok(())
-            },
-            "forLanguage" => {
-                self.for_languages.push(lang_code_tag(reader, attributes)?);
                 Ok(())
             },
             _ => Err(FromXMLError::UnexpectedElement(name.to_string())),

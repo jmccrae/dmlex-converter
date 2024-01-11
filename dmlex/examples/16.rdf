@@ -7,42 +7,32 @@ PREFIX ex: <http://www.example.com/#>
 ex:lexicon a dmlex:LexicographicResource;
   dmlex:entry ex:colour;
   dmlex:relation [ a dmlex:Relation;
-      dmlex:member [ a dmlex:Member;
-          dmlex:ref "colour-3";
+      dmlex:member [ dmlex:ref "colour-3";
           dmlex:listingOrder "2"^^xsd:unsignedInt;
-          dmlex:role "sub" ],
-        [ a dmlex:Member;
+          dmlex:role "sub" ], [
           dmlex:listingOrder "1"^^xsd:unsignedInt;
           dmlex:role "super";
           dmlex:ref "colour-1" ];
       dmlex:type "subsensing";
-      dmlex:listingOrder "2"^^xsd:unsignedInt ],
-    [ a dmlex:Relation;
+      dmlex:listingOrder "2"^^xsd:unsignedInt ], [ 
       dmlex:listingOrder "1"^^xsd:unsignedInt;
       dmlex:type "subsensing";
-      dmlex:member [ a dmlex:Member;
-          dmlex:ref "colour-2";
+      dmlex:member [ dmlex:ref "colour-2";
           dmlex:role "sub";
-          dmlex:listingOrder "2"^^xsd:unsignedInt ],
-        [ a dmlex:Member;
+          dmlex:listingOrder "2"^^xsd:unsignedInt ], [ 
           dmlex:role "super";
           dmlex:ref "colour-1";
           dmlex:listingOrder "1"^^xsd:unsignedInt ] ];
   dmlex:langCode "en";
   dmlex:uri "http://example.com";
-  dmlex:relationType [ a dmlex:RelationType;
-      dmlex:scopeRestriction dmlex:sameEntry;
+  dmlex:relationType [ dmlex:scopeRestriction dmlex:sameEntry;
       dmlex:type "subsensing";
-      dmlex:memberType [ a dmlex:MemberType;
-          dmlex:min "1"^^xsd:unsignedInt;
-          dmlex:max "1"^^xsd:unsignedInt;
+      dmlex:memberType [ dmlex:min 1; dmlex:max 1;
           dmlex:type dmlex:sense;
           dmlex:role "sub";
-          dmlex:hint dmlex:embed ],
-        [ a dmlex:MemberType;
-          dmlex:min "1"^^xsd:unsignedInt;
+          dmlex:hint dmlex:embed ], [ 
+          dmlex:min 1; dmlex:max: 1;
           dmlex:hint dmlex:none;
-          dmlex:max "1"^^xsd:unsignedInt;
           dmlex:type dmlex:sense;
           dmlex:role "super" ] ].
 
@@ -51,28 +41,22 @@ ex:colour a dmlex:Entry;
   dmlex:headword "colour".
 
 ex:colour-1 a dmlex:Sense;
-  dmlex:definition [ a dmlex:Definition;
-      dmlex:listingOrder "1"^^xsd:unsignedInt;
+  dmlex:definition [ dmlex:listingOrder "1"^^xsd:unsignedInt;
       dmlex:text "red, blue, yellow etc." ];
   dmlex:listingOrder "1"^^xsd:unsignedInt;
-  dmlex:example [ a dmlex:Example;
-      dmlex:listingOrder "1"^^xsd:unsignedInt;
+  dmlex:example [ dmlex:listingOrder "1"^^xsd:unsignedInt;
       dmlex:text "What is your favourite colour?" ].
 
 ex:colour-2 a dmlex:Sense;
-  dmlex:example [ a dmlex:Example;
-      dmlex:listingOrder "1"^^xsd:unsignedInt;
+  dmlex:example [ dmlex:listingOrder "1"^^xsd:unsignedInt;
       dmlex:text "Owning a colour TV meant you were rich." ];
   dmlex:listingOrder "2"^^xsd:unsignedInt;
-  dmlex:definition [ a dmlex:Definition;
-      dmlex:text "not being black and white";
+  dmlex:definition [ dmlex:text "not being black and white";
       dmlex:listingOrder "1"^^xsd:unsignedInt ].
 
 ex:colour-3 a dmlex:Sense;
   dmlex:listingOrder "3"^^xsd:unsignedInt;
-  dmlex:definition [ a dmlex:Definition;
-      dmlex:text "a sign of a person's race";
+  dmlex:definition [ dmlex:text "a sign of a person's race";
       dmlex:listingOrder "1"^^xsd:unsignedInt ];
-  dmlex:example [ a dmlex:Example;
-      dmlex:listingOrder "1"^^xsd:unsignedInt;
+  dmlex:example [ dmlex:listingOrder "1"^^xsd:unsignedInt;
       dmlex:text "People of all creeds and colours." ].

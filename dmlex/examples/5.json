@@ -24,10 +24,10 @@
     "inflectedFormTags": [{
         "tag": "sg-gen",
         "description": "singular genitive",
-        "forPartsOfSpeech": ["n-masc", "n-fem"]
+        "for": "n-masc n-fem"
     }, {
         "tag": "pl",
         "description": "plural",
-        "forPartsOfSpeech": ["n-masc", "n-fem"]
+        "for": "n-masc n-fem"
     }]
 }

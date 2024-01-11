@@ -333,26 +333,13 @@ impl WriteXML for &InflectedFormTag {
     fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("inflectedFormTag");
         e = e.attr("tag", &self.tag);
-        if let Some(for_headwords) = &self.for_headwords {
-            e = e.attr("forHeadwords", if *for_headwords { "true" } else { "false" });
-        }
-        if let Some(for_translations) = &self.for_translations {
-            e = e.attr("forTranslations", if *for_translations { "true" } else { "false" });
+        if let Some(for_) = &self.for_{
+            e = e.attr("for", for_);
         }
         writer.write(e)?;
         if let Some(description) = &self.description {
             writer.write(XmlEvent::start_element("description"))?;
             writer.write(XmlEvent::characters(description))?;
-            writer.write(XmlEvent::end_element())?;
-        }
-        for for_language in self.for_languages.iter() {
-            writer.write(XmlEvent::start_element("forLanguage")
-                .attr("langCode", &for_language))?;
-            writer.write(XmlEvent::end_element())?;
-        }
-        for for_part_of_speech in self.for_parts_of_speech.iter() {
-            writer.write(XmlEvent::start_element("forPartOfSpeech")
-                .attr("tag", for_part_of_speech))?;
             writer.write(XmlEvent::end_element())?;
         }
         for same_as in self.same_as.iter() {
@@ -372,29 +359,13 @@ impl WriteXML for &LabelTag {
         if let Some(type_tag) = &self.type_tag {
             e = e.attr("typeTag", type_tag);
         }
-        if let Some(for_headwords) = &self.for_headwords {
-            e = e.attr("forHeadwords", if *for_headwords { "true" } else { "false" });
-        }
-        if let Some(for_translations) = &self.for_translations {
-            e = e.attr("forTranslations", if *for_translations { "true" } else { "false" });
-        }
-        if let Some(for_collocates) = &self.for_collocates {
-            e = e.attr("forCollocates", if *for_collocates { "true" } else { "false" });
+        if let Some(for_) = &self.for_{
+            e = e.attr("for", for_);
         }
         writer.write(e)?;
         if let Some(description) = &self.description {
             writer.write(XmlEvent::start_element("description"))?;
             writer.write(XmlEvent::characters(description))?;
-            writer.write(XmlEvent::end_element())?;
-        }
-        for for_language in self.for_languages.iter() {
-            writer.write(XmlEvent::start_element("forLanguage")
-                .attr("langCode", &for_language))?;
-            writer.write(XmlEvent::end_element())?;
-        }
-        for for_part_of_speech in self.for_parts_of_speech.iter() {
-            writer.write(XmlEvent::start_element("forPartOfSpeech")
-                .attr("tag", for_part_of_speech))?;
             writer.write(XmlEvent::end_element())?;
         }
         for same_as in self.same_as.iter() {
@@ -431,24 +402,13 @@ impl WriteXML for &PartOfSpeechTag {
     fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("partOfSpeechTag")
             .attr("tag", &self.tag);
-        if let Some(for_headwords) = &self.for_headwords {
-            e = e.attr("forHeadwords", if *for_headwords { "true" } else { "false" });
-        }
-        if let Some(for_translations) = &self.for_translations {
-            e = e.attr("forTranslations", if *for_translations { "true" } else { "false" });
-        }
-        if let Some(for_etymology) = &self.for_etymology {
-            e = e.attr("forEtymology", if *for_etymology { "true" } else { "false" });
+        if let Some(for_) = &self.for_{
+            e = e.attr("for", for_);
         }
         writer.write(e)?;
         if let Some(description) = &self.description {
             writer.write(XmlEvent::start_element("description"))?;
             writer.write(XmlEvent::characters(description))?;
-            writer.write(XmlEvent::end_element())?;
-        }
-        for for_language in self.for_languages.iter() {
-            writer.write(XmlEvent::start_element("forLanguage")
-                .attr("langCode", &for_language))?;
             writer.write(XmlEvent::end_element())?;
         }
         for same_as in self.same_as.iter() {
@@ -485,21 +445,13 @@ impl WriteXML for &TranscriptionSchemeTag {
     fn write_xml<W : Write>(&self, writer: &mut EventWriter<&mut W>) -> Result<(), xml::writer::Error> {
         let mut e = XmlEvent::start_element("transcriptionSchemeTag")
             .attr("tag", &self.tag);
-        if let Some(for_headwords) = &self.for_headwords {
-            e = e.attr("forHeadwords", if *for_headwords { "true" } else { "false" });
-        }
-        if let Some(for_translations) = &self.for_translations {
-            e = e.attr("forTranslations", if *for_translations { "true" } else { "false" });
+        if let Some(for_) = &self.for_{
+            e = e.attr("for", for_);
         }
         writer.write(e)?;
         if let Some(description) = &self.description {
             writer.write(XmlEvent::start_element("description"))?;
             writer.write(XmlEvent::characters(description))?;
-            writer.write(XmlEvent::end_element())?;
-        }
-        for for_language in self.for_languages.iter() {
-            writer.write(XmlEvent::start_element("forLanguage")
-                .attr("langCode", &for_language))?;
             writer.write(XmlEvent::end_element())?;
         }
         writer.write(XmlEvent::end_element())?;
