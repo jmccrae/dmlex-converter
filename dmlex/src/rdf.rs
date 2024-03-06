@@ -16,7 +16,7 @@ use sophia::triple::Triple;
 use thiserror::Error;
 
 type Result<T> = std::result::Result<T, RdfError>;
-pub static DMLEX : &str = "https://www.oasis-open.org/to-be-confirmed/dmlex#";
+pub static DMLEX : &str = "http://www.oasis-open.org/to-be-confirmed/dmlex#";
 
 pub trait ToRDF {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
