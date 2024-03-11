@@ -81,11 +81,20 @@ impl ToRDF for LexicographicResource {
                 &dmlex.get("entry")?,
                 &entry_id).expect("Error inserting triple");
         }
-        for translation_language in self.translation_languages.iter() {
+        for (listing_order, translation_language) in self.translation_languages.iter().enumerate() {
+            let node = URIOrBlank::gen();
             graph.insert(
                 &id,
                 &dmlex.get("translationLanguage")?,
+                &node).expect("Error inserting triple");
+            graph.insert(
+                &node,
+                &dmlex.get("langCode")?,
                 &translation_language.as_literal()).expect("Error inserting triple");
+            graph.insert(
+                &node,
+                &dmlex.get("listingOrder")?,
+                &((listing_order + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         for (i, definition_type_tag) in self.definition_type_tags.iter().enumerate() {
             let dtt_id = definition_type_tag.to_rdf(graph, data, dmlex, i)?;
@@ -169,7 +178,7 @@ impl FromRDF for LexicographicResource {
             uri: get_zero_one_str(g, id, &dmlex.get("uri")?)?,
             lang_code: LangCode(get_one_str(g, id, &dmlex.get("langCode")?)?),
             entries: read_many(g, id, "entry", data, dmlex)?,
-            translation_languages: read_many_str(g, id, "translationLanguage", data, dmlex)?,
+            translation_languages: read_translation_language(g, id, "translationLanguage", data, dmlex)?,
             definition_type_tags: read_many(g, id, "definitionTypeTag", data, dmlex)?,
             inflected_form_tags: read_many(g, id, "inflectedFormTag", data, dmlex)?,
             label_tags: read_many(g, id, "labelTag", data, dmlex)?,
@@ -2056,6 +2065,19 @@ fn read_tag<G : Graph, T1: AsRef<str>, T2: AsRef<str>>
     elems.sort_by_key(|(listing_order, _)| *listing_order);
     Ok(elems.into_iter().map(|(_, tag)| tag).collect())
 }
+
+fn read_translation_language<G : Graph, T1: AsRef<str>, T2: AsRef<str>>
+    (g : &G, id : &Term<String>, prop : &str, _data : &Namespace<T1>, dmlex : &Namespace<T2>) -> Result<Vec<String>> {
+    let mut elems = Vec::new();
+    for elem_id in get_many(g, id, &dmlex.get(prop)?)? {
+        let tag = get_one_str(g, &elem_id, &dmlex.get("langCode")?)?;
+        let listing_order = get_one_usize(g, &elem_id, &dmlex.get("listingOrder")?)?;
+        elems.push((listing_order, tag));
+    }
+    elems.sort_by_key(|(listing_order, _)| *listing_order);
+    Ok(elems.into_iter().map(|(_, tag)| tag).collect())
+}
+
 
 #[derive(Error, Debug)]
 pub enum RdfError {
