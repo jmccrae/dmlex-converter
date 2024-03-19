@@ -10,7 +10,7 @@ Packages
 * `dmlex`: A library in Rust for converting and validating DMLEX
 * `dmlex-cli`: A command-line conversion tool
 * `dmlex-web`: A web-based converter and validator. This is deployed at 
-   https://jmccrae.github.io/dmlex-converter/
+   https://john.mccr.ae/dmlex-converter/
 
 Installing
 ----------
