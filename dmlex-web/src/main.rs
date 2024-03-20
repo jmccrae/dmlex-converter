@@ -7,6 +7,7 @@ pub enum Msg {
     ChangeOutputFormat(String),
     ChangeInput(String),
     ChangeDefaultNamespace(String),
+    ChangeOntolex(bool),
     Ignore,
 }
 
@@ -16,6 +17,7 @@ pub struct App {
     input : String,
     output : Result<String, String>,
     default_namespace : String,
+    ontolex : bool,
 }
 
 impl App {
@@ -33,7 +35,7 @@ impl App {
             }
         };
         let mut out = Vec::new();
-        self.output = match write(&mut out, &self.output_format, &resource, &Some(self.default_namespace.clone())) {
+        self.output = match write(&mut out, &self.output_format, &resource, &Some(self.default_namespace.clone()), self.ontolex) {
             Ok(_) => Ok(String::from_utf8(out).unwrap()),
             Err(e) => Err(format!("{:?}", e)),
         };
@@ -51,6 +53,7 @@ impl Component for App {
             input: String::new(),
             output: Ok(String::new()),
             default_namespace: String::new(),
+            ontolex: false,
         }
     }
 
@@ -86,7 +89,12 @@ impl Component for App {
                 self.default_namespace = ns;
                 self.update();
                 true
-            }
+            },
+            Msg::ChangeOntolex(_) => {
+                self.ontolex = !self.ontolex;
+                self.update();
+                true
+            },
             Msg::Ignore => false
         }
     }
@@ -100,6 +108,7 @@ impl Component for App {
         let change_output3 = ctx.link().callback(|s| Msg::ChangeOutputFormat(s));
         let change_input = ctx.link().callback(|s| Msg::ChangeInput(s));
         let change_default_namespace = ctx.link().callback(|s| Msg::ChangeDefaultNamespace(s));
+        let change_ontolex = ctx.link().callback(|s| Msg::ChangeOntolex(s));
         html!{
             <div class="container mx-auto">
                     <div>
@@ -172,6 +181,9 @@ impl Component for App {
                             placeholder="Default Namespace" value={self.default_namespace.clone()} oninput={move |e : InputEvent| change_default_namespace.emit(
                                 e.target().unwrap().dyn_into::<web_sys::HtmlInputElement>().unwrap().value() 
                                 ) }/>
+                            <input id="ontolex" type="checkbox" class="w-4 h-4"
+                            checked={self.ontolex} onclick={move |_| change_ontolex.emit(false)}/>
+                            <label for="ontolex" class="pl-2">{{ "Generate OntoLex" }}</label>
                         </div>
                     </div>
                     </>

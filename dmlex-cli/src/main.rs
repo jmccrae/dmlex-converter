@@ -18,6 +18,8 @@ struct Args {
     default_namespace: Option<String>,
     #[clap(long, default_value = "false")]
     entry: bool,
+    #[clap(long, default_value = "false")]
+    ontolex: bool,
 }
 
 #[derive(Debug,Clone,ValueEnum)]
@@ -59,7 +61,7 @@ fn main() {
         };
         if let Some(output) = &args.output {
             if let Ok(file) = File::create(output.clone()) {
-                match write_entry(file, &args.output_format.into(), &resource, &args.default_namespace) {
+                match write_entry(file, &args.output_format.into(), &resource, &args.default_namespace, args.ontolex) {
                     Ok(_) => (),
                     Err(e) => panic!("Could not write output file: {}", e),
                 }
@@ -67,7 +69,7 @@ fn main() {
                 panic!("Could not open output file {}", output);
             }
         } else {
-            match write_entry(std::io::stdout(), &args.output_format.into(), &resource, &args.default_namespace) {
+            match write_entry(std::io::stdout(), &args.output_format.into(), &resource, &args.default_namespace, args.ontolex) {
                 Ok(_) => (),
                 Err(e) => panic!("Could not write output file: {}", e),
             }
@@ -91,7 +93,7 @@ fn main() {
         };
         if let Some(output) = &args.output {
             if let Ok(file) = File::create(output.clone()) {
-                match write(file, &args.output_format.into(), &resource, &args.default_namespace) {
+                match write(file, &args.output_format.into(), &resource, &args.default_namespace, args.ontolex) {
                     Ok(_) => (),
                     Err(e) => panic!("Could not write output file: {}", e),
                 }
@@ -99,7 +101,7 @@ fn main() {
                 panic!("Could not open output file {}", output);
             }
         } else {
-            match write(std::io::stdout(), &args.output_format.into(), &resource, &args.default_namespace) {
+            match write(std::io::stdout(), &args.output_format.into(), &resource, &args.default_namespace, args.ontolex) {
                 Ok(_) => (),
                 Err(e) => panic!("Could not write output file: {}", e),
             }

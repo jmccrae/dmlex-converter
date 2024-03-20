@@ -53,7 +53,7 @@ pub fn parse<R : Read>(input: R, format: &Format, default_namespace : &Option<St
 }
 
 pub fn write<W : Write>(mut output: W, format: &Format, resource: &LexicographicResource,
-    default_namespace : &Option<String>) -> Result<(), WriteError> {
+    default_namespace : &Option<String>, ontolex : bool) -> Result<(), WriteError> {
     match format {
         Format::XML => {
             let mut writer = xml::EmitterConfig::new().perform_indent(true).create_writer(&mut output);
@@ -64,7 +64,7 @@ pub fn write<W : Write>(mut output: W, format: &Format, resource: &Lexicographic
                 let mut g = Graph::new();
                 let ns2 = Namespace::new(ns)?;
                 let dmlex = Namespace::new(crate::rdf::DMLEX).expect("DMLEX namespace is invalid");
-                resource.to_rdf(&mut g, &ns2, &dmlex, 0)?;
+                resource.to_rdf(&mut g, &ns2, &dmlex, 0, ontolex)?;
                 let mut serializer = TurtleSerializer::new_with_config(output,
                     TurtleConfig::new().with_pretty(true)
                     .with_own_prefix_map(
@@ -122,7 +122,7 @@ pub fn parse_entry<R : Read>(input: R, format: &Format, default_namespace : &Opt
 }
 
 pub fn write_entry<W : Write>(mut output: W, format: &Format, resource: &Entry,
-    default_namespace : &Option<String>) -> Result<(), WriteError> {
+    default_namespace : &Option<String>, ontolex : bool) -> Result<(), WriteError> {
     match format {
         Format::XML => {
             let mut writer = xml::EmitterConfig::new().perform_indent(true).create_writer(&mut output);
@@ -133,7 +133,7 @@ pub fn write_entry<W : Write>(mut output: W, format: &Format, resource: &Entry,
                 let mut g = Graph::new();
                 let ns2 = Namespace::new(ns)?;
                 let dmlex = Namespace::new(crate::rdf::DMLEX).expect("DMLEX namespace is invalid");
-                resource.to_rdf(&mut g, &ns2, &dmlex, 0)?;
+                resource.to_rdf(&mut g, &ns2, &dmlex, 0, ontolex)?;
                 let mut serializer = TurtleSerializer::new_with_config(output,
                     TurtleConfig::new().with_pretty(true)
                     .with_own_prefix_map(
