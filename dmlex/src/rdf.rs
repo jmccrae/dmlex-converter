@@ -2333,7 +2333,7 @@ mod tests {
         let lexicon = read_lexicographic_resource(&graph, &data).unwrap();
         let mut graph2 = LightGraph::new();
         let dmlex = Namespace::new(DMLEX).expect("DMLEX namespace is invalid");
-        lexicon.to_rdf(&mut graph2, &data, &dmlex, 0, ontolex).unwrap();
+        lexicon.to_rdf(&mut graph2, &data, &dmlex, 0, false).unwrap();
         assert_eq!(graph.triples().count(), graph2.triples().count());
     }
 
@@ -2344,7 +2344,7 @@ mod tests {
         let lexicon = read_entry(&graph, &data).unwrap();
         let mut graph2 = LightGraph::new();
         let dmlex = Namespace::new(DMLEX).expect("DMLEX namespace is invalid");
-        (&lexicon).to_rdf(&mut graph2, &data, &dmlex, 0, ontolex).unwrap();
+        (&lexicon).to_rdf(&mut graph2, &data, &dmlex, 0, false).unwrap();
         assert_eq!(graph.triples().count(), graph2.triples().count());
     }
 
