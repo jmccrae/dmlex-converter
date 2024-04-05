@@ -13,12 +13,10 @@ impl WriteXML for &LexicographicResource {
             e = e.attr("uri", uri);
         }
         e = e.attr("langCode", self.lang_code.0.as_str());
-        writer.write(e)?;
         if let Some(title) = &self.title {
-            writer.write(XmlEvent::start_element("title"))?;
-            writer.write(XmlEvent::characters(title))?;
-            writer.write(XmlEvent::end_element())?;
+            e = e.attr("title", title);
         }
+        writer.write(e)?;
         for entry in self.entries.iter() {
             entry.write_xml(writer)?;
         }

@@ -9,7 +9,7 @@ use sophia::term::RawValue;
 use sophia::term::blank_node::BlankNode;
 use sophia::term::literal::convert::AsLiteral;
 use sophia::iri::Iri;
-use sophia::term::ns::{rdf,owl};
+use sophia::term::ns::rdf;
 use sophia::term::simple_iri::SimpleIri;
 use sophia::term::{Term, TTerm, TermKind, CopyTerm};
 use sophia::triple::Triple;
@@ -93,6 +93,12 @@ impl ToRDF for LexicographicResource {
         }
         for (i,entry) in self.entries.iter().enumerate() {
             let entry_id = entry.to_rdf(graph, data, dmlex, i, ontolex)?;
+            if ontolex {
+                graph.insert(
+                    &id,
+                    &Namespace::new(LIME)?.get("entry")?,
+                    &entry_id).expect("Error inserting triple");
+            }
             graph.insert(
                 &id,
                 &dmlex.get("entry")?,
@@ -998,7 +1004,7 @@ impl ToRDF for &DefinitionTypeTag {
         for same_as in &self.same_as {
             graph.insert(
                 &id,
-                &owl::sameAs,
+                &dmlex.get("sameAs")?,
                 &Iri::new(same_as)?).expect("Error inserting triple");
         }
         Ok(id)
@@ -1008,11 +1014,11 @@ impl ToRDF for &DefinitionTypeTag {
 
 impl FromRDF for DefinitionTypeTag {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
-        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
         Ok((0, DefinitionTypeTag {
             tag: get_one_str(g, id, &dmlex.get("tag")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
-            same_as: read_same_as(g, id, data)?,
+            same_as: get_many_uri(g, id, &dmlex.get("sameAs")?)?,
         }))
     }
 }
@@ -1041,7 +1047,7 @@ impl ToRDF for &InflectedFormTag {
         for same_as in &self.same_as {
             graph.insert(
                 &id,
-                &owl::sameAs,
+                &dmlex.get("sameAs")?,
                 &Iri::new(same_as)?).expect("Error inserting triple");
         }
         if let Some(for_) = &self.for_ {
@@ -1058,11 +1064,11 @@ impl ToRDF for &InflectedFormTag {
 
 impl FromRDF for InflectedFormTag {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
-        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
         Ok((0, InflectedFormTag {
             tag: get_one_str(g, id, &dmlex.get("tag")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
-            same_as: read_same_as(g, id, data)?,
+            same_as: get_many_uri(g, id, &dmlex.get("sameAs")?)?,
             for_: get_zero_one_str(g, id, &dmlex.get("for")?)?,
         }))
     }
@@ -1097,7 +1103,7 @@ impl ToRDF for &LabelTag {
         for same_as in &self.same_as {
             graph.insert(
                 &id,
-                &owl::sameAs,
+                &dmlex.get("sameAs")?,
                 &Iri::new(same_as)?).expect("Error inserting triple");
         }
         if let Some(for_) = &self.for_{
@@ -1112,13 +1118,13 @@ impl ToRDF for &LabelTag {
 
 impl FromRDF for LabelTag {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>,
-        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
 
         Ok((0, LabelTag {
             tag: get_one_str(g, id, &dmlex.get("tag")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
             type_tag: get_zero_one_str(g, id, &dmlex.get("typeTag")?)?,
-            same_as: read_same_as(g, id, data)?,
+            same_as: get_many_uri(g, id, &dmlex.get("sameAs")?)?,
             for_: get_zero_one_str(g, id, &dmlex.get("for")?)?,
         }))
     }
@@ -1148,7 +1154,7 @@ impl ToRDF for &LabelTypeTag {
         for same_as in &self.same_as {
             graph.insert(
                 &id,
-                &owl::sameAs,
+                &dmlex.get("sameAs")?,
                 &Iri::new(same_as)?).expect("Error inserting triple");
         }
         Ok(id)
@@ -1157,12 +1163,12 @@ impl ToRDF for &LabelTypeTag {
 
 impl FromRDF for LabelTypeTag {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>,
-        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
 
         Ok((0, LabelTypeTag {
             tag: get_one_str(g, id, &dmlex.get("tag")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
-            same_as: read_same_as(g, id, data)?,
+            same_as: get_many_uri(g, id, &dmlex.get("sameAs")?)?,
         }))
     }
 }
@@ -1190,7 +1196,7 @@ impl ToRDF for &PartOfSpeechTag {
         for same_as in &self.same_as {
             graph.insert(
                 &id,
-                &owl::sameAs,
+                &dmlex.get("sameAs")?,
                 &Iri::new(same_as)?).expect("Error inserting triple");
         }
         if let Some(for_) = &self.for_{
@@ -1205,12 +1211,12 @@ impl ToRDF for &PartOfSpeechTag {
 
 impl FromRDF for PartOfSpeechTag {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>,
-        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
 
         Ok((0, PartOfSpeechTag {
             tag: get_one_str(g, id, &dmlex.get("tag")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
-            same_as: read_same_as(g, id, data)?,
+            same_as: get_many_uri(g, id, &dmlex.get("sameAs")?)?,
             for_: get_zero_one_str(g, id, &dmlex.get("for")?)?,
         }))
     }
@@ -1240,7 +1246,7 @@ impl ToRDF for &SourceIdentityTag {
         for same_as in &self.same_as {
             graph.insert(
                 &id,
-                &owl::sameAs,
+                &dmlex.get("sameAs")?,
                 &Iri::new(same_as)?).expect("Error inserting triple");
         }
         Ok(id)
@@ -1249,12 +1255,12 @@ impl ToRDF for &SourceIdentityTag {
 
 impl FromRDF for SourceIdentityTag {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>,
-        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
 
         Ok((0, SourceIdentityTag {
             tag: get_one_str(g, id, &dmlex.get("tag")?)?,
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
-            same_as: read_same_as(g, id, data)?,
+            same_as: get_many_uri(g, id, &dmlex.get("sameAs")?)?,
         }))
     }
 }
@@ -1446,7 +1452,7 @@ impl ToRDF for &RelationType {
         for same_as in &self.same_as {
             graph.insert(
                 &id,
-                &owl::sameAs,
+                &dmlex.get("sameAs")?,
                 &Iri::new(same_as)?).expect("Error inserting triple");
         }
         Ok(id)
@@ -1470,7 +1476,7 @@ impl FromRDF for RelationType {
             description: get_zero_one_str(g, id, &dmlex.get("description")?)?,
             scope_restriction,
             member_types: read_many(g, id, "memberType", data, dmlex)?,
-            same_as: read_same_as(g, id, data)?,
+            same_as: get_many_uri(g, id, &dmlex.get("sameAs")?)?,
         }))
     }
 }
@@ -1554,7 +1560,7 @@ impl ToRDF for &MemberType {
         for same_as in &self.same_as {
             graph.insert(
                 &id,
-                &owl::sameAs,
+                &dmlex.get("sameAs")?,
                 &Iri::new(same_as)?).expect("Error inserting triple");
         }
         Ok(id)
@@ -1563,7 +1569,7 @@ impl ToRDF for &MemberType {
 
 impl FromRDF for MemberType {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
-        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
         let _type = match get_one_dmlex_uri(g, id, &dmlex.get("type")?)?.as_str() {
             "sense" => MemberTypeType::Sense,
             "collocate" => MemberTypeType::Collocate,
@@ -1586,7 +1592,7 @@ impl FromRDF for MemberType {
             min: get_zero_one_u32(g, id, &dmlex.get("min")?)?,
             max: get_zero_one_u32(g, id, &dmlex.get("max")?)?,
             hint,
-            same_as: read_same_as(g, id, data)?,
+            same_as: get_many_uri(g, id, &dmlex.get("sameAs")?)?,
         }))
     }
 }
@@ -2080,6 +2086,22 @@ fn get_many_str<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::De
     Ok(result)
 }
 
+fn get_many_uri<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<Vec<String>> {
+    let mut iter = g.triples_with_sp(subj, prop);
+    let mut result = Vec::new();
+    while let Some(triple) = iter.next() {
+        let t = triple.unwrap();
+        let obj = t.o();
+        if obj.kind() == TermKind::Iri {
+            result.push(obj.value_raw().0.to_string());
+        } else {
+            return Err(RdfError::IriExpected(format!("{:?}", subj), format!("{:?}", prop)))
+        }
+    }
+    Ok(result)
+}
+
+
 fn get_many<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<Vec<Term<String>>> {
     let mut iter = g.triples_with_sp(subj, prop);
     let mut result = Vec::new();
@@ -2113,21 +2135,21 @@ fn read_many_str<G : Graph, T1: AsRef<str>, T2: AsRef<str>>
     get_many_str(g, id, &dmlex.get(prop)?)
 }
 
-fn read_same_as<G : Graph, T1: AsRef<str>>
-    (g : &G, subj : &Term<String>, _data : &Namespace<T1>) -> Result<Vec<String>> {
-    let mut iter = g.triples_with_sp(subj, &owl::sameAs);
-    let mut result = Vec::new();
-    while let Some(triple) = iter.next() {
-        let t = triple.unwrap();
-        let obj = t.o();
-        if obj.kind() == TermKind::Iri {
-            result.push(obj.value_raw().0.to_string());
-        } else {
-            return Err(RdfError::LiteralExpected(format!("{:?}", subj), format!("owl:sameAs")))
-        }
-    }
-    Ok(result)
-}
+//fn read_same_as<G : Graph, T1: AsRef<str>>
+//    (g : &G, subj : &Term<String>, _data : &Namespace<T1>) -> Result<Vec<String>> {
+//    let mut iter = g.triples_with_sp(subj, &dmlex.get("sameAs")?);
+//    let mut result = Vec::new();
+//    while let Some(triple) = iter.next() {
+//        let t = triple.unwrap();
+//        let obj = t.o();
+//        if obj.kind() == TermKind::Iri {
+//            result.push(obj.value_raw().0.to_string());
+//        } else {
+//            return Err(RdfError::LiteralExpected(format!("{:?}", subj), format!("dmlex:sameAs")))
+//        }
+//    }
+//    Ok(result)
+//}
 
 
 fn read_tag<G : Graph, T1: AsRef<str>, T2: AsRef<str>>

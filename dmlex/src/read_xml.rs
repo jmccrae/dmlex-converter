@@ -140,6 +140,7 @@ impl XMLVisitor for LexicographicResource {
         self.uri = str_attr("uri", attributes);
         self.lang_code = LangCode(str_attr("langCode", attributes)
             .ok_or(FromXMLError::MissingAttribute("langCode"))?);
+        self.title = str_attr("title", attributes);
         Ok(())
     }
 
@@ -147,10 +148,6 @@ impl XMLVisitor for LexicographicResource {
         attributes: Vec<OwnedAttribute>, reader: &mut EventReader<R>) 
         -> Result<()> {
         match name {
-            "title" => {
-                self.title = Some(text(reader, attributes)?);
-                Ok(())
-            },
             "entry" => {
                 self.entries.push(Entry::from_event_reader(reader, attributes)?);
                 Ok(())

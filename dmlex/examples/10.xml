@@ -1,5 +1,5 @@
-<lexicographicResource uri="http://example.com" langCode="ga">
-    <title>My Irish-Multilingual Dictionary</title>
+<lexicographicResource uri="http://example.com" langCode="ga"
+    title="My Irish-Multilingual Dictionary">
     <translationLanguage langCode="en"/>
     <translationLanguage langCode="de"/>
     <translationLanguage langCode="cs"/>

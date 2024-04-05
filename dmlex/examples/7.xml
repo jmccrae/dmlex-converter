@@ -1,4 +1,4 @@
-<lexicographicResource uri="http://example.com" langCode="de">
-    <title>My German-English Dictionary</title>
+<lexicographicResource uri="http://example.com" langCode="de"
+    title="My German-English Dictionary">
     <translationLanguage langCode="en"/>
 </lexicographicResource>
