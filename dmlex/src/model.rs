@@ -1,5 +1,6 @@
 /// This module containss the data model for the lexicon.
 use serde::{Deserialize, Serialize};
+use crate::validate::Validate;
 
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
@@ -54,6 +55,17 @@ pub struct LexicographicResource {
     pub etymon_types: Vec<EtymonType>,
 }
 
+impl LexicographicResource {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        let errors = self.check_uniqueness();
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(errors)
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]
 #[serde(transparent)]
 pub struct LangCode(pub String);
@@ -90,6 +102,17 @@ pub struct Entry {
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
     pub etymologies: Vec<Etymology>,
+}
+
+impl Entry {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        let errors = self.check_uniqueness();
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(errors)
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default)]

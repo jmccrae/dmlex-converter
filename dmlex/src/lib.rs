@@ -1,8 +1,9 @@
 pub mod model;
 pub mod rdf;
-pub mod serialization;
+mod serialization;
 pub mod read_xml;
 pub mod write_xml;
+mod validate;
 
 use crate::model::{LexicographicResource, Entry};
 use crate::rdf::ToRDF;
