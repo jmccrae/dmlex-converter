@@ -21,17 +21,17 @@
             </etymon>
         </etymology>
     </entry>
-    <etymonType type="derivation">
-        <description>A historical form of the word</description>
-    </etymonType>
-    <etymonType type="doublet">
-        <description>Two words derived from the same etymological root</description>
-    </etymonType>
     <etymonLanguage langCode="dum">
         <displayName>Middle Dutch</displayName>
     </etymonLanguage>
     <etymonLanguage langCode="gem-pro">
         <displayName>Proto-Germanic</displayName>
     </etymonLanguage>
+    <etymonType type="derivation">
+        <description>A historical form of the word</description>
+    </etymonType>
+    <etymonType type="doublet">
+        <description>Two words derived from the same etymological root</description>
+    </etymonType>
 </lexicographicResource>
             

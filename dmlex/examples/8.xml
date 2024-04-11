@@ -2,22 +2,22 @@
     <headword>doctor</headword>
     <sense id="doctor-n-1">
         <indicator>medical doctor</indicator>
-        <headwordTranslation>
+        <headwordTranslation langCode="de">
             <text>Arzt</text>
             <partOfSpeech tag="n-masc"/>
         </headwordTranslation>
-        <headwordTranslation>
+        <headwordTranslation langCode="de">
             <text>Ärztin</text>
             <partOfSpeech tag="n-fem"/>
         </headwordTranslation>
     </sense>
     <sense id="doctor-n-2">
         <indicator>academic title</indicator>
-        <headwordTranslation>
+        <headwordTranslation langCode="de">
             <text>Doktor</text>
             <partOfSpeech tag="n-masc"/>
         </headwordTranslation>
-        <headwordTranslation>
+        <headwordTranslation langCode="de">
             <text>Doktorin</text>
             <partOfSpeech tag="n-fem"/>
         </headwordTranslation>

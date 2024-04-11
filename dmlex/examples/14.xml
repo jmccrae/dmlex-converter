@@ -1,5 +1,4 @@
 <lexicographicResource uri="http://example.com" langCode="de">
-    <translationLanguage langCode="en"/>
     <entry id="die-see">
         <headword>See</headword>
         <partOfSpeech tag="n-fem"/>
@@ -21,6 +20,7 @@
             <headwordTranslation><text>ocean</text></headwordTranslation>
         </sense>
     </entry>
+    <translationLanguage langCode="en"/>
     <relation type="synonyms">
         <description>words that mean sea and ocean</description>
         <member ref="die-see-1"/>

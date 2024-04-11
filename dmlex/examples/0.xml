@@ -1,4 +1,5 @@
-<lexicographicResource uri="http://example.com" langCode="en" title="Example Dictionary">
+<lexicographicResource title="Example Dictionary" 
+    uri="http://example.com" langCode="en">
     <entry id="abandon-verb">
         <headword>abandon</headword>
             <partOfSpeech tag="verb"/>

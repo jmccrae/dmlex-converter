@@ -2,8 +2,8 @@
     <headword>Treppenwitz</headword>
     <partOfSpeech tag="n-masc"/>
     <sense id="treppenwitz-1">
-        <headwordExplanation>belated realisation of what one could have said</headwordExplanation>
-        <headwordTranslation>
+        <headwordExplanation langCode="en">belated realisation of what one could have said</headwordExplanation>
+        <headwordTranslation langCode="en">
             <text>staircase wit</text>
         </headwordTranslation>
     </sense>

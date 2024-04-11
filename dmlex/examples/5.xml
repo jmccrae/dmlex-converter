@@ -9,16 +9,16 @@
             <text>folúsghlantóirí</text>
         </inflectedForm>
     </entry>
-    <partOfSpeechTag tag="n-masc">
-        <description>masculine noun</description>
-    </partOfSpeechTag>
-    <partOfSpeechTag tag="n-fem">
-        <description>feminine noun</description>
-    </partOfSpeechTag>
     <inflectedFormTag tag="sg-gen" for="n-masc n-fem">
         <description>singular genitive</description>
     </inflectedFormTag>
     <inflectedFormTag tag="pl" for="n-masc n-fem">
         <description>plural</description>
     </inflectedFormTag>
+    <partOfSpeechTag tag="n-masc">
+        <description>masculine noun</description>
+    </partOfSpeechTag>
+    <partOfSpeechTag tag="n-fem">
+        <description>feminine noun</description>
+    </partOfSpeechTag>
 </lexicographicResource>

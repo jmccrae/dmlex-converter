@@ -19,6 +19,12 @@
                 <text>People of all creeds and colours.</text>
             </example>
         </sense>
+        <sense id="colour-4">
+            <definition>interest or excitement</definition>
+            <example>
+                <text>Examples add colour to your writing.</text>
+            </example>
+        </sense>
     </entry>
     <relation type="subsensing">
         <member ref="colour-1" role="super"/>
