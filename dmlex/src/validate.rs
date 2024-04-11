@@ -1,9 +1,17 @@
 /// This module evaluates the uniqueness constraints in the model.
 use crate::model::*;
 
-pub trait Validate<S: PartialEq> {
+pub trait Validate<S: PartialEq + FragId> {
     fn check_uniqueness(&self) -> Vec<String>;
     fn signature(&self) -> S;
+
+    fn frag_path(&self) -> String {
+        self.signature().frag_id()
+    }
+}
+
+pub trait FragId {
+    fn frag_id(&self) -> String;
 }
 
 fn all_unique<S: PartialEq>(items: &Vec<S>) -> bool {
@@ -30,7 +38,7 @@ macro_rules! check_rec {
     }
 }
 
-impl Validate<usize> for LexicographicResource {
+impl Validate<String> for LexicographicResource {
     fn check_uniqueness(&self) -> Vec<String> {
         let mut errors = Vec::new();
 
@@ -53,8 +61,16 @@ impl Validate<usize> for LexicographicResource {
         return errors;
     }
 
-    fn signature(&self) -> usize {
+    fn signature(&self) -> String {
         panic!("Lexicographic Resource does not have a signature");
+    }
+
+    fn frag_path(&self) -> String {
+        if let Some(uri) = &self.uri {
+            uri.clone()
+        } else {
+            "".to_string()
+        }
     }
 }
 
@@ -130,6 +146,12 @@ impl Validate<String> for Definition {
     }
 }
 
+impl FragId for Definition {
+    fn frag_id(&self) -> String {
+        self.text.frag_id()
+    }
+}
+
 impl Validate<(Option<String>, Vec<Transcription>)> for Pronunciation {
     fn check_uniqueness(&self) -> Vec<String> {
         let mut errors = Vec::new();
@@ -151,6 +173,12 @@ impl Validate<String> for Transcription {
 
     fn signature(&self) -> String {
         self.text.clone()
+    }
+}
+
+impl FragId for Transcription {
+    fn frag_id(&self) -> String {
+        self.text.frag_id()
     }
 }
 
@@ -317,7 +345,7 @@ impl Validate<String> for TranscriptionSchemeTag {
     }
 }
 
-impl Validate<Relation> for Relation {
+impl Validate<String> for Relation {
     fn check_uniqueness(&self) -> Vec<String> {
         let mut errors = Vec::new();
 
@@ -326,7 +354,7 @@ impl Validate<Relation> for Relation {
         Vec::new()
     }
 
-    fn signature(&self) -> Relation {
+    fn signature(&self) -> String {
         panic!("Relation does not have a signature");
     }
 }
@@ -368,6 +396,16 @@ impl Validate<(Option<String>, MemberTypeType)> for MemberType {
     }
 }
 
+impl FragId for MemberTypeType {
+    fn frag_id(&self) -> String {
+        match self {
+            MemberTypeType::Sense => "sense".to_string(),
+            MemberTypeType::Entry => "entry".to_string(),
+            MemberTypeType::Collocate => "collocate".to_string(),
+        }
+    }
+}
+
 impl Validate<(Option<String>, Vec<Etymon>)> for Etymology {
     fn check_uniqueness(&self) -> Vec<String> {
         let mut errors = Vec::new();
@@ -396,13 +434,25 @@ impl Validate<(Option<String>, Vec<EtymonUnit>)> for Etymon {
     }
 }
 
-impl Validate<(LangCode, String)> for EtymonUnit {
+impl FragId for Etymon {
+    fn frag_id(&self) -> String {
+        self.when.frag_id() + "~" + &self.etymon_units.frag_id()
+    }
+}
+
+impl Validate<(String, LangCode)> for EtymonUnit {
     fn check_uniqueness(&self) -> Vec<String> {
         Vec::new()
     }
 
-    fn signature(&self) -> (LangCode, String) {
-        (self.lang_code.clone(), self.text.clone())
+    fn signature(&self) -> (String, LangCode) {
+        (self.text.clone(), self.lang_code.clone())
+    }
+}
+
+impl FragId for EtymonUnit {
+    fn frag_id(&self) -> String {
+        self.lang_code.frag_id() + "~" + &self.text.frag_id()
     }
 }
 
@@ -424,11 +474,118 @@ impl Validate<LangCode> for EtymonLanguage {
     fn signature(&self) -> LangCode {
         self.lang_code.clone()
     }
-}#[cfg(test)]
+}
+
+fn percentage_encode(input: &str) -> String {
+    let mut result = String::new();
+    for byte in input.bytes() {
+        match byte {
+            // Unreserved characters
+            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' | b'.' | b'~' => {
+                result.push(byte as char);
+            }
+            // Reserved characters
+            b'!' | b'<' | b'>' | b'*' | b'\'' | b'(' | b')' | b';' | b':' | b'@' | b'&' | b'=' | b'+' | b'$' | b',' | b'/' | b'?' | b'#' | b'[' | b']' | b' ' | b'"' | b'%' | b'{' | b'}' | b'|' | b'\\' | b'^' | b'`' => {
+                result.push('%');
+                result.push_str(&format!("{:02X}", byte));
+            }
+            // Other characters
+            _ => {
+                result.push('%');
+                result.push_str(&format!("{:02X}", byte));
+            }
+        }
+    }
+    result
+}
+
+
+impl FragId for String {
+    fn frag_id(&self) -> String {
+        percentage_encode(&self.replace("\\","\\\\")
+            .replace("~","\\~")
+            .replace("_", "\\_"))
+    }
+}
+
+impl<A : FragId, B: FragId> FragId for (A, B) {
+    fn frag_id(&self) -> String {
+        let s1 = self.0.frag_id();
+        let s2 = self.1.frag_id();
+        if s1.is_empty() {
+            s2
+        } else if s2.is_empty() {
+            s1
+        } else {
+            format!("{}~{}", s1, s2)
+        }
+    }
+}
+
+impl<A : FragId, B : FragId, C : FragId> FragId for (A, B, C) {
+    fn frag_id(&self) -> String {
+        let s1 = self.0.frag_id();
+        let s2 = self.1.frag_id();
+        let s3 = self.2.frag_id();
+        if s1.is_empty() {
+            if s2.is_empty() {
+                s3
+            } else if s3.is_empty() {
+                s2
+            } else {
+                format!("{}~{}", s2, s3)
+            }
+        } else if s2.is_empty() {
+            if s3.is_empty() {
+                s1
+            } else {
+                format!("{}~{}", s1, s3)
+            }
+        } else {
+            format!("{}~{}~{}", s1, s2, s3)
+        }
+    }
+}
+
+impl FragId for LangCode {
+    fn frag_id(&self) -> String {
+        self.0.frag_id()
+    }
+}
+
+impl<A : FragId> FragId for Option<A> {
+    fn frag_id(&self) -> String {
+        match self {
+            Some(a) => a.frag_id(),
+            None => "".to_string()
+        }
+    }
+}
+
+impl<A : FragId> FragId for Vec<A> {
+    fn frag_id(&self) -> String {
+        let mut result = String::new();
+        for a in self {
+            if !result.is_empty() {
+                result.push('_');
+            }
+            result.push_str(&a.frag_id());
+        }
+        result
+    }
+}
+
+impl FragId for u32 {
+    fn frag_id(&self) -> String {
+        self.to_string()
+    }
+}
+
+#[cfg(test)]
 mod tests {
     use crate::model::*;
     use std::fs::File;
-    use crate::write_xml::WriteXML;
+    use crate::validate::Validate;
 
     #[test]
     fn test_validate_xml_0() {
@@ -604,5 +761,29 @@ mod tests {
         let resource : LexicographicResource = crate::read_xml::read_xml(file, "lexicographicResource").unwrap();
         resource.validate().unwrap();
     }
+
+    #[test]
+    fn test_frag_id() {
+        let mut resource = LexicographicResource::default();
+        resource.title = Some("Test".to_string());
+        resource.uri = Some("http://example.com/lexicon".to_string());
+        resource.lang_code = LangCode("en".to_string());
+        
+        let mut entry = Entry::default();
+        entry.headword = "test".to_string();
+        let mut sense = Sense::default();
+        let mut definition = Definition::default();
+        definition.text = "test definition".to_string();
+        sense.definitions.push(definition);
+
+        assert_eq!(entry.frag_path(), "test");
+        assert_eq!(sense.frag_path(), "test%20definition");
+        
+        entry.senses.push(sense);
+        resource.entries.push(entry);
+
+        assert_eq!(resource.frag_path(), "http://example.com/lexicon");
+    }
+
 }
  
