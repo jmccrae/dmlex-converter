@@ -65,7 +65,7 @@ pub fn write<W : Write>(mut output: W, format: &Format, resource: &Lexicographic
                 let mut g = Graph::new();
                 let ns2 = Namespace::new(ns)?;
                 let dmlex = Namespace::new(crate::rdf::DMLEX).expect("DMLEX namespace is invalid");
-                resource.to_rdf(&mut g, &ns2, &dmlex, 0, ontolex)?;
+                resource.to_rdf(&mut g, &ns2, &dmlex, 0, ontolex, &None)?;
                 let mut serializer = TurtleSerializer::new_with_config(output,
                     TurtleConfig::new().with_pretty(true)
                     .with_own_prefix_map(
@@ -134,7 +134,7 @@ pub fn write_entry<W : Write>(mut output: W, format: &Format, resource: &Entry,
                 let mut g = Graph::new();
                 let ns2 = Namespace::new(ns)?;
                 let dmlex = Namespace::new(crate::rdf::DMLEX).expect("DMLEX namespace is invalid");
-                resource.to_rdf(&mut g, &ns2, &dmlex, 0, ontolex)?;
+                resource.to_rdf(&mut g, &ns2, &dmlex, 0, ontolex, &None)?;
                 let mut serializer = TurtleSerializer::new_with_config(output,
                     TurtleConfig::new().with_pretty(true)
                     .with_own_prefix_map(

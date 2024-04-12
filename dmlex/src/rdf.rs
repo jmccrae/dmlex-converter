@@ -1,16 +1,14 @@
 //use sophia_term::factory::RcTermFactory;
 //use sophia_inmem::graph::*;
 use crate::model::*;
+use crate::validate::{FragId, Validate};
 use rand::Rng;
 use rand;
 use sophia::graph::{Graph, MutableGraph};
 use sophia::ns::Namespace;
-use sophia::term::RawValue;
-use sophia::term::blank_node::BlankNode;
 use sophia::term::literal::convert::AsLiteral;
 use sophia::iri::Iri;
 use sophia::term::ns::rdf;
-use sophia::term::simple_iri::SimpleIri;
 use sophia::term::{Term, TTerm, TermKind, CopyTerm};
 use sophia::triple::Triple;
 use thiserror::Error;
@@ -26,13 +24,24 @@ pub static SKOS : &str = "http://www.w3.org/2004/02/skos/core#";
 pub trait ToRDF {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        index : usize, ontolex : bool) -> 
-        Result<URIOrBlank<'a>>;
+        index : usize, ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>>;
 }
 
 pub trait FromRDF {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized;
+}
+
+fn name_elem<F : Validate<S>, S : PartialEq + FragId>(uri : &Option<String>, elem : &'static str, f : &F) -> Result<(Term<String>, Option<String>)> {
+    if let Some(uri) = uri {
+        let id = uri.to_string() + "/" + elem + "/" + &f.frag_path();
+        let uri = id.to_string() + "/";
+        let id : Term<String> = Term::new_iri(id)?;
+        Ok((id, Some(uri)))
+    } else {
+        Ok((gen_blank_node()?, None))
+    }
 }
 
 pub fn read_lexicographic_resource<G : Graph, T: AsRef<str>>(g : &G, data : &Namespace<T>) -> Result<LexicographicResource> {
@@ -56,9 +65,17 @@ pub fn read_entry<G : Graph, T: AsRef<str>>(g : &G, data : &Namespace<T>) -> Res
 impl ToRDF for LexicographicResource {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        _index : usize, ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        _index : usize, ontolex : bool, _ : &Option<String>) -> 
+        Result<Term<String>> {
+        let (id, uri) = if let Some(uri) = &self.uri {
+            if uri.ends_with("#") {
+                (Term::new_iri(uri.to_string() + "lexicographicResource/")?, Some(uri.to_string()))
+            } else {
+                (Term::new_iri(uri.to_string() + "/lexicographicResource/")?, Some(uri.to_string() + "#"))
+            }
+        } else {
+            (gen_blank_node()?, None)
+        };
         graph.insert(
             &id,
             &rdf::type_,
@@ -92,7 +109,7 @@ impl ToRDF for LexicographicResource {
                 &self.lang_code.0.as_literal()).expect("Error inserting triple");
         }
         for (i,entry) in self.entries.iter().enumerate() {
-            let entry_id = entry.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let entry_id = entry.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             if ontolex {
                 graph.insert(
                     &id,
@@ -105,7 +122,7 @@ impl ToRDF for LexicographicResource {
                 &entry_id).expect("Error inserting triple");
         }
         for (listing_order, translation_language) in self.translation_languages.iter().enumerate() {
-            let node = URIOrBlank::gen();
+            let node = gen_blank_node()?;
             graph.insert(
                 &id,
                 &dmlex.get("translationLanguage")?,
@@ -120,70 +137,70 @@ impl ToRDF for LexicographicResource {
                 &((listing_order + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         for (i, definition_type_tag) in self.definition_type_tags.iter().enumerate() {
-            let dtt_id = definition_type_tag.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let dtt_id = definition_type_tag.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("definitionTypeTag")?,
                 &dtt_id).expect("Error inserting triple");
         }
         for (i, inflected_form_tag) in self.inflected_form_tags.iter().enumerate() {
-            let inflected_form_tag_id = inflected_form_tag.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let inflected_form_tag_id = inflected_form_tag.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("inflectedFormTag")?,
                 &inflected_form_tag_id).expect("Error inserting triple");
         }
         for (i, label_tag) in self.label_tags.iter().enumerate() {
-            let label_tag_id = label_tag.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let label_tag_id = label_tag.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("labelTag")?,
                 &label_tag_id).expect("Error inserting triple");
         }
         for (i, part_of_speech_tag) in self.part_of_speech_tags.iter().enumerate() {
-            let part_of_speech_tag_id = part_of_speech_tag.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let part_of_speech_tag_id = part_of_speech_tag.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("partOfSpeechTag")?,
                 &part_of_speech_tag_id).expect("Error inserting triple");
         }
         for (i, source_identity_tag) in self.source_identity_tags.iter().enumerate() {
-            let source_identity_tag_id = source_identity_tag.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let source_identity_tag_id = source_identity_tag.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("sourceIdentityTag")?,
                 &source_identity_tag_id).expect("Error inserting triple");
         }
         for (i, transcription_scheme_tag) in self.transcription_scheme_tags.iter().enumerate() {
-            let transcription_scheme_tag_id = transcription_scheme_tag.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let transcription_scheme_tag_id = transcription_scheme_tag.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("transcriptionSchemeTag")?,
                 &transcription_scheme_tag_id).expect("Error inserting triple");
         }
         for (i, relation) in self.relations.iter().enumerate() {
-            let relation_id = relation.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let relation_id = relation.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("relation")?,
                 &relation_id).expect("Error inserting triple");
         }
         for (i, relation) in self.relation_types.iter().enumerate() {
-            let relation_type_id = relation.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let relation_type_id = relation.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("relationType")?,
                 &relation_type_id).expect("Error inserting triple");
         }
         for  (i, etymon_language) in self.etymon_languages.iter().enumerate() {
-            let etymon_language_id = etymon_language.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let etymon_language_id = etymon_language.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("etymonLanguage")?,
                 &etymon_language_id).expect("Error inserting triple");
         }
         for (i, etymon_type) in self.etymon_types.iter().enumerate() {
-            let etymon_type_id = etymon_type.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let etymon_type_id = etymon_type.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("etymonType")?,
@@ -218,13 +235,17 @@ impl FromRDF for LexicographicResource {
     }
 }
 
-
-impl ToRDF for &Entry {
+impl ToRDF for Entry {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        _index : usize, ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::make(&self.id, data)?;
+        _index : usize, ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, uri) = name_elem(uri, "entry", self)?;
+        let id = if let Some(i) = &self.id {
+            make_id(&i, data)?
+        } else {
+            id
+        };
         graph.insert(
             &id,
             &rdf::type_,
@@ -240,7 +261,7 @@ impl ToRDF for &Entry {
             &dmlex.get("headword")?,
             &self.headword.as_literal()).expect("Error inserting triple");
         if ontolex {
-            let form = URIOrBlank::gen();
+            let form = gen_blank_node()?;
             graph.insert(
                 &id,
                 &Namespace::new(ONTOLEX)?.get("canonicalForm")?,
@@ -251,7 +272,7 @@ impl ToRDF for &Entry {
                 &self.headword.as_literal()).expect("Error inserting triple");
         }
         for (i, placeholder_marker) in self.placeholder_markers.iter().enumerate() {
-            let placeholder_marker_id = placeholder_marker.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let placeholder_marker_id = placeholder_marker.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("placeholderMarker")?,
@@ -264,7 +285,7 @@ impl ToRDF for &Entry {
                 &homograph_number.as_literal()).expect("Error inserting triple");
         }
         for (i, part_of_speech) in self.parts_of_speech.iter().enumerate() {
-            let blank = URIOrBlank::gen();
+            let blank = gen_blank_node()?;
             graph.insert(
                 &id,
                 &dmlex.get("partOfSpeech")?,
@@ -279,7 +300,7 @@ impl ToRDF for &Entry {
                 &((i + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         for (i, label) in self.labels.iter().enumerate() {
-            let blank = URIOrBlank::gen();
+            let blank = gen_blank_node()?;
             graph.insert(
                 &id,
                 &dmlex.get("label")?,
@@ -294,14 +315,14 @@ impl ToRDF for &Entry {
                 &((i + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         for (i, pronunciation) in self.pronunciations.iter().enumerate() {
-            let pronunciation_id = pronunciation.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let pronunciation_id = pronunciation.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("pronunciation")?,
                 &pronunciation_id).expect("Error inserting triple");
         }
         for (i, inflected_form) in self.inflected_forms.iter().enumerate() {
-            let inflected_form_id = inflected_form.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let inflected_form_id = inflected_form.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("inflectedForm")?,
@@ -314,7 +335,7 @@ impl ToRDF for &Entry {
             }
         }
         for (i, sense) in self.senses.iter().enumerate() {
-            let sense_id = sense.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let sense_id = sense.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("sense")?,
@@ -327,7 +348,7 @@ impl ToRDF for &Entry {
             }
         }
         for (i, etymology) in self.etymologies.iter().enumerate() {
-            let etymology_id = etymology.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let etymology_id = etymology.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("etymology")?,
@@ -356,12 +377,12 @@ impl FromRDF for Entry {
     }
 }
 
-impl ToRDF for &InflectedForm {
+impl ToRDF for InflectedForm {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        index : usize, ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        index : usize, ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, uri) = name_elem(uri, "inflectedForm", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -383,7 +404,7 @@ impl ToRDF for &InflectedForm {
                 &tag.as_literal()).expect("Error inserting triple");
         }
         for (i, label) in self.labels.iter().enumerate() {
-            let blank = URIOrBlank::gen();
+            let blank = gen_blank_node()?;
             graph.insert(
                 &id,
                 &dmlex.get("label")?,
@@ -398,7 +419,7 @@ impl ToRDF for &InflectedForm {
                 &((i + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         for (i, pronunciation) in self.pronunciations.iter().enumerate() {
-            let pronunciation_id = pronunciation.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let pronunciation_id = pronunciation.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("pronunciation")?,
@@ -426,12 +447,17 @@ impl FromRDF for InflectedForm {
     }
 }
 
-impl ToRDF for &Sense {
+impl ToRDF for Sense {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        index : usize, ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::make(&self.id, data)?;
+        index : usize, ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, uri) = name_elem(uri, "sense", self)?;
+        let id = if let Some(id2) = &self.id {
+            make_id(&id2, data)?
+        } else {
+            id
+        };
         graph.insert(
             &id,
             &rdf::type_,
@@ -443,7 +469,7 @@ impl ToRDF for &Sense {
                 &indicator.as_literal()).expect("Error inserting triple");
         }
         for (i, label) in self.labels.iter().enumerate() {
-            let blank = URIOrBlank::gen();
+            let blank = gen_blank_node()?;
             graph.insert(
                 &id,
                 &dmlex.get("label")?,
@@ -458,7 +484,7 @@ impl ToRDF for &Sense {
                 &((i + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         for (i, definition) in self.definitions.iter().enumerate() {
-            let definition_id = definition.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let definition_id = definition.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("definition")?,
@@ -471,21 +497,21 @@ impl ToRDF for &Sense {
             }
         }
         for (i, example) in self.examples.iter().enumerate() {
-            let example_id = example.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let example_id = example.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("example")?,
                 &example_id).expect("Error inserting triple");
         }
         for (i, headword_explanation) in self.headword_explanations.iter().enumerate() {
-            let headword_explanation_id = headword_explanation.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let headword_explanation_id = headword_explanation.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("headwordExplanation")?,
                 &headword_explanation_id).expect("Error inserting triple");
         }
         for (i, headword_translation) in self.headword_translations.iter().enumerate() {
-            let headword_translation_id = headword_translation.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let headword_translation_id = headword_translation.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("headwordTranslation")?,
@@ -515,12 +541,12 @@ impl FromRDF for Sense {
     }
 }
 
-impl ToRDF for &Definition {
+impl ToRDF for Definition {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        index : usize, _ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        index : usize, _ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, _) = name_elem(uri, "definition", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -556,12 +582,12 @@ impl FromRDF for Definition {
 }
 
 
-impl ToRDF for &Pronunciation {
+impl ToRDF for Pronunciation {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        index : usize, ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        index : usize, ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, uri) = name_elem(uri, "pronunciation", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -573,14 +599,14 @@ impl ToRDF for &Pronunciation {
                 &sound_file.as_literal()).expect("Error inserting triple");
         }
         for (i, transcription) in self.transcriptions.iter().enumerate() {
-            let transcription_id = transcription.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let transcription_id = transcription.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("transcription")?,
                 &transcription_id).expect("Error inserting triple");
         }
         for (i, label) in self.labels.iter().enumerate() {
-            let blank = URIOrBlank::gen();
+            let blank = gen_blank_node()?;
             graph.insert(
                 &id,
                 &dmlex.get("label")?,
@@ -615,12 +641,12 @@ impl FromRDF for Pronunciation {
     }
 }
 
-impl ToRDF for &Transcription {
+impl ToRDF for Transcription {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        index : usize, _ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        index : usize, _ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, _) = name_elem(uri, "transcription", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -653,12 +679,12 @@ impl FromRDF for Transcription {
     }
 }
 
-impl ToRDF for &Example {
+impl ToRDF for Example {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        index : usize, ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        index : usize, ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, uri) = name_elem(uri, "example", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -668,7 +694,7 @@ impl ToRDF for &Example {
             &dmlex.get("text")?,
             &self.text.as_literal()).expect("Error inserting triple");
         if ontolex {
-            let example = URIOrBlank::gen();
+            let example = gen_blank_node()?;
             graph.insert(
                 &id,
                 &Namespace::new(LEXICOG)?.get("usageExample")?,
@@ -679,14 +705,14 @@ impl ToRDF for &Example {
                 &self.text.as_literal()).expect("Error inserting triple");
         }
         for (i, collocate_marker) in self.collocate_markers.iter().enumerate() {
-            let collocate_marker_id = collocate_marker.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let collocate_marker_id = collocate_marker.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("collocateMarker")?,
                 &collocate_marker_id).expect("Error inserting triple");
         }
         for (i, headword_marker) in self.headword_markers.iter().enumerate() {
-            let headword_marker_id = headword_marker.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let headword_marker_id = headword_marker.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("headwordMarker")?,
@@ -705,7 +731,7 @@ impl ToRDF for &Example {
                 &source_elaboration.as_literal()).expect("Error inserting triple");
         }
         for (i, label) in self.labels.iter().enumerate() {
-            let blank = URIOrBlank::gen();
+            let blank = gen_blank_node()?;
             graph.insert(
                 &id,
                 &dmlex.get("label")?,
@@ -726,7 +752,7 @@ impl ToRDF for &Example {
                 &sound_file.as_literal()).expect("Error inserting triple");
         }
         for (i, example_translation) in self.example_translations.iter().enumerate() {
-            let example_translation_id = example_translation.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let example_translation_id = example_translation.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("exampleTranslation")?,
@@ -757,12 +783,12 @@ impl FromRDF for Example {
     }
 }
 
-impl ToRDF for &HeadwordTranslation {
+impl ToRDF for HeadwordTranslation {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        index : usize, ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        index : usize, ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, uri) = name_elem(uri, "headwordTranslation", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -772,7 +798,7 @@ impl ToRDF for &HeadwordTranslation {
             &dmlex.get("text")?,
             &self.text.as_literal()).expect("Error inserting triple");
         for (i, placeholder_marker) in self.placeholder_markers.iter().enumerate() {
-            let placeholder_marker_id = placeholder_marker.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let placeholder_marker_id = placeholder_marker.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("placeholderMarker")?,
@@ -785,7 +811,7 @@ impl ToRDF for &HeadwordTranslation {
                 &lang_code.as_literal()).expect("Error inserting triple");
         }
         for (i, part_of_speech) in self.parts_of_speech.iter().enumerate() {
-            let blank = URIOrBlank::gen();
+            let blank = gen_blank_node()?;
             graph.insert(
                 &id,
                 &dmlex.get("partOfSpeech")?,
@@ -800,7 +826,7 @@ impl ToRDF for &HeadwordTranslation {
                 &((i + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         for (i, label) in self.labels.iter().enumerate() {
-            let blank = URIOrBlank::gen();
+            let blank = gen_blank_node()?;
             graph.insert(
                 &id,
                 &dmlex.get("label")?,
@@ -815,14 +841,14 @@ impl ToRDF for &HeadwordTranslation {
                 &((i + 1) as u32).as_literal()).expect("Error inserting triple");
         }
         for (i, pronunciation) in self.pronunciations.iter().enumerate() {
-            let pronunciation_id = pronunciation.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let pronunciation_id = pronunciation.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("pronunciation")?,
                 &pronunciation_id).expect("Error inserting triple");
         }
         for (i, inflected_form) in self.inflected_forms.iter().enumerate() {
-            let inflected_form_id = inflected_form.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let inflected_form_id = inflected_form.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("inflectedForm")?,
@@ -852,12 +878,12 @@ impl FromRDF for HeadwordTranslation {
     }
 }
 
-impl ToRDF for &HeadwordExplanation {
+impl ToRDF for HeadwordExplanation {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        _index : usize, ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        _index : usize, ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, uri) = name_elem(uri, "headwordExplanation", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -867,14 +893,14 @@ impl ToRDF for &HeadwordExplanation {
             &dmlex.get("text")?,
             &self.text.as_literal()).expect("Error inserting triple");
         for (i, collocate_marker) in self.collocate_markers.iter().enumerate() {
-            let collocate_marker_id = collocate_marker.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let collocate_marker_id = collocate_marker.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("collocateMarker")?,
                 &collocate_marker_id).expect("Error inserting triple");
         }
         for (i, headword_marker) in self.headword_markers.iter().enumerate() {
-            let headword_marker_id = headword_marker.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let headword_marker_id = headword_marker.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("headwordMarker")?,
@@ -903,12 +929,12 @@ impl FromRDF for HeadwordExplanation {
     }
 }
 
-impl ToRDF for &ExampleTranslation {
+impl ToRDF for ExampleTranslation {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        index : usize, ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        index : usize, ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, uri) = name_elem(uri, "exampleTranslation", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -918,14 +944,14 @@ impl ToRDF for &ExampleTranslation {
             &dmlex.get("text")?,
             &self.text.as_literal()).expect("Error inserting triple");
         for (i, collocate_marker) in self.collocate_markers.iter().enumerate() {
-            let collocate_marker_id = collocate_marker.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let collocate_marker_id = collocate_marker.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("collocateMarker")?,
                 &collocate_marker_id).expect("Error inserting triple");
         }
         for (i, headword_marker) in self.headword_markers.iter().enumerate() {
-            let headword_marker_id = headword_marker.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let headword_marker_id = headword_marker.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("headwordMarker")?,
@@ -938,7 +964,7 @@ impl ToRDF for &ExampleTranslation {
                 &lang_code.as_literal()).expect("Error inserting triple");
         }
         for (i, label) in self.labels.iter().enumerate() {
-            let blank = URIOrBlank::gen();
+            let blank = gen_blank_node()?;
             graph.insert(
                 &id,
                 &dmlex.get("label")?,
@@ -981,12 +1007,12 @@ impl FromRDF for ExampleTranslation {
     }
 }
 
-impl ToRDF for &DefinitionTypeTag {
+impl ToRDF for DefinitionTypeTag {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        _index : usize, _ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        _index : usize, _ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, _) = name_elem(uri, "definitionTypeTag", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -1024,12 +1050,12 @@ impl FromRDF for DefinitionTypeTag {
 }
 
 
-impl ToRDF for &InflectedFormTag {
+impl ToRDF for InflectedFormTag {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        _index : usize, _ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        _index : usize, _ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, _) = name_elem(uri, "inflectedFormTag", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -1074,12 +1100,12 @@ impl FromRDF for InflectedFormTag {
     }
 }
 
-impl ToRDF for &LabelTag {
+impl ToRDF for LabelTag {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        _index : usize, _ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        _index : usize, _ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, _) = name_elem(uri, "labelTag", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -1131,12 +1157,12 @@ impl FromRDF for LabelTag {
 }
 
 
-impl ToRDF for &LabelTypeTag {
+impl ToRDF for LabelTypeTag {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        _index : usize, _ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        _index : usize, _ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, _) = name_elem(uri, "labelTypeTag", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -1173,12 +1199,12 @@ impl FromRDF for LabelTypeTag {
     }
 }
 
-impl ToRDF for &PartOfSpeechTag {
+impl ToRDF for PartOfSpeechTag {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        _index : usize, _ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        _index : usize, _ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, _) = name_elem(uri, "partOfSpeechTag", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -1223,12 +1249,12 @@ impl FromRDF for PartOfSpeechTag {
 }
 
 
-impl ToRDF for &SourceIdentityTag {
+impl ToRDF for SourceIdentityTag {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        _index : usize, _ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        _index : usize, _ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, _) = name_elem(uri, "sourceIdentityTag", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -1265,12 +1291,12 @@ impl FromRDF for SourceIdentityTag {
     }
 }
 
-impl ToRDF for &TranscriptionSchemeTag {
+impl ToRDF for TranscriptionSchemeTag {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        _index : usize, _ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        _index : usize, _ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, _) = name_elem(uri, "transcriptionSchemeTag", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -1307,12 +1333,13 @@ impl FromRDF for TranscriptionSchemeTag {
     }
 }
 
-impl ToRDF for &Relation {
+impl ToRDF for Relation {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        index : usize, ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        index : usize, ontolex : bool, _ : &Option<String>) ->
+        Result<Term<String>> {
+        let id = gen_blank_node()?;
+        let uri = None;
         graph.insert(
             &id,
             &rdf::type_,
@@ -1328,7 +1355,7 @@ impl ToRDF for &Relation {
                 &description.as_literal()).expect("Error inserting triple");
         }
         for (i, member) in self.members.iter().enumerate() {
-            let ref_ = member.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let ref_ = member.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("member")?,
@@ -1355,12 +1382,12 @@ impl FromRDF for Relation {
 }
 
 
-impl ToRDF for &Member {
+impl ToRDF for Member {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        index : usize, _ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        index : usize, _ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, _) = name_elem(uri, "member", self)?;
         graph.insert(
             &id,
             &dmlex.get("ref")?,
@@ -1401,12 +1428,12 @@ impl FromRDF for Member {
     }
 }
 
-impl ToRDF for &RelationType {
+impl ToRDF for RelationType {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        _index : usize, ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        _index : usize, ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, uri) = name_elem(uri, "relationType", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -1443,7 +1470,7 @@ impl ToRDF for &RelationType {
             },
         }
         for (i, member_type) in self.member_types.iter().enumerate() {
-            let member_type_id = member_type.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let member_type_id = member_type.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("memberType")?,
@@ -1482,12 +1509,12 @@ impl FromRDF for RelationType {
 }
 
 
-impl ToRDF for &MemberType {
+impl ToRDF for MemberType {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        _index : usize, _ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        _index : usize, _ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, _) = name_elem(uri, "memberType", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -1597,12 +1624,12 @@ impl FromRDF for MemberType {
     }
 }
 
-impl ToRDF for &Marker {
+impl ToRDF for Marker {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        _index : usize, _ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        _index : usize, _ontolex : bool, _ : &Option<String>) ->
+        Result<Term<String>> {
+        let id = gen_blank_node()?;
         graph.insert(
             &id,
             &dmlex.get("startIndex")?,
@@ -1625,12 +1652,17 @@ impl FromRDF for Marker {
     }
 }
 
-impl ToRDF for &CollocateMarker {
+impl ToRDF for CollocateMarker {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        _index : usize, _ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::make(&self.id, data)?;
+        _index : usize, _ontolex : bool, _ : &Option<String>) ->
+        Result<Term<String>> {
+        let id = gen_blank_node()?;
+        let id = if let Some(id) = &self.id {
+            make_id(id, data)?
+        } else {
+            id
+        };
         graph.insert(
             &id,
             &dmlex.get("startIndex")?,
@@ -1668,12 +1700,12 @@ impl FromRDF for CollocateMarker {
     }
 }
 
-impl ToRDF for &Etymology {
+impl ToRDF for Etymology {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        index : usize, ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        index : usize, ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, uri) = name_elem(uri, "etymology", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -1685,7 +1717,7 @@ impl ToRDF for &Etymology {
                 &description.as_literal()).expect("Error inserting triple");
         }
         for (i, etymon) in self.etymons.iter().enumerate() {
-            let etymon_id = etymon.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let etymon_id = etymon.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("etymon")?,
@@ -1710,12 +1742,12 @@ impl FromRDF for Etymology {
 }
 
 
-impl ToRDF for &Etymon {
+impl ToRDF for Etymon {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        index : usize, ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        index : usize, ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, uri) = name_elem(uri, "etymon", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -1739,7 +1771,7 @@ impl ToRDF for &Etymon {
                 &note.as_literal()).expect("Error inserting triple");
         }
         for (i, etymon_unit) in self.etymon_units.iter().enumerate() {
-            let etymon_unit_id = etymon_unit.to_rdf(graph, data, dmlex, i, ontolex)?;
+            let etymon_unit_id = etymon_unit.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
                 &dmlex.get("etymonUnit")?,
@@ -1772,12 +1804,12 @@ impl FromRDF for Etymon {
     }
 }
 
-impl ToRDF for &EtymonUnit {
+impl ToRDF for EtymonUnit {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        index : usize, _ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        index : usize, _ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, _) = name_elem(uri, "etymonUnit", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -1829,12 +1861,12 @@ impl FromRDF for EtymonUnit {
     }
 }
 
-impl ToRDF for &EtymonType {
+impl ToRDF for EtymonType {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        _index : usize, _ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        _index : usize, _ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, _) = name_elem(uri, "etymonType", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -1864,12 +1896,12 @@ impl FromRDF for EtymonType {
 }
 
 
-impl ToRDF for &EtymonLanguage {
+impl ToRDF for EtymonLanguage {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
         graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        _index : usize, _ontolex : bool) -> 
-        Result<URIOrBlank<'a>> {
-        let id = URIOrBlank::gen();
+        _index : usize, _ontolex : bool, uri : &Option<String>) ->
+        Result<Term<String>> {
+        let (id, _) = name_elem(uri, "etymonLanguage", self)?;
         graph.insert(
             &id,
             &rdf::type_,
@@ -1898,30 +1930,42 @@ impl FromRDF for EtymonLanguage {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum URIOrBlank<'s> {
-    URI(SimpleIri<'s>),
-    Blank(BlankNode<String>),
+//#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+//pub enum URIOrBlank<'s> {
+//    URI(SimpleIri<'s>),
+//    Blank(BlankNode<String>),
+//}
+
+fn gen_blank_node() -> Result<Term<String>> {
+    Ok(Term::new_bnode(rand::thread_rng()
+        .sample_iter(&rand::distributions::Alphanumeric)
+        .take(20)
+        .map(char::from)
+        .collect::<String>())?)
 }
 
-impl URIOrBlank<'_> {
-    fn gen<'s>() -> URIOrBlank<'s> {
-        URIOrBlank::Blank(BlankNode::new(
-                rand::thread_rng()
-                .sample_iter(&rand::distributions::Alphanumeric)
-                .take(20)
-                .map(char::from)
-                .collect::<String>()).unwrap())
-    }
+//impl URIOrBlank<'_> {
+//    fn gen<'s>() -> URIOrBlank<'s> {
+//        URIOrBlank::Blank(BlankNode::new(
+//                rand::thread_rng()
+//                .sample_iter(&rand::distributions::Alphanumeric)
+//                .take(20)
+//                .map(char::from)
+//                .collect::<String>()).unwrap())
+//    }
+//
+//    fn make<'s, T: AsRef<str>>(s : &'s Option<String>, data : &'s Namespace<T>) -> Result<URIOrBlank<'s>> {
+//        if let Some(s) = s {
+//            Ok(URIOrBlank::URI(data.get(s)?))
+//        } else {
+//            Ok(URIOrBlank::gen())
+//        }
+//    }
+//
+//}
 
-    fn make<'s, T: AsRef<str>>(s : &'s Option<String>, data : &'s Namespace<T>) -> Result<URIOrBlank<'s>> {
-        if let Some(s) = s {
-            Ok(URIOrBlank::URI(data.get(s)?))
-        } else {
-            Ok(URIOrBlank::gen())
-        }
-    }
-
+fn make_id<T: AsRef<str>>(s : &str, data : &Namespace<T>) -> Result<Term<String>> {
+    Ok(Term::from(data.get(s)?).clone_into())
 }
 
 fn get_id<T: AsRef<str>>(term : &Term<String>, data : &Namespace<T>) -> Option<String> {
@@ -1945,25 +1989,25 @@ fn get_id<T: AsRef<str>>(term : &Term<String>, data : &Namespace<T>) -> Option<S
 }
 
 
-impl TTerm for URIOrBlank<'_> {
-    fn kind(&self) -> TermKind {
-        match self {
-            URIOrBlank::URI(_) => TermKind::Iri,
-            URIOrBlank::Blank(_) => TermKind::BlankNode,
-        }
-    }
-
-    fn value_raw(&self) -> RawValue<'_> {
-        match self {
-            URIOrBlank::URI(s) => s.value_raw(),
-            URIOrBlank::Blank(s) => s.value_raw(),
-        }
-    }
-
-    fn as_dyn(&self) -> &dyn TTerm {
-        self
-    }
-}
+//impl TTerm for URIOrBlank<'_> {
+//    fn kind(&self) -> TermKind {
+//        match self {
+//            URIOrBlank::URI(_) => TermKind::Iri,
+//            URIOrBlank::Blank(_) => TermKind::BlankNode,
+//        }
+//    }
+//
+//    fn value_raw(&self) -> RawValue<'_> {
+//        match self {
+//            URIOrBlank::URI(s) => s.value_raw(),
+//            URIOrBlank::Blank(s) => s.value_raw(),
+//        }
+//    }
+//
+//    fn as_dyn(&self) -> &dyn TTerm {
+//        self
+//    }
+//}
 
 fn get_zero_one_str<G : Graph, S : TTerm + std::fmt::Debug, P : TTerm + std::fmt::Debug>(g : &G, subj : &S, prop : &P) -> Result<Option<String>> {
     let mut iter = g.triples_with_sp(subj, prop);
@@ -2355,7 +2399,7 @@ mod tests {
         let lexicon = read_lexicographic_resource(&graph, &data).unwrap();
         let mut graph2 = LightGraph::new();
         let dmlex = Namespace::new(DMLEX).expect("DMLEX namespace is invalid");
-        lexicon.to_rdf(&mut graph2, &data, &dmlex, 0, false).unwrap();
+        lexicon.to_rdf(&mut graph2, &data, &dmlex, 0, false, &None).unwrap();
         assert_eq!(graph.triples().count(), graph2.triples().count());
     }
 
@@ -2366,7 +2410,7 @@ mod tests {
         let lexicon = read_entry(&graph, &data).unwrap();
         let mut graph2 = LightGraph::new();
         let dmlex = Namespace::new(DMLEX).expect("DMLEX namespace is invalid");
-        (&lexicon).to_rdf(&mut graph2, &data, &dmlex, 0, false).unwrap();
+        (&lexicon).to_rdf(&mut graph2, &data, &dmlex, 0, false, &None).unwrap();
         assert_eq!(graph.triples().count(), graph2.triples().count());
     }
 
