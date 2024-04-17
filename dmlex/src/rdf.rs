@@ -35,7 +35,7 @@ pub trait FromRDF {
 
 fn name_elem<F : Validate<S>, S : PartialEq + FragId>(uri : &Option<String>, elem : &'static str, f : &F) -> Result<(Term<String>, Option<String>)> {
     if let Some(uri) = uri {
-        let id = uri.to_string() + "/" + elem + "/" + &f.frag_path();
+        let id = uri.to_string() + elem + "/" + &f.frag_path();
         let uri = id.to_string() + "/";
         let id : Term<String> = Term::new_iri(id)?;
         Ok((id, Some(uri)))
@@ -69,9 +69,9 @@ impl ToRDF for LexicographicResource {
         Result<Term<String>> {
         let (id, uri) = if let Some(uri) = &self.uri {
             if uri.ends_with("#") {
-                (Term::new_iri(uri.to_string() + "lexicographicResource/")?, Some(uri.to_string()))
+                (Term::new_iri(uri.to_string())?, Some(uri.to_string()))
             } else {
-                (Term::new_iri(uri.to_string() + "/lexicographicResource/")?, Some(uri.to_string() + "#"))
+                (Term::new_iri(uri.to_string())?, Some(uri.to_string() + "#"))
             }
         } else {
             (gen_blank_node()?, None)

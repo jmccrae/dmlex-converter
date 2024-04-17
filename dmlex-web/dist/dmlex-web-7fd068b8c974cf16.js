@@ -760,7 +760,7 @@ async function __wbg_init(input) {
     if (wasm !== undefined) return wasm;
 
     if (typeof input === 'undefined') {
-        input = new URL('dmlex-web-1cf60a07ea568663_bg.wasm', import.meta.url);
+        input = new URL('dmlex-web-7fd068b8c974cf16_bg.wasm', import.meta.url);
     }
     const imports = __wbg_get_imports();
 
