@@ -5,6 +5,7 @@ use thiserror::Error;
 use xml::reader::XmlEvent::{StartElement, EndElement, Characters, StartDocument, EndDocument, ProcessingInstruction, Comment, Whitespace, CData};
 use xml::attribute::OwnedAttribute;
 use xml::common::Position;
+use regex::Regex;
 
 pub fn read_xml<R: Read, E : XMLVisitor>(input: R, element_name : &'static str) -> std::result::Result<E, XMLErrorWithPosition> {
     let mut reader = EventReader::new_with_config(input, xml::ParserConfig::new()
@@ -1213,6 +1214,10 @@ fn headword_string<R: Read>(input: &mut EventReader<R>, attributes: Vec<OwnedAtt
     }
 }
 
+lazy_static! {
+    static ref ASCII_WHITESPACE: Regex = Regex::new(r"[ \t\n\r\v\f]+").unwrap();
+}
+
 fn text_string<R: Read>(input: &mut EventReader<R>, attributes: Vec<OwnedAttribute>) -> Result<(String, Vec<Marker>, Vec<CollocateMarker>)> {
     let mut headword = String::new();
     let mut markers = Vec::new();
@@ -1247,7 +1252,8 @@ fn text_string<R: Read>(input: &mut EventReader<R>, attributes: Vec<OwnedAttribu
                 }
             },
             Ok(Characters(characters)) => {
-                headword.push_str(&characters);
+                headword.push_str(ASCII_WHITESPACE.replace_all(&characters,
+                        " ").as_ref());
             },
             Ok(CData(cdata)) => {
                 headword.push_str(&cdata);
@@ -1257,7 +1263,8 @@ fn text_string<R: Read>(input: &mut EventReader<R>, attributes: Vec<OwnedAttribu
                     if markers.len() > 0 && markers.last().unwrap().end_index == 0 {
                         return Err(FromXMLError::UnclosedPlaceholderMarker);
                     }
-                    return Ok((headword.to_string(), markers, collocate_markers));
+                    return Ok((headword.trim_end().to_string(),
+                            markers, collocate_markers));
                 } else if name.local_name == "headwordMarker" {
                     if markers.len() == 0 {
                         return Err(FromXMLError::MismatchedEndElement("headwordMarker".to_string()));
@@ -1274,8 +1281,10 @@ fn text_string<R: Read>(input: &mut EventReader<R>, attributes: Vec<OwnedAttribu
                     return Err(FromXMLError::UnexpectedElement(name.local_name));
                 }
             },
-            Ok(Whitespace(s)) => {
-                headword.push_str(&s);
+            Ok(Whitespace(_)) => {
+                if !headword.is_empty() {
+                    headword.push_str(" ");
+                }
             },
             Ok(StartDocument { .. }) => {
                 return Err(FromXMLError::UnexpectedStartDocument);

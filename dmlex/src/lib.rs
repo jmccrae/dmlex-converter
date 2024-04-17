@@ -22,6 +22,9 @@ use std::io::BufReader;
 use std::io::{Read, Write};
 use thiserror::Error;
 
+#[macro_use]
+extern crate lazy_static;
+
 type Graph = OpsWrapper<GenericGraph<u16, RcTermFactory>>;
 
 #[derive(Debug,Clone,PartialEq,Eq)]

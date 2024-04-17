@@ -13,4 +13,5 @@ xml = "0.8.0"
 sophia = "0.7.2"
 thiserror = "1.0.50"
 rand = "*"
-
+regex = "*"
+lazy_static = "*"
