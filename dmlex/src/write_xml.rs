@@ -170,7 +170,9 @@ impl WriteXML for &Definition {
             e = e.attr("definitionType", definition_type);
         }
         writer.write(e)?;
+        writer.write(XmlEvent::start_element("text"))?;
         writer.write(XmlEvent::characters(&self.text))?;
+        writer.write(XmlEvent::end_element())?;
         writer.write(XmlEvent::end_element())?;
         Ok(())
     }
@@ -203,7 +205,9 @@ impl WriteXML for &Transcription {
             e = e.attr("scheme", scheme);
         }
         writer.write(e)?;
+        writer.write(XmlEvent::start_element("text"))?;
         writer.write(XmlEvent::characters(&self.text))?;
+        writer.write(XmlEvent::end_element())?;
         writer.write(XmlEvent::end_element())?;
         Ok(())
     }
@@ -276,9 +280,9 @@ impl WriteXML for &HeadwordExplanation {
             e = e.attr("langCode", &lang_code.0);
         }
         writer.write(e)?;
-        //writer.write(XmlEvent::start_element("text"))?;
+        writer.write(XmlEvent::start_element("text"))?;
         write_text_string(writer, &self.text, &self.headword_markers, &self.collocate_markers)?;
-        //writer.write(XmlEvent::end_element())?;
+        writer.write(XmlEvent::end_element())?;
         writer.write(XmlEvent::end_element())?;
         Ok(())
     }

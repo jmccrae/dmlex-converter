@@ -298,7 +298,7 @@ impl XMLVisitor for Sense {
     }
 
     fn visit_start_element<R: Read>(&mut self, name: &str, 
-        mut attributes: Vec<OwnedAttribute>, reader: &mut EventReader<R>) 
+        attributes: Vec<OwnedAttribute>, reader: &mut EventReader<R>) 
         -> Result<()> {
         match name {
             "indicator" => {
@@ -318,14 +318,7 @@ impl XMLVisitor for Sense {
                 Ok(())
             }, 
             "headwordExplanation" => {
-                let lang_code = str_attr("langCode", &mut attributes).map(|s| LangCode(s));
-                let (text, headword_markers, collocate_markers) = text_string(reader, attributes)?;
-                self.headword_explanations.push(HeadwordExplanation {
-                    text,
-                    headword_markers,
-                    collocate_markers,
-                    lang_code
-                });
+                self.headword_explanations.push(HeadwordExplanation::from_event_reader(reader, attributes)?);
                 Ok(())
             },
             "headwordTranslation" => {
@@ -347,9 +340,21 @@ impl XMLVisitor for Definition {
         Ok(())
     }
 
-    fn visit_characters(&mut self, characters: &str) -> Result<()> {
-        self.text.push_str(&characters);
-        Ok(())
+    //fn visit_characters(&mut self, characters: &str) -> Result<()> {
+    //    self.text.push_str(&characters);
+    //    Ok(())
+    //}
+    fn visit_start_element<R: Read>(&mut self, name: &str, 
+        _attributes: Vec<OwnedAttribute>, reader: &mut EventReader<R>) 
+        -> Result<()> {
+        match name {
+            "text" => {
+                let text = plain_string(reader)?;
+                self.text = text;
+                Ok(())
+            },
+            _ => Err(FromXMLError::UnexpectedElement(name.to_string())),
+        }
     }
 
     fn visit_end_element(&mut self) -> Result<()> {
@@ -395,9 +400,16 @@ impl XMLVisitor for Transcription {
         Ok(())
     }
 
-    fn visit_characters(&mut self, characters: &str) -> Result<()> {
-        self.text.push_str(&characters);
-        Ok(())
+    fn visit_start_element<R: Read>(&mut self, name: &str, 
+        _attributes: Vec<OwnedAttribute>, reader: &mut EventReader<R>) 
+        -> Result<()> {
+        match name {
+            "text" => {
+                self.text = plain_string(reader)?;
+                Ok(())
+            },
+            _ => Err(FromXMLError::UnexpectedElement(name.to_string())),
+        }
     }
 
     fn visit_end_element(&mut self) -> Result<()> {
@@ -484,21 +496,31 @@ impl XMLVisitor for HeadwordTranslation {
     }
 }
 
-//impl XMLVisitor for HeadwordExplanation {
-//    fn name(&self) -> &'static str {
-//        "headwordExplanation"
-//    }
-//
-//    fn visit_attributes(&mut self, attributes: &mut Vec<OwnedAttribute>) -> Result<()> {
-//        self.lang_code = str_attr("langCode", attributes).map(|s| LangCode(s));
-//        Ok(())
-//    }
-//
-//    fn visit_characters(&mut self, characters: &str) -> Result<()> {
-//        self.text.push_str(&characters);
-//        Ok(())
-//    }
-//}
+impl XMLVisitor for HeadwordExplanation {
+    fn name(&self) -> &'static str {
+        "headwordExplanation"
+    }
+
+    fn visit_attributes(&mut self, attributes: &mut Vec<OwnedAttribute>) -> Result<()> {
+        self.lang_code = str_attr("langCode", attributes).map(|s| LangCode(s));
+        Ok(())
+    }
+
+    fn visit_start_element<R: Read>(&mut self, name: &str, 
+        attributes: Vec<OwnedAttribute>, reader: &mut EventReader<R>) 
+        -> Result<()> {
+        match name {
+            "text" => {
+                let (text, markers, coll_markers) = text_string(reader, attributes)?;
+                self.text = text;
+                self.headword_markers = markers;
+                self.collocate_markers = coll_markers;
+                Ok(())
+            },
+            _ => Err(FromXMLError::UnexpectedElement(name.to_string())),
+        }
+    }
+}
 
 impl XMLVisitor for ExampleTranslation {
     fn name(&self) -> &'static str {
@@ -1157,6 +1179,43 @@ fn text<R: Read>(input: &mut EventReader<R>, attributes: Vec<OwnedAttribute>) ->
     }
 }
 
+fn plain_string<R : Read>(input: &mut EventReader<R>) -> Result<String> {
+    let mut text = String::new();
+    loop {
+        match input.next() {
+            Ok(StartElement { name, .. }) => {
+                return Err(FromXMLError::UnexpectedElement(name.local_name));
+            },
+            Ok(Characters(characters)) => {
+                if text.is_empty() {
+                    text.push_str(&ASCII_WHITESPACE.replace_all(&characters, " ").trim_start());
+                } else {
+                    text.push_str(&ASCII_WHITESPACE.replace_all(&characters, " "));
+                }
+            },
+            Ok(CData(cdata)) => {
+                text.push_str(&cdata);
+            },
+            Ok(EndElement { .. }) => {
+                return Ok(text.trim_end().to_string());
+            },
+            Ok(Whitespace(_)) => {
+            },
+            Ok(StartDocument { .. }) => {
+                return Err(FromXMLError::UnexpectedStartDocument);
+            },
+            Ok(EndDocument) => {
+                return Err(FromXMLError::UnexpectedEndDocument);
+            },
+            Ok(ProcessingInstruction { .. }) => {
+                return Err(FromXMLError::UnexpectedProcessingInstruction);
+            },
+            Ok(Comment(_)) => { },
+            Err(e) => return Err(FromXMLError::XML(e)),
+        }
+    }
+}
+
 fn headword_string<R: Read>(input: &mut EventReader<R>, attributes: Vec<OwnedAttribute>) -> Result<(String, Vec<Marker>)> {
     let mut headword = String::new();
     let mut markers = Vec::new();
@@ -1252,8 +1311,13 @@ fn text_string<R: Read>(input: &mut EventReader<R>, attributes: Vec<OwnedAttribu
                 }
             },
             Ok(Characters(characters)) => {
-                headword.push_str(ASCII_WHITESPACE.replace_all(&characters,
-                        " ").as_ref());
+                if headword.is_empty() {
+                    headword.push_str(ASCII_WHITESPACE.replace_all(&characters,
+                        " ").trim_start());
+                } else {
+                    headword.push_str(ASCII_WHITESPACE.replace_all(&characters,
+                            " ").as_ref());
+                }
             },
             Ok(CData(cdata)) => {
                 headword.push_str(&cdata);

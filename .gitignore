@@ -5,3 +5,6 @@ tmp.md
 .tmp.py.swp
 out
 tmp.py
+dmlex/examples/*.rdf.xml
+dmlex/examples/*.json.xml
+dmlex/examples/*.xml.xml

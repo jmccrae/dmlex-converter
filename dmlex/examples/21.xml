@@ -4,8 +4,7 @@
         <example>
             <text>The coroner performed an <headwordMarker>autopsy</headwordMarker>.</text>
             <exampleTranslation langCode="cs">
-                <text>Koroner provedl
-                <headwordMarker>pitvu</headwordMarker>.</text>
+                <text>Koroner provedl <headwordMarker>pitvu</headwordMarker>.</text>
             </exampleTranslation>
         </example>
         <headwordTranslation langCode="cs"><text>pitva</text></headwordTranslation>

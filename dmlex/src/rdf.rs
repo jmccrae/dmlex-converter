@@ -14,7 +14,7 @@ use sophia::triple::Triple;
 use thiserror::Error;
 
 type Result<T> = std::result::Result<T, RdfError>;
-pub static DMLEX : &str = "http://www.oasis-open.org/to-be-confirmed/dmlex#";
+pub static DMLEX : &str = "https://docs.oasis-open.org/lexidma/dmlex/v1.0/schemas/RDF/dmlex.ttl#";
 pub static ONTOLEX : &str = "http://www.w3.org/ns/lemon/ontolex#";
 pub static LIME : &str = "http://www.w3.org/ns/lemon/lime#";
 pub static LEXICOG : &str = "http://www.w3.org/ns/lemon/lexicog#";
