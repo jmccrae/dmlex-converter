@@ -1,5 +1,6 @@
 /// This module evaluates the uniqueness constraints in the model.
 use crate::model::*;
+use std::fmt::Debug;  
 
 pub trait Validate<S: PartialEq + FragId> {
     fn check_uniqueness(&self) -> Vec<String>;
@@ -12,12 +13,14 @@ pub trait Validate<S: PartialEq + FragId> {
 
 pub trait FragId {
     fn frag_id(&self) -> String;
+    fn is_none(&self) -> bool;
 }
 
-fn all_unique<S: PartialEq>(items: &Vec<S>) -> bool {
+fn all_unique<S: PartialEq + Debug + FragId>(items: &Vec<S>) -> bool {
     for i in 0..items.len() {
         for j in i+1..items.len() {
-            if items[i] == items[j] {
+            if items[i] == items[j] && !items[i].is_none() && !items[j].is_none() {
+                println!("Duplicate elements: {:?} and {:?}", items[i], items[j]);
                 return false;
             }
         }
@@ -150,6 +153,7 @@ impl FragId for Definition {
     fn frag_id(&self) -> String {
         self.text.frag_id()
     }
+    fn is_none(&self) -> bool { false }
 }
 
 impl Validate<(Option<String>, Vec<Transcription>)> for Pronunciation {
@@ -180,6 +184,7 @@ impl FragId for Transcription {
     fn frag_id(&self) -> String {
         self.text.frag_id()
     }
+    fn is_none(&self) -> bool { false }
 }
 
 impl Validate<String> for Example {
@@ -404,6 +409,7 @@ impl FragId for MemberTypeType {
             MemberTypeType::Collocate => "collocate".to_string(),
         }
     }
+    fn is_none(&self) -> bool { false }
 }
 
 impl Validate<(Option<String>, Vec<Etymon>)> for Etymology {
@@ -436,8 +442,9 @@ impl Validate<(Option<String>, Vec<EtymonUnit>)> for Etymon {
 
 impl FragId for Etymon {
     fn frag_id(&self) -> String {
-        self.when.frag_id() + "~" + &self.etymon_units.frag_id()
+        self.etymon_units.frag_id()
     }
+    fn is_none(&self) -> bool { self.etymon_units.is_empty() }
 }
 
 impl Validate<(String, LangCode)> for EtymonUnit {
@@ -453,6 +460,9 @@ impl Validate<(String, LangCode)> for EtymonUnit {
 impl FragId for EtymonUnit {
     fn frag_id(&self) -> String {
         self.lang_code.frag_id() + "~" + &self.text.frag_id()
+    }
+    fn is_none(&self) -> bool { 
+        self.lang_code.is_none() && self.text.is_none()
     }
 }
 
@@ -506,6 +516,7 @@ impl FragId for String {
             .replace("~","\\~")
             .replace("_", "\\_"))
     }
+    fn is_none(&self) -> bool { false }
 }
 
 impl<A : FragId, B: FragId> FragId for (A, B) {
@@ -520,6 +531,7 @@ impl<A : FragId, B: FragId> FragId for (A, B) {
             format!("{}~{}", s1, s2)
         }
     }
+    fn is_none(&self) -> bool { self.0.is_none() && self.1.is_none() }
 }
 
 impl<A : FragId, B : FragId, C : FragId> FragId for (A, B, C) {
@@ -545,12 +557,14 @@ impl<A : FragId, B : FragId, C : FragId> FragId for (A, B, C) {
             format!("{}~{}~{}", s1, s2, s3)
         }
     }
+    fn is_none(&self) -> bool { self.0.is_none() && self.1.is_none() && self.2.is_none() }
 }
 
 impl FragId for LangCode {
     fn frag_id(&self) -> String {
         self.0.frag_id()
     }
+    fn is_none(&self) -> bool { false }
 }
 
 impl<A : FragId> FragId for Option<A> {
@@ -558,6 +572,12 @@ impl<A : FragId> FragId for Option<A> {
         match self {
             Some(a) => a.frag_id(),
             None => "".to_string()
+        }
+    }
+    fn is_none(&self) -> bool { 
+        match self {
+            Some(_) => false,
+            None => true
         }
     }
 }
@@ -573,12 +593,14 @@ impl<A : FragId> FragId for Vec<A> {
         }
         result
     }
+    fn is_none(&self) -> bool { self.is_empty() }
 }
 
 impl FragId for u32 {
     fn frag_id(&self) -> String {
         self.to_string()
     }
+    fn is_none(&self) -> bool { false }
 }
 
 #[cfg(test)]
@@ -664,12 +686,12 @@ mod tests {
         resource.validate().unwrap();
     }
 
-//    #[test]
-//    fn test_validate_xml_11() {
-//        let file = File::open("examples/11.xml").unwrap();
-//        let resource : Entry = crate::read_xml::read_xml(file, "entry").unwrap();
-//        resource.validate().unwrap();
-//    }
+    #[test]
+    fn test_validate_xml_11() {
+        let file = File::open("examples/11.xml").unwrap();
+        let resource : Entry = crate::read_xml::read_xml(file, "entry").unwrap();
+        resource.validate().unwrap();
+    }
 
     #[test]
     fn test_validate_xml_12() {
