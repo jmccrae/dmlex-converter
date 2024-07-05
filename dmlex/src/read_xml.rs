@@ -336,7 +336,7 @@ impl XMLVisitor for Definition {
     }
 
     fn visit_attributes(&mut self, attributes: &mut Vec<OwnedAttribute>) -> Result<()> {
-        self.definition_type = str_attr("type", attributes);
+        self.definition_type = str_attr("definitionType", attributes);
         Ok(())
     }
 
