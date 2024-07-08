@@ -171,7 +171,7 @@ impl WriteXML for &Definition {
         }
         writer.write(e)?;
         writer.write(XmlEvent::start_element("text"))?;
-        writer.write(XmlEvent::characters(&self.text))?;
+        write_text_string(writer, &self.text, &self.headword_markers, &self.collocate_markers)?;
         writer.write(XmlEvent::end_element())?;
         writer.write(XmlEvent::end_element())?;
         Ok(())
@@ -281,7 +281,7 @@ impl WriteXML for &HeadwordExplanation {
         }
         writer.write(e)?;
         writer.write(XmlEvent::start_element("text"))?;
-        write_text_string(writer, &self.text, &self.headword_markers, &self.collocate_markers)?;
+        write_headword_string(writer, &self.text, &self.placeholder_markers)?;
         writer.write(XmlEvent::end_element())?;
         writer.write(XmlEvent::end_element())?;
         Ok(())

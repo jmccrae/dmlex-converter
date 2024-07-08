@@ -345,12 +345,14 @@ impl XMLVisitor for Definition {
     //    Ok(())
     //}
     fn visit_start_element<R: Read>(&mut self, name: &str, 
-        _attributes: Vec<OwnedAttribute>, reader: &mut EventReader<R>) 
+        attributes: Vec<OwnedAttribute>, reader: &mut EventReader<R>) 
         -> Result<()> {
         match name {
             "text" => {
-                let text = plain_string(reader)?;
+                let (text, markers, collocate_markers) = text_string(reader, attributes)?;
                 self.text = text;
+                self.headword_markers = markers;
+                self.collocate_markers = collocate_markers;
                 Ok(())
             },
             _ => Err(FromXMLError::UnexpectedElement(name.to_string())),
@@ -511,10 +513,9 @@ impl XMLVisitor for HeadwordExplanation {
         -> Result<()> {
         match name {
             "text" => {
-                let (text, markers, coll_markers) = text_string(reader, attributes)?;
+                let (text, markers) = headword_string(reader, attributes)?;
                 self.text = text;
-                self.headword_markers = markers;
-                self.collocate_markers = coll_markers;
+                self.placeholder_markers = markers;
                 Ok(())
             },
             _ => Err(FromXMLError::UnexpectedElement(name.to_string())),
@@ -618,6 +619,7 @@ impl XMLVisitor for LabelTag {
     fn visit_attributes(&mut self, attributes: &mut Vec<OwnedAttribute>) -> Result<()> {
         self.tag = str_attr("tag", attributes)
             .ok_or(FromXMLError::MissingAttribute("tag"))?;
+        self.type_tag = str_attr("typeTag", attributes);
         self.for_= str_attr("for", attributes);
         Ok(())
     }
@@ -1235,7 +1237,13 @@ fn headword_string<R: Read>(input: &mut EventReader<R>, attributes: Vec<OwnedAtt
                 }
             },
             Ok(Characters(characters)) => {
-                headword.push_str(&characters);
+                if headword.is_empty() {
+                    headword.push_str(ASCII_WHITESPACE.replace_all(&characters,
+                        " ").trim_start());
+                } else {
+                    headword.push_str(ASCII_WHITESPACE.replace_all(&characters,
+                            " ").as_ref());
+                }
             },
             Ok(CData(cdata)) => {
                 headword.push_str(&cdata);
@@ -1245,7 +1253,7 @@ fn headword_string<R: Read>(input: &mut EventReader<R>, attributes: Vec<OwnedAtt
                     if markers.len() > 0 && markers.last().unwrap().end_index == 0 {
                         return Err(FromXMLError::UnclosedPlaceholderMarker);
                     }
-                    return Ok((headword.to_string(), markers));
+                    return Ok((headword.trim_end().to_string(), markers));
                 } else if name.local_name == "placeholderMarker" {
                     if markers.len() == 0 {
                         return Err(FromXMLError::MismatchedEndElement("placeholderMarker".to_string()));
@@ -1256,7 +1264,9 @@ fn headword_string<R: Read>(input: &mut EventReader<R>, attributes: Vec<OwnedAtt
                 }
             },
             Ok(Whitespace(s)) => {
-                headword.push_str(&s);
+                if !headword.is_empty() {
+                    headword.push_str(&s);
+                }
             },
             Ok(StartDocument { .. }) => {
                 return Err(FromXMLError::UnexpectedStartDocument);

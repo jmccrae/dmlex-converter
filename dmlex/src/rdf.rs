@@ -543,8 +543,8 @@ impl FromRDF for Sense {
 
 impl ToRDF for Definition {
     fn to_rdf<'a, G: MutableGraph, T1: AsRef<str>, T2: AsRef<str>>(&'a self, 
-        graph: &mut G, _data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
-        index : usize, _ontolex : bool, uri : &Option<String>) ->
+        graph: &mut G, data : &'a Namespace<T1>, dmlex: &Namespace<T2>,
+        index : usize, ontolex : bool, uri : &Option<String>) ->
         Result<Term<String>> {
         let (id, _) = name_elem(uri, "definition", self)?;
         graph.insert(
@@ -555,6 +555,20 @@ impl ToRDF for Definition {
             &id,
             &dmlex.get("text")?,
             &self.text.as_literal()).expect("Error inserting triple");
+        for (i, collocate_marker) in self.collocate_markers.iter().enumerate() {
+            let collocate_marker_id = collocate_marker.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
+            graph.insert(
+                &id,
+                &dmlex.get("collocateMarker")?,
+                &collocate_marker_id).expect("Error inserting triple");
+        }
+        for (i, headword_marker) in self.headword_markers.iter().enumerate() {
+            let headword_marker_id = headword_marker.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
+            graph.insert(
+                &id,
+                &dmlex.get("headwordMarker")?,
+                &headword_marker_id).expect("Error inserting triple");
+        }
         if let Some(definition_type) = &self.definition_type {
             graph.insert(
                 &id,
@@ -572,10 +586,12 @@ impl ToRDF for Definition {
 
 impl FromRDF for Definition {
     fn from_rdf<G : Graph, T1 : AsRef<str>, T2: AsRef<str>>(id : &Term<String>, 
-        g : &G, dmlex: &Namespace<T1>, _data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
+        g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
 
         Ok((get_one_usize(g, id, &dmlex.get("listingOrder")?)?, Definition {
             text: get_one_str(g, id, &dmlex.get("text")?)?,
+            collocate_markers: read_many(g, id, "collocateMarker", data, dmlex)?,
+            headword_markers: read_many(g, id, "headwordMarker", data, dmlex)?,
             definition_type: get_zero_one_str(g, id, &dmlex.get("definitionType")?)?,
         }))
     }
@@ -892,19 +908,12 @@ impl ToRDF for HeadwordExplanation {
             &id,
             &dmlex.get("text")?,
             &self.text.as_literal()).expect("Error inserting triple");
-        for (i, collocate_marker) in self.collocate_markers.iter().enumerate() {
-            let collocate_marker_id = collocate_marker.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
+        for (i, placeholder_marker) in self.placeholder_markers.iter().enumerate() {
+            let placeholder_marker_id = placeholder_marker.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
             graph.insert(
                 &id,
-                &dmlex.get("collocateMarker")?,
-                &collocate_marker_id).expect("Error inserting triple");
-        }
-        for (i, headword_marker) in self.headword_markers.iter().enumerate() {
-            let headword_marker_id = headword_marker.to_rdf(graph, data, dmlex, i, ontolex, &uri)?;
-            graph.insert(
-                &id,
-                &dmlex.get("headwordMarker")?,
-                &headword_marker_id).expect("Error inserting triple");
+                &dmlex.get("placeholderMarker")?,
+                &placeholder_marker_id).expect("Error inserting triple");
         }
         if let Some(LangCode(lang_code)) = &self.lang_code {
             graph.insert(
@@ -922,8 +931,7 @@ impl FromRDF for HeadwordExplanation {
         g : &G, dmlex: &Namespace<T1>, data: &Namespace<T2>) -> Result<(usize, Self)> where Self : Sized {
         Ok((0, HeadwordExplanation {
             text: get_one_str(g, id, &dmlex.get("text")?)?,
-            collocate_markers: read_many(g, id, "collocateMarker", data, dmlex)?,
-            headword_markers: read_many(g, id, "headwordMarker", data, dmlex)?,
+            placeholder_markers: read_many(g, id, "placeholderMarker", data, dmlex)?,
             lang_code: get_zero_one_str(g, id, &dmlex.get("langCode")?)?.map(|x| LangCode(x)),
         }))
     }

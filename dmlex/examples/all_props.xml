@@ -1,0 +1,115 @@
+<lexicographicResource title="Example Dictionary" 
+    uri="http://example.com" langCode="en"
+    xmlns="http://docs.oasis-open.org/lexidma/ns/dmlex-1.0">
+    <entry homographNumber="1" id="entry">
+        <headword>cat <placeholderMarker>x</placeholderMarker></headword>
+        <partOfSpeech tag="noun"/>
+        <label tag="informal"/>
+        <pronunciation soundFile="cat.mp3">
+            <transcription scheme="ipa"><text>cat</text></transcription>
+            <label tag="UK"/>
+        </pronunciation>
+        <inflectedForm tag="plural">
+            <text>cats</text>
+            <label tag="plural"/>
+            <pronunciation soundFile="cats.mp3">
+                <transcription scheme="ipa"><text>kæts</text></transcription>
+                <label tag="UK"/>
+            </pronunciation>
+        </inflectedForm>
+        <sense id="sense">
+            <indicator>informal</indicator>
+            <label tag="animal"/>
+            <definition definitionType="normal">
+                <text>The definition of <headwordMarker>cat</headwordMarker> which is not a <collocateMarker lemma="dog">dog</collocateMarker></text>
+            </definition>
+            <example sourceIdentity="sourceIdentity" sourceElaboration="sourceElaboration" soundFile="example.mp3">
+                <text>The <headwordMarker>cat</headwordMarker> sits on the <collocateMarker id="collocate">mat</collocateMarker>.</text>
+                <label tag="informal"/>
+                <exampleTranslation langCode="es" soundFile="ejemplo.mp3">
+                    <text>El <headwordMarker>gato</headwordMarker> se sienta en la <collocateMarker>alfombra</collocateMarker>.</text>
+                    <label tag="informal"/>
+                </exampleTranslation>
+            </example>
+            <headwordExplanation langCode="en">
+                <text>Explanation of the headword</text>
+            </headwordExplanation>
+            <headwordTranslation langCode="es">
+                <text>gato <placeholderMarker>x</placeholderMarker></text>
+                <label tag="informal"/>
+                <pronunciation soundFile="gato.mp3">
+                    <transcription scheme="ipa"><text>gato</text></transcription>
+                    <label tag="ES"/>
+                </pronunciation>
+                <inflectedForm tag="PLURAL">
+                    <text>gatos</text>
+                    <label tag="plural"/>
+                    <pronunciation soundFile="gatos.mp3">
+                        <transcription scheme="ipa"><text>gatos</text></transcription>
+                        <label tag="ES"/>
+                    </pronunciation>
+                </inflectedForm>
+            </headwordTranslation>
+        </sense>
+        <etymology>
+            <description>from Germanic *kattuz</description>
+            <etymon when="before" type="derivation">
+                <note>via Old English</note>
+                <etymonUnit langCode="gem-pro" reconstructed="true">
+                    <text>*kattuz</text>
+                    <partOfSpeech tag="noun"/>
+                    <translation>cat</translation>
+                </etymonUnit>
+                <translation>cat</translation>
+            </etymon>
+        </etymology>
+    </entry>
+    <translationLanguage langCode="es"/>
+    <definitionTypeTag tag="normal">
+        <description>the most common type of definition</description>
+        <sameAs uri="http://example.com/normal"/>
+    </definitionTypeTag>
+    <inflectedFormTag tag="plural" for="form">
+        <description>the form of a word that is used to indicate more than one person or thing</description>
+        <sameAs uri="http://example.com/plural"/>
+    </inflectedFormTag>
+    <labelTag tag="informal" typeTag="typeTag" for="entry">
+        <description>used in conversation and not in formal writing or speech</description>
+        <sameAs uri="http://example.com/informal"/>
+    </labelTag>
+    <labelTypeTag tag="informal">
+        <description>used in conversation and not in formal writing or speech</description>
+        <sameAs uri="http://example.com/informal"/>
+    </labelTypeTag>
+    <partOfSpeechTag tag="noun" for="entry">
+        <description>a word that refers to a person, place, thing, event, substance, or quality</description>
+        <sameAs uri="http://example.com/noun"/>
+    </partOfSpeechTag>
+    <sourceIdentityTag tag="sourceIdentity">
+        <description>the source of the example</description>
+        <sameAs uri="http://example.com/sourceIdentity"/>
+    </sourceIdentityTag>
+    <transcriptionSchemeTag tag="ipa" for="transcription">
+        <description>the International Phonetic Alphabet</description>
+    </transcriptionSchemeTag>
+    <relation type="hypernym">
+        <description>the relation between a word and a word that is more general in meaning</description>
+        <member ref="entry" role="x" obverseListingOrder="1"/>
+        <member ref="collocate" role="x" obverseListingOrder="2"/>
+    </relation>
+    <relationType type="hypernym">
+        <description>the relation between a word and a word that is more general in meaning</description>
+        <memberType role="x" type="entry" min="1" max="1" hint="embed">
+            <description>the word that is more general in meaning</description>
+            <sameAs uri="http://example.com/hypernym"/>
+        </memberType>
+        <sameAs uri="http://example.com/hypernym"/>
+    </relationType>
+    <etymonLanguage langCode="gem-pro">
+        <displayName>Proto-Germanic</displayName>
+    </etymonLanguage>
+    <etymonType type="derivation">
+        <description>the relation between a word and a word from which it is derived</description>
+    </etymonType>
+</lexicographicResource>
+ 

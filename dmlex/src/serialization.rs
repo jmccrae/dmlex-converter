@@ -735,4 +735,9 @@ mod tests {
     fn test_xml_round_trip_24() {
         xml_round_trip_lexicon("24");
     }
+
+    #[test]
+    fn test_xml_round_trip_all_props() {
+        xml_round_trip_lexicon("all_props");
+    }
 }

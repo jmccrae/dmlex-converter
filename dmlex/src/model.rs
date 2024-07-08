@@ -163,6 +163,12 @@ pub struct Sense {
 #[serde(deny_unknown_fields)]
 pub struct Definition {
     pub text: String,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
+    pub collocate_markers: Vec<CollocateMarker>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    #[serde(default)]
+    pub headword_markers: Vec<Marker>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub definition_type: Option<String>
@@ -253,10 +259,7 @@ pub struct HeadwordExplanation {
     pub text: String,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     #[serde(default)]
-    pub collocate_markers: Vec<CollocateMarker>,
-    #[serde(skip_serializing_if = "Vec::is_empty")]
-    #[serde(default)]
-    pub headword_markers: Vec<Marker>,
+    pub placeholder_markers: Vec<Marker>,
     #[serde(skip_serializing_if = "Option::is_none")]
     #[serde(default)]
     pub lang_code: Option<LangCode>,
